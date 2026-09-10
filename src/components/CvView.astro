@@ -100,7 +100,7 @@ const short = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '');
 
       <section class="block">
         <h2>{strings.cv.certifications}</h2>
-        <ul class="plain">
+        <ul class="plain certs-print">
           {
             certifications.map((certification) => (
               <li>
@@ -348,7 +348,7 @@ const short = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '');
   @media print {
     @page {
       size: A4;
-      margin: 14mm 14mm 16mm;
+      margin: 11mm 12mm 12mm;
     }
 
     .print-button {
@@ -364,7 +364,8 @@ const short = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '');
       max-width: none;
       padding: 0;
       color: #000;
-      font-size: 10pt;
+      font-size: 9pt;
+      line-height: 1.35;
       background: none;
       backdrop-filter: none;
       border: 0;
@@ -381,14 +382,52 @@ const short = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '');
       text-decoration: none;
     }
 
+    h1 {
+      font-size: 17pt;
+    }
+
+    .role {
+      font-size: 10pt;
+      margin-top: 0.15rem;
+    }
+
+    .contact {
+      margin-top: 0.35rem;
+      padding-bottom: 0.5rem;
+      gap: 0.25rem;
+    }
+
     .block {
-      margin-top: 1.1rem;
+      margin-top: 0.75rem;
       break-inside: avoid;
     }
 
     h2 {
       color: #000;
       border-color: #999;
+      margin-bottom: 0.4rem;
+      padding-bottom: 0.15rem;
+      font-size: 8pt;
+    }
+
+    h3 {
+      font-size: 10pt;
+    }
+
+    .entry {
+      margin-bottom: 0.5rem;
+    }
+
+    .org-line {
+      margin: 0.05rem 0 0.15rem;
+    }
+
+    ul {
+      padding-inline-start: 0.9rem;
+    }
+
+    li {
+      margin-bottom: 0.05rem;
     }
 
     .period,
@@ -401,8 +440,29 @@ const short = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '');
 
     li,
     .summary,
-    .skills dd {
-      font-size: 9.5pt;
+    .skills dd,
+    .org,
+    .org-line,
+    .contact,
+    .period {
+      font-size: 8.5pt;
+    }
+
+    .skills {
+      gap: 0.2rem;
+      row-gap: 0.2rem;
+    }
+
+    /* Certificates and projects read fine in two columns on paper. */
+    .certs-print,
+    .projects {
+      column-count: 2;
+      column-gap: 1.2rem;
+    }
+
+    .certs-print li,
+    .projects li {
+      break-inside: avoid;
     }
   }
 </style>

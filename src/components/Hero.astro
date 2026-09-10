@@ -1,5 +1,6 @@
 ---
 import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import ExternalIcon from './ExternalIcon.astro';
 import MailLink from './MailLink.astro';
 import { profile } from '../lib/content';
@@ -12,7 +13,7 @@ interface Props {
 const { locale } = Astro.props;
 const strings = t(locale);
 
-const hasPortrait = existsSync(new URL('../../public/portrait.avif', import.meta.url));
+const hasPortrait = existsSync(resolve(process.cwd(), 'public/portrait.avif'));
 const initials = profile.name
   .split(' ')
   .map((part) => part[0])

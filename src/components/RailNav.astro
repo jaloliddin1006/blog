@@ -144,7 +144,7 @@ const stops = [
     box-shadow: 0 0 0 3px var(--accent-soft);
   }
 
-  @media (min-width: 1180px) {
+  @media (min-width: 1280px) {
     .rail {
       top: 50%;
       bottom: auto;
@@ -161,7 +161,7 @@ const stops = [
       clip-path: none;
     }
 
-    ul {
+    .rail ul {
       list-style: none;
       margin: 0;
       padding: 0.7rem 0.55rem;
@@ -170,7 +170,7 @@ const stops = [
       border-radius: 999px;
     }
 
-    a {
+    .rail a {
       display: flex;
       align-items: center;
       justify-content: flex-end;
@@ -184,7 +184,7 @@ const stops = [
       display: block;
     }
 
-    .text {
+    .rail .text {
       font-family: var(--font-mono);
       font-size: var(--text-micro);
       letter-spacing: 0.08em;
@@ -199,7 +199,7 @@ const stops = [
         opacity 0.25s ease;
     }
 
-    .dot {
+    .rail .dot {
       width: 7px;
       height: 7px;
       border-radius: 50%;
@@ -216,28 +216,28 @@ const stops = [
     /* The whole rail opens on hover; the active stop is always lit. */
     .rail:hover .text,
     .rail:focus-within .text,
-    a[aria-current='true'] .text {
+    .rail a[aria-current='true'] .text {
       max-width: 11rem;
       opacity: 1;
     }
 
-    a:hover .dot {
+    .rail a:hover .dot {
       opacity: 1;
       background-color: var(--accent);
     }
 
-    a:hover .text {
+    .rail a:hover .text {
       color: var(--ink);
     }
 
-    a[aria-current='true'] .dot {
+    .rail a[aria-current='true'] .dot {
       opacity: 1;
       background-color: var(--accent);
       transform: scale(1.5);
       box-shadow: 0 0 0 4px var(--accent-soft);
     }
 
-    a[aria-current='true'] .text {
+    .rail a[aria-current='true'] .text {
       color: var(--accent);
     }
   }
