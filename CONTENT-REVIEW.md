@@ -19,6 +19,16 @@ sheet is the only source of truth: nothing here was invented, embellished or inf
 | Four skill groups                           | A2 → Skills, in the given display order                                   |
 | Twelve repositories                         | A2 → Selected projects; the six marked `featured` are the six named in A2 |
 
+## Corrected by the owner after the first build
+
+- **The unit is a bo‘lim, not a departament.** Uzbek now reads
+  "…bo‘limi boshlig‘i" / "…bo‘limi bosh mutaxassisi", and Russian follows with
+  "отдела" rather than "управления" (which is the counterpart of _boshqarma_).
+  The English titles are left as SPEC A2 records them from LinkedIn — Uzbek
+  state bodies commonly render _bo‘lim_ as "Department" in English. Say the
+  word if it should become "Division" instead; it is one field in
+  `profile.json` and one per role in `experience.json`.
+
 ## Written for this build
 
 - **The About paragraphs** (`profile.about`). Drafted in A3.3 during the review and

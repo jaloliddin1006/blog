@@ -9,8 +9,8 @@
     },
     "role": {
       "en": "Head of Information Systems Development and Implementation Department",
-      "uz": "Axborot tizimlarini ishlab chiqish va joriy etish departamenti boshlig‘i",
-      "ru": "Начальник управления разработки и внедрения информационных систем"
+      "uz": "Axborot tizimlarini ishlab chiqish va joriy etish bo‘limi boshlig‘i",
+      "ru": "Начальник отдела разработки и внедрения информационных систем"
     },
     "summary": {
       "en": "Leads design, development and rollout of the information systems supporting national statistical data collection, processing and reporting. Manages the development team, sets technical standards and reviews architecture.",
@@ -26,12 +26,12 @@
       "uz": [
         "Milliy statistik ma’lumotlarni yig‘ish, qayta ishlash va hisobot berishni qo‘llab-quvvatlaydigan axborot tizimlarini loyihalash, ishlab chiqish va joriy etishga rahbarlik qiladi",
         "Ishlab chiqish jamoasini boshqaradi, texnik standartlarni belgilaydi va arxitekturani ko‘rib chiqadi",
-        "Departamentlararo va tashqi integratsiyalarni muvofiqlashtiradi"
+        "Bo‘limlararo va tashqi integratsiyalarni muvofiqlashtiradi"
       ],
       "ru": [
         "Руководит проектированием, разработкой и внедрением информационных систем для сбора, обработки и публикации национальной статистики",
         "Управляет командой разработки, задаёт технические стандарты и проверяет архитектуру",
-        "Координирует межведомственные и внешние интеграции"
+        "Координирует интеграции между отделами и с внешними системами"
       ]
     }
   },
@@ -44,13 +44,13 @@
     },
     "role": {
       "en": "Chief Specialist, Information Systems Development and Implementation Department",
-      "uz": "Axborot tizimlarini ishlab chiqish va joriy etish departamenti bosh mutaxassisi",
-      "ru": "Главный специалист управления разработки и внедрения информационных систем"
+      "uz": "Axborot tizimlarini ishlab chiqish va joriy etish bo‘limi bosh mutaxassisi",
+      "ru": "Главный специалист отдела разработки и внедрения информационных систем"
     },
     "summary": {
       "en": "Designed and developed internal information systems with Python, Django and PostgreSQL, and led their technical implementation across departments, including REST API integrations.",
-      "uz": "Python, Django va PostgreSQL yordamida ichki axborot tizimlarini loyihalagan va ishlab chiqqan, ularning departamentlar bo‘ylab texnik joriy etilishiga, jumladan REST API integratsiyalariga rahbarlik qilgan.",
-      "ru": "Проектировал и разрабатывал внутренние информационные системы на Python, Django и PostgreSQL, вёл их техническое внедрение по управлениям, включая интеграции через REST API."
+      "uz": "Python, Django va PostgreSQL yordamida ichki axborot tizimlarini loyihalagan va ishlab chiqqan, ularning bo‘limlar bo‘ylab texnik joriy etilishiga, jumladan REST API integratsiyalariga rahbarlik qilgan.",
+      "ru": "Проектировал и разрабатывал внутренние информационные системы на Python, Django и PostgreSQL, вёл их техническое внедрение по отделам, включая интеграции через REST API."
     },
     "bullets": {
       "en": [
@@ -60,12 +60,12 @@
       ],
       "uz": [
         "Python, Django va PostgreSQL yordamida ichki axborot tizimlarini loyihalagan va ishlab chiqqan",
-        "Departamentlar bo‘ylab texnik joriy etishga rahbarlik qilgan",
+        "Bo‘limlar bo‘ylab texnik joriy etishga rahbarlik qilgan",
         "Tizimlarni ichki ma’lumotlar bazalari va tashqi manbalar bilan REST API orqali integratsiya qilgan"
       ],
       "ru": [
         "Проектировал и разрабатывал внутренние информационные системы на Python, Django и PostgreSQL",
-        "Вёл техническое внедрение по управлениям",
+        "Вёл техническое внедрение по отделам",
         "Интегрировал системы с внутренними базами данных и внешними источниками через REST API"
       ]
     }
@@ -79,8 +79,8 @@
     },
     "role": {
       "en": "Chief Specialist, AI Technologies Implementation Department",
-      "uz": "Sun’iy intellekt texnologiyalarini joriy etish departamenti bosh mutaxassisi",
-      "ru": "Главный специалист управления внедрения технологий искусственного интеллекта"
+      "uz": "Sun’iy intellekt texnologiyalarini joriy etish bo‘limi bosh mutaxassisi",
+      "ru": "Главный специалист отдела внедрения технологий искусственного интеллекта"
     },
     "summary": {
       "en": "Evaluated and piloted AI/ML solutions for statistical data processing, building prototypes with Python, vector databases and LLM tooling — RAG and semantic search.",

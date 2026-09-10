@@ -11,8 +11,8 @@
   },
   "title": {
     "en": "Head of Information Systems Development & Implementation",
-    "uz": "Axborot tizimlarini ishlab chiqish va joriy etish departamenti boshlig‘i",
-    "ru": "Начальник управления разработки и внедрения информационных систем"
+    "uz": "Axborot tizimlarini ishlab chiqish va joriy etish bo‘limi boshlig‘i",
+    "ru": "Начальник отдела разработки и внедрения информационных систем"
   },
   "org": {
     "en": "National Statistics Committee of Uzbekistan",
@@ -40,11 +40,11 @@
       "Day to day that means data architecture in PostgreSQL, backend services in Python and Django, integrations over REST APIs, and working out where AI genuinely helps official statistics — vector search, RAG and LLM tooling — rather than where it merely looks impressive."
     ],
     "uz": [
-      "Men O‘zbekiston Respublikasi Milliy statistika qo‘mitasida ishlayman va milliy statistik ma’lumotlarni yig‘ish, qayta ishlash hamda hisobot berishni ta’minlaydigan axborot tizimlarini loyihalash, ishlab chiqish va joriy etuvchi jamoaga rahbarlik qilaman. Bu yo‘l ma’lumotlar bazasi muhandisligidan sun’iy intellektni joriy etishga, so‘ngra departament boshqaruviga olib keldi.",
+      "Men O‘zbekiston Respublikasi Milliy statistika qo‘mitasida ishlayman va milliy statistik ma’lumotlarni yig‘ish, qayta ishlash hamda hisobot berishni ta’minlaydigan axborot tizimlarini loyihalash, ishlab chiqish va joriy etuvchi jamoaga rahbarlik qilaman. Bu yo‘l ma’lumotlar bazasi muhandisligidan sun’iy intellektni joriy etishga, so‘ngra bo‘lim boshqaruviga olib keldi.",
       "Kundalik ish — PostgreSQL asosidagi ma’lumotlar arxitekturasi, Python va Django yordamidagi backend xizmatlar, REST API orqali integratsiyalar hamda sun’iy intellekt rasmiy statistikaga qayerda haqiqatan foyda keltirishini baholash: vektorli qidiruv, RAG va LLM vositalari — shunchaki ta’sirli ko‘ringan joyda emas."
     ],
     "ru": [
-      "Я работаю в Национальном комитете по статистике Республики Узбекистан и руковожу командой, которая проектирует, разрабатывает и внедряет информационные системы для сбора, обработки и публикации национальной статистики. Мой путь здесь шёл от инженерии баз данных к внедрению ИИ и затем к руководству управлением.",
+      "Я работаю в Национальном комитете по статистике Республики Узбекистан и руковожу командой, которая проектирует, разрабатывает и внедряет информационные системы для сбора, обработки и публикации национальной статистики. Мой путь здесь шёл от инженерии баз данных к внедрению ИИ и затем к руководству отделом.",
       "На практике это архитектура данных в PostgreSQL, бэкенд-сервисы на Python и Django, интеграции через REST API и оценка того, где ИИ действительно помогает официальной статистике — векторный поиск, RAG и инструменты LLM, — а где лишь выглядит эффектно."
     ]
   },
@@ -71,7 +71,7 @@
     "uz": [
       {
         "label": "Rahbarlik",
-        "value": "statistik axborot tizimlarini quruvchi muhandislar departamenti"
+        "value": "statistik axborot tizimlarini quruvchi muhandislar bo‘limi"
       },
       {
         "label": "Stek",
