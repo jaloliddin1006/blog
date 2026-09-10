@@ -1,0 +1,237 @@
+---
+import Atlas from '../components/Atlas.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import RailNav from '../components/RailNav.astro';
+import { profile } from '../lib/content';
+import { DEFAULT_LOCALE, LOCALES, localePath, pick, t, type Locale } from '../lib/i18n';
+import '../styles/global.css';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  /** Route key without locale prefix: '', 'blog', 'cv', … */
+  route?: string;
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
+  showBlogNav?: boolean;
+  bare?: boolean;
+  /** The rail only makes sense where the anchored sections live. */
+  rail?: boolean;
+}
+
+const {
+  locale,
+  title,
+  description,
+  route = '',
+  noindex = false,
+  ogType = 'website',
+  showBlogNav = false,
+  bare = false,
+  rail = false,
+} = Astro.props;
+
+const strings = t(locale);
+const site = Astro.site ?? new URL('https://mamatmusayev.uz');
+const canonical = new URL(localePath(locale, route), site);
+const ogImage = new URL(`/og/og-${locale}.png`, site);
+
+const alternates = LOCALES.map((code) => ({
+  code,
+  href: new URL(localePath(code, route), site).href,
+}));
+
+const OG_LOCALE: Record<Locale, string> = { en: 'en_US', uz: 'uz_UZ', ru: 'ru_RU' };
+
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  jobTitle: pick(profile.title, locale),
+  worksFor: { '@type': 'Organization', name: pick(profile.orgFull, locale) },
+  alumniOf: {
+    '@type': 'CollegeOrUniversity',
+    name: 'Tashkent University of Information Technologies',
+  },
+  address: { '@type': 'PostalAddress', addressLocality: 'Tashkent', addressCountry: 'UZ' },
+  // No email here on purpose: JSON-LD is plain text, and it would undo the
+  // entity encoding that keeps the address out of scrapes (SPEC A3.9).
+  url: new URL(localePath(locale), site).href,
+  sameAs: [profile.links.linkedin, profile.links.github, profile.links.telegram],
+};
+---
+
+<html lang={strings.htmlLang} dir={strings.dir} class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    {alternates.map((alt) => <link rel="alternate" hreflang={alt.code} href={alt.href} />)}
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={new URL(localePath(DEFAULT_LOCALE, route), site).href}
+    />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={profile.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:image" content={ogImage.href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${profile.name} — ${pick(profile.title, locale)}`} />
+    <meta property="og:locale" content={OG_LOCALE[locale]} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#eef3f8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#060c14" media="(prefers-color-scheme: dark)" />
+
+    <link
+      rel="preload"
+      href="/fonts/ibm-plex-sans-latin-400-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/ibm-plex-serif-latin-600-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <!-- Theme before first paint: no flash of the wrong theme (SPEC A5). -->
+    <script is:inline>
+      try {
+        var stored = localStorage.getItem('theme');
+        if (stored === 'light' || stored === 'dark') {
+          document.documentElement.dataset.theme = stored;
+        }
+      } catch (error) {
+        /* private mode: fall back to prefers-color-scheme */
+      }
+    </script>
+
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">{strings.nav.skip}</a>
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <Atlas />
+    {!bare && <Header locale={locale} route={route} showBlogNav={showBlogNav} />}
+    {rail && <RailNav locale={locale} />}
+    <div class="page">
+      <main id="main">
+        <slot />
+      </main>
+      {!bare && <Footer locale={locale} />}
+    </div>
+
+    <script is:inline>
+      // Sections rise into place once, then stay put. Nothing loops, nothing
+      // moves on its own — and with reduced motion it never runs at all.
+      (function () {
+        // Chrome and friends drive these from the scroll position in CSS;
+        // this observer only exists for the browsers that cannot.
+        if (window.CSS && CSS.supports && CSS.supports('animation-timeline: view()')) return;
+
+        var items = document.querySelectorAll('.reveal');
+        if (!items.length) return;
+        if (
+          !('IntersectionObserver' in window) ||
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ) {
+          items.forEach(function (item) {
+            item.classList.add('is-static');
+          });
+          return;
+        }
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (!entry.isIntersecting) return;
+              var delay = Number(entry.target.dataset.revealDelay || 0);
+              setTimeout(function () {
+                entry.target.classList.add('is-visible');
+              }, delay);
+              observer.unobserve(entry.target);
+            });
+          },
+          { rootMargin: '0px 0px -12% 0px', threshold: 0.08 },
+        );
+        items.forEach(function (item) {
+          observer.observe(item);
+        });
+      })();
+    </script>
+
+    <script is:inline>
+      // Progress bar for browsers without scroll-driven CSS animations.
+      (function () {
+        if (window.CSS && CSS.supports && CSS.supports('animation-timeline: scroll()')) return;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        var bar = document.querySelector('.scroll-progress');
+        if (!bar) return;
+        var update = function () {
+          var max = document.documentElement.scrollHeight - window.innerHeight;
+          bar.style.transform = 'scaleX(' + (max > 0 ? window.scrollY / max : 0) + ')';
+        };
+        update();
+        window.addEventListener('scroll', update, { passive: true });
+        window.addEventListener('resize', update);
+      })();
+    </script>
+
+    <style>
+      .page {
+        position: relative;
+        z-index: 1;
+        /* Room for the bottom rail so it never sits on the footer. */
+        padding-bottom: 4.5rem;
+      }
+
+      @media (min-width: 1180px) {
+        .page {
+          padding-bottom: 0;
+        }
+      }
+
+      @media print {
+        .page {
+          padding-bottom: 0;
+        }
+      }
+
+      .skip-link {
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        z-index: 100;
+        background-color: var(--glass-strong);
+        backdrop-filter: blur(12px);
+        color: var(--ink);
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--glass-border);
+        border-radius: 10px;
+        font-size: 0.875rem;
+        text-decoration: none;
+      }
+
+      .skip-link:focus {
+        left: 0.5rem;
+        top: 0.5rem;
+      }
+    </style>
+  </body>
+</html>

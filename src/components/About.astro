@@ -1,0 +1,42 @@
+---
+import Section from './Section.astro';
+import { profile } from '../lib/content';
+import { pick, t, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
+const paragraphs = pick(profile.about, locale);
+---
+
+<Section id="about" index="01" title={strings.sections.about}>
+  <div class="measure">
+    {paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+    <p class="languages">{pick(profile.languages, locale)}</p>
+  </div>
+</Section>
+
+<style>
+  p {
+    margin: 0 0 1.15rem;
+    color: var(--ink-2);
+    font-size: 1.05em;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  .languages {
+    margin-top: 1.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--glass-border);
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.06em;
+    color: var(--ink-2);
+  }
+</style>

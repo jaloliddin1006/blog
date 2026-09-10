@@ -1,0 +1,17 @@
+[
+  {
+    "id": "tuit-bsc",
+    "period": { "en": "2021 – 2025", "uz": "2021 – 2025", "ru": "2021 – 2025" },
+    "degree": {
+      "en": "B.Sc. in Artificial Intelligence",
+      "uz": "Sun’iy intellekt yo‘nalishi bakalavri",
+      "ru": "Бакалавр по искусственному интеллекту"
+    },
+    "school": {
+      "en": "Tashkent University of Information Technologies (TUIT)",
+      "uz": "Toshkent axborot texnologiyalari universiteti (TATU)",
+      "ru": "Ташкентский университет информационных технологий (ТУИТ)"
+    },
+    "note": { "en": "GPA 4.0 / 5.0", "uz": "GPA 4.0 / 5.0", "ru": "Средний балл 4.0 / 5.0" }
+  }
+]

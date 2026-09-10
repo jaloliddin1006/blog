@@ -1,0 +1,60 @@
+[
+  {
+    "id": "data-backend",
+    "label": {
+      "en": "Data & backend",
+      "uz": "Ma’lumotlar va backend",
+      "ru": "Данные и бэкенд"
+    },
+    "items": [
+      "Python",
+      "Django",
+      "Django REST Framework",
+      "PostgreSQL",
+      "SQL",
+      "Redis",
+      "REST API design",
+      "Docker",
+      "Git",
+      "Linux"
+    ]
+  },
+  {
+    "id": "ai-data-systems",
+    "label": {
+      "en": "AI & data systems",
+      "uz": "Sun’iy intellekt va ma’lumot tizimlari",
+      "ru": "ИИ и системы данных"
+    },
+    "items": [
+      "Vector databases (pgvector)",
+      "RAG / LLM tooling",
+      "Machine learning",
+      "NLP",
+      "Generative AI"
+    ]
+  },
+  {
+    "id": "bots-integration",
+    "label": {
+      "en": "Bots & integration",
+      "uz": "Botlar va integratsiya",
+      "ru": "Боты и интеграции"
+    },
+    "items": ["Telegram Bot API", "aiogram 3", "Tortoise ORM", "LMS integrations", "Payme", "Upay"]
+  },
+  {
+    "id": "leadership",
+    "label": {
+      "en": "Leadership",
+      "uz": "Rahbarlik",
+      "ru": "Руководство"
+    },
+    "items": [
+      "Team leadership",
+      "Software project management",
+      "System architecture",
+      "Data architecture"
+    ]
+  }
+]

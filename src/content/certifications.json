@@ -1,0 +1,50 @@
+[
+  {
+    "name": "Advanced Django: Building a Blog",
+    "issuer": "Codio",
+    "date": { "en": "Oct 2025", "uz": "2025 oktabr", "ru": "Октябрь 2025" },
+    "url": null
+  },
+  {
+    "name": "Python Programming Fundamentals",
+    "issuer": "Microsoft",
+    "date": { "en": "Jul 2025", "uz": "2025 iyul", "ru": "Июль 2025" },
+    "url": null
+  },
+  {
+    "name": "Vector Database Fundamentals Specialization",
+    "issuer": "IBM / SkillUp EdTech",
+    "date": { "en": "May 2025", "uz": "2025 may", "ru": "Май 2025" },
+    "url": null
+  },
+  {
+    "name": "Vector Search with Relational Databases using PostgreSQL",
+    "issuer": "IBM",
+    "date": { "en": "May 2025", "uz": "2025 may", "ru": "Май 2025" },
+    "url": null
+  },
+  {
+    "name": "Introduction to Generative AI for Software Development",
+    "issuer": "DeepLearning.AI",
+    "date": { "en": "Mar 2025", "uz": "2025 mart", "ru": "Март 2025" },
+    "url": null
+  },
+  {
+    "name": "Learn to Program: The Fundamentals",
+    "issuer": "University of Toronto",
+    "date": { "en": "Mar 2025", "uz": "2025 mart", "ru": "Март 2025" },
+    "url": null
+  },
+  {
+    "name": "Computer Hardware and Software",
+    "issuer": "UC Irvine",
+    "date": { "en": "Feb 2025", "uz": "2025 fevral", "ru": "Февраль 2025" },
+    "url": null
+  },
+  {
+    "name": "NLP: Twitter Sentiment Analysis",
+    "issuer": "Coursera Project Network",
+    "date": { "en": "Feb 2025", "uz": "2025 fevral", "ru": "Февраль 2025" },
+    "url": null
+  }
+]

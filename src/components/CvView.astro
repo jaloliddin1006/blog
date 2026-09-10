@@ -1,0 +1,408 @@
+---
+import Base from '../layouts/Base.astro';
+import MailLink from './MailLink.astro';
+import {
+  certifications,
+  education,
+  experience,
+  featuredProjects,
+  profile,
+  skills,
+} from '../lib/content';
+import { pick, t, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
+const short = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '');
+---
+
+<Base
+  locale={locale}
+  title={strings.meta.cvTitle}
+  description={strings.meta.cvDescription}
+  route="cv"
+>
+  <div class="cv-wrap shell">
+    <article class="cv glass glass-sheen">
+      <header class="masthead">
+        <div>
+          <h1>{profile.name}</h1>
+          <p class="role">{pick(profile.title, locale)}</p>
+          <p class="org">{pick(profile.orgFull, locale)} · {pick(profile.location, locale)}</p>
+        </div>
+        <button type="button" data-print class="print-button">{strings.cv.download}</button>
+      </header>
+
+      <p class="contact">
+        <MailLink />
+        <span aria-hidden="true">·</span>
+        <a href={profile.links.linkedin} rel="noopener noreferrer" target="_blank">
+          {short(profile.links.linkedin)}
+        </a>
+        <span aria-hidden="true">·</span>
+        <a href={profile.links.github} rel="noopener noreferrer" target="_blank">
+          {short(profile.links.github)}
+        </a>
+        <span aria-hidden="true">·</span>
+        <a href={profile.links.telegram} rel="noopener noreferrer" target="_blank">
+          {short(profile.links.telegram)}
+        </a>
+      </p>
+
+      <section class="block">
+        <h2>{strings.cv.summary}</h2>
+        <p class="summary">{pick(profile.lede, locale)}</p>
+      </section>
+
+      <section class="block">
+        <h2>{strings.cv.experience}</h2>
+        {
+          experience.map((entry) => (
+            <div class="entry">
+              <div class="entry-head">
+                <h3>{pick(entry.role, locale)}</h3>
+                <p class="period">{pick(entry.period, locale)}</p>
+              </div>
+              <p class="org-line">
+                {entry.org ? pick(entry.org, locale) : pick(profile.orgFull, locale)}
+              </p>
+              <ul>
+                {pick(entry.bullets, locale).map((bullet) => (
+                  <li>{bullet}</li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </section>
+
+      <section class="block">
+        <h2>{strings.cv.education}</h2>
+        {
+          education.map((entry) => (
+            <div class="entry">
+              <div class="entry-head">
+                <h3>{pick(entry.degree, locale)}</h3>
+                <p class="period">{pick(entry.period, locale)}</p>
+              </div>
+              <p class="org-line">
+                {pick(entry.school, locale)}
+                {entry.note ? ` · ${pick(entry.note, locale)}` : ''}
+              </p>
+            </div>
+          ))
+        }
+      </section>
+
+      <section class="block">
+        <h2>{strings.cv.certifications}</h2>
+        <ul class="plain">
+          {
+            certifications.map((certification) => (
+              <li>
+                {certification.name} — {certification.issuer}, {pick(certification.date, locale)}
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="block">
+        <h2>{strings.cv.skills}</h2>
+        <dl class="skills">
+          {
+            skills.map((group) => (
+              <div>
+                <dt>{pick(group.label, locale)}</dt>
+                <dd>{group.items.join(' · ')}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </section>
+
+      <section class="block">
+        <h2>{strings.cv.projects}</h2>
+        <ul class="plain projects">
+          {
+            featuredProjects.map((project) => (
+              <li>
+                <span class="project-name">{project.name}</span> —{' '}
+                {pick(project.description, locale)}{' '}
+                <a href={project.url} rel="noopener noreferrer" target="_blank">
+                  {short(project.url)}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="block">
+        <h2>{strings.cv.languages}</h2>
+        <p>{pick(profile.languages, locale)}</p>
+      </section>
+    </article>
+  </div>
+</Base>
+
+<script is:inline>
+  (function () {
+    var button = document.querySelector('[data-print]');
+    if (button) {
+      button.addEventListener('click', function () {
+        window.print();
+      });
+    }
+  })();
+</script>
+
+<style>
+  .cv-wrap {
+    padding-block: 6.5rem 1rem;
+    max-width: 900px;
+  }
+
+  .cv {
+    padding: 2rem 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .cv-wrap {
+      padding-block: 8rem 2rem;
+    }
+
+    .cv {
+      padding: 3rem 3rem 3.25rem;
+    }
+  }
+
+  .masthead {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: var(--text-h2);
+  }
+
+  .role {
+    margin: 0.35rem 0 0;
+    color: var(--ink);
+  }
+
+  .org,
+  .contact {
+    margin: 0.25rem 0 0;
+    font-size: var(--text-meta);
+    color: var(--ink-2);
+  }
+
+  .contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .contact :global(a) {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .print-button {
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 0.4rem 0.9rem;
+    cursor: pointer;
+  }
+
+  .print-button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .block {
+    margin-top: 2rem;
+    break-inside: auto;
+  }
+
+  h2 {
+    margin: 0 0 1rem;
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: var(--text-meta);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-2);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.4rem;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  .entry {
+    margin-bottom: 1.25rem;
+    break-inside: avoid;
+  }
+
+  .entry-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .period {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    color: var(--ink-2);
+    white-space: nowrap;
+  }
+
+  .org-line {
+    margin: 0.15rem 0 0.4rem;
+    font-size: var(--text-meta);
+    color: var(--ink-2);
+  }
+
+  ul {
+    margin: 0;
+    padding-inline-start: 1.1rem;
+  }
+
+  li {
+    margin-bottom: 0.25rem;
+    font-size: var(--text-meta);
+  }
+
+  .plain {
+    list-style: none;
+    padding: 0;
+  }
+
+  .plain li {
+    padding-inline-start: 0;
+  }
+
+  .projects :global(a) {
+    color: var(--accent);
+  }
+
+  .project-name {
+    font-family: var(--font-mono);
+  }
+
+  .skills {
+    margin: 0;
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .skills dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    color: var(--ink-2);
+  }
+
+  .skills dd {
+    margin: 0.1rem 0 0;
+    font-size: var(--text-meta);
+  }
+
+  .summary {
+    margin: 0;
+    font-size: var(--text-meta);
+  }
+
+  @media (min-width: 768px) {
+    .skills {
+      grid-template-columns: 12rem minmax(0, 1fr);
+      row-gap: 0.6rem;
+    }
+
+    .skills > div {
+      display: contents;
+    }
+  }
+
+  @media print {
+    @page {
+      size: A4;
+      margin: 14mm 14mm 16mm;
+    }
+
+    .print-button {
+      display: none;
+    }
+
+    .cv-wrap {
+      padding: 0;
+      max-width: none;
+    }
+
+    .cv {
+      max-width: none;
+      padding: 0;
+      color: #000;
+      font-size: 10pt;
+      background: none;
+      backdrop-filter: none;
+      border: 0;
+      box-shadow: none;
+      border-radius: 0;
+    }
+
+    .cv::before {
+      display: none;
+    }
+
+    .cv :global(a) {
+      color: #000;
+      text-decoration: none;
+    }
+
+    .block {
+      margin-top: 1.1rem;
+      break-inside: avoid;
+    }
+
+    h2 {
+      color: #000;
+      border-color: #999;
+    }
+
+    .period,
+    .org,
+    .org-line,
+    .contact,
+    .skills dt {
+      color: #333;
+    }
+
+    li,
+    .summary,
+    .skills dd {
+      font-size: 9.5pt;
+    }
+  }
+</style>

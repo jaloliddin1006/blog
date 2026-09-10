@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="JM">
+  <rect width="64" height="64" rx="10" fill="#14253B"/>
+  <path d="M12 46v6h40v-6z" fill="#1B7A8E"/>
+  <text x="32" y="38" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="30" font-weight="600" fill="#F5F7FA">JM</text>
+</svg>

@@ -1,0 +1,142 @@
+---
+import ExternalIcon from './ExternalIcon.astro';
+import Section from './Section.astro';
+import { certifications, education } from '../lib/content';
+import { pick, t, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
+---
+
+<Section id="education" index="05" title={strings.sections.education} wide>
+  <div class="columns">
+    <div>
+      {
+        education.map((entry) => (
+          <div class="degree">
+            <p class="period">{pick(entry.period, locale)}</p>
+            <h3>{pick(entry.degree, locale)}</h3>
+            <p class="school">{pick(entry.school, locale)}</p>
+            {entry.note && <p class="note">{pick(entry.note, locale)}</p>}
+          </div>
+        ))
+      }
+    </div>
+
+    <div>
+      <h3 class="certs-title">{strings.sections.certifications}</h3>
+      <ul class="certs">
+        {
+          certifications.map((certification) => (
+            <li>
+              <p class="cert-name">
+                {certification.url ? (
+                  <a href={certification.url} rel="noopener noreferrer" target="_blank">
+                    {certification.name}
+                    <ExternalIcon />
+                  </a>
+                ) : (
+                  certification.name
+                )}
+              </p>
+              <p class="cert-meta">
+                {certification.issuer} · {pick(certification.date, locale)}
+              </p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</Section>
+
+<style>
+  .columns {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .period {
+    margin: 0 0 0.35rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    color: var(--ink-2);
+  }
+
+  h3 {
+    margin: 0;
+    font-size: var(--text-h3);
+  }
+
+  .school {
+    margin: 0.35rem 0 0;
+    color: var(--ink-2);
+  }
+
+  .note {
+    margin: 0.35rem 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    color: var(--ink-2);
+  }
+
+  .certs-title {
+    margin-bottom: 1.1rem;
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: var(--text-micro);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .certs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .certs li {
+    padding-inline-start: 0.9rem;
+    border-inline-start: 1px solid var(--glass-border);
+    transition: border-color 0.25s ease;
+  }
+
+  .certs li:hover {
+    border-color: var(--accent);
+  }
+
+  .cert-name {
+    margin: 0;
+    font-size: var(--text-meta);
+  }
+
+  .cert-name a {
+    text-decoration: none;
+    color: var(--accent);
+  }
+
+  .cert-name a:hover {
+    text-decoration: underline;
+  }
+
+  .cert-meta {
+    margin: 0.15rem 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    color: var(--ink-2);
+  }
+
+  @media (min-width: 768px) {
+    .columns {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      gap: 3rem;
+    }
+  }
+</style>

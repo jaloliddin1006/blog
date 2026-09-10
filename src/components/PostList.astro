@@ -1,0 +1,115 @@
+---
+import ExternalIcon from './ExternalIcon.astro';
+import type { Post } from '../lib/posts';
+import { fill, formatDate, localePath, t, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+  posts: Post[];
+}
+
+const { locale, posts } = Astro.props;
+const strings = t(locale);
+---
+
+<ul class="posts">
+  {
+    posts.map((post) => {
+      const href = post.data.external ?? localePath(locale, `blog/${post.id}`);
+      const external = Boolean(post.data.external);
+      return (
+        <li>
+          <p class="date">
+            <time datetime={post.data.date.toISOString().slice(0, 10)}>
+              {formatDate(post.data.date, locale)}
+            </time>
+          </p>
+          <h3>
+            <a
+              href={href}
+              rel={external ? 'noopener noreferrer' : undefined}
+              target={external ? '_blank' : undefined}
+              aria-label={fill(strings.blog.readLabel, { title: post.data.title })}
+            >
+              {post.data.title}
+              {external && <ExternalIcon />}
+            </a>
+          </h3>
+          <p class="summary">{post.data.summary}</p>
+          {external && <p class="source">{strings.blog.external}</p>}
+        </li>
+      );
+    })
+  }
+</ul>
+
+<style>
+  .posts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.75rem;
+  }
+
+  .posts li {
+    position: relative;
+    border-top: 1px solid var(--glass-border);
+    padding-top: 1.4rem;
+  }
+
+  .posts li:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .posts li::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 0;
+    height: 1px;
+    width: 0;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    transition: width 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .posts li:hover::after {
+    width: 100%;
+  }
+
+  .date {
+    margin: 0 0 0.35rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    color: var(--ink-2);
+  }
+
+  h3 {
+    margin: 0;
+    font-size: var(--text-h3);
+  }
+
+  h3 a {
+    text-decoration: none;
+  }
+
+  h3 a:hover {
+    color: var(--accent);
+  }
+
+  .summary {
+    margin: 0.4rem 0 0;
+    color: var(--ink-2);
+    max-width: 68ch;
+  }
+
+  .source {
+    margin: 0.4rem 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+</style>

@@ -1,0 +1,172 @@
+[
+  {
+    "id": "head-isd",
+    "current": true,
+    "period": {
+      "en": "Jul 2026 – present",
+      "uz": "2026 iyul – hozirgacha",
+      "ru": "Июль 2026 — наст. время"
+    },
+    "role": {
+      "en": "Head of Information Systems Development and Implementation Department",
+      "uz": "Axborot tizimlarini ishlab chiqish va joriy etish departamenti boshlig‘i",
+      "ru": "Начальник управления разработки и внедрения информационных систем"
+    },
+    "summary": {
+      "en": "Leads design, development and rollout of the information systems supporting national statistical data collection, processing and reporting. Manages the development team, sets technical standards and reviews architecture.",
+      "uz": "Milliy statistik ma’lumotlarni yig‘ish, qayta ishlash va hisobot berishni qo‘llab-quvvatlaydigan axborot tizimlarini loyihalash, ishlab chiqish va joriy etishga rahbarlik qiladi. Ishlab chiqish jamoasini boshqaradi, texnik standartlarni belgilaydi va arxitekturani ko‘rib chiqadi.",
+      "ru": "Руководит проектированием, разработкой и внедрением информационных систем для сбора, обработки и публикации национальной статистики. Управляет командой разработки, задаёт технические стандарты и проверяет архитектуру."
+    },
+    "bullets": {
+      "en": [
+        "Leads design, development and rollout of information systems supporting national statistical data collection, processing and reporting",
+        "Manages the development team, sets technical standards and reviews architecture",
+        "Coordinates cross-department and external integrations"
+      ],
+      "uz": [
+        "Milliy statistik ma’lumotlarni yig‘ish, qayta ishlash va hisobot berishni qo‘llab-quvvatlaydigan axborot tizimlarini loyihalash, ishlab chiqish va joriy etishga rahbarlik qiladi",
+        "Ishlab chiqish jamoasini boshqaradi, texnik standartlarni belgilaydi va arxitekturani ko‘rib chiqadi",
+        "Departamentlararo va tashqi integratsiyalarni muvofiqlashtiradi"
+      ],
+      "ru": [
+        "Руководит проектированием, разработкой и внедрением информационных систем для сбора, обработки и публикации национальной статистики",
+        "Управляет командой разработки, задаёт технические стандарты и проверяет архитектуру",
+        "Координирует межведомственные и внешние интеграции"
+      ]
+    }
+  },
+  {
+    "id": "chief-is",
+    "period": {
+      "en": "Jun 2025 – Jul 2026",
+      "uz": "2025 iyun – 2026 iyul",
+      "ru": "Июнь 2025 — июль 2026"
+    },
+    "role": {
+      "en": "Chief Specialist, Information Systems Development and Implementation Department",
+      "uz": "Axborot tizimlarini ishlab chiqish va joriy etish departamenti bosh mutaxassisi",
+      "ru": "Главный специалист управления разработки и внедрения информационных систем"
+    },
+    "summary": {
+      "en": "Designed and developed internal information systems with Python, Django and PostgreSQL, and led their technical implementation across departments, including REST API integrations.",
+      "uz": "Python, Django va PostgreSQL yordamida ichki axborot tizimlarini loyihalagan va ishlab chiqqan, ularning departamentlar bo‘ylab texnik joriy etilishiga, jumladan REST API integratsiyalariga rahbarlik qilgan.",
+      "ru": "Проектировал и разрабатывал внутренние информационные системы на Python, Django и PostgreSQL, вёл их техническое внедрение по управлениям, включая интеграции через REST API."
+    },
+    "bullets": {
+      "en": [
+        "Designed and developed internal information systems with Python, Django and PostgreSQL",
+        "Led technical implementation across departments",
+        "Integrated systems with internal databases and external sources via REST APIs"
+      ],
+      "uz": [
+        "Python, Django va PostgreSQL yordamida ichki axborot tizimlarini loyihalagan va ishlab chiqqan",
+        "Departamentlar bo‘ylab texnik joriy etishga rahbarlik qilgan",
+        "Tizimlarni ichki ma’lumotlar bazalari va tashqi manbalar bilan REST API orqali integratsiya qilgan"
+      ],
+      "ru": [
+        "Проектировал и разрабатывал внутренние информационные системы на Python, Django и PostgreSQL",
+        "Вёл техническое внедрение по управлениям",
+        "Интегрировал системы с внутренними базами данных и внешними источниками через REST API"
+      ]
+    }
+  },
+  {
+    "id": "chief-ai",
+    "period": {
+      "en": "Mar 2025 – Jun 2025",
+      "uz": "2025 mart – 2025 iyun",
+      "ru": "Март 2025 — июнь 2025"
+    },
+    "role": {
+      "en": "Chief Specialist, AI Technologies Implementation Department",
+      "uz": "Sun’iy intellekt texnologiyalarini joriy etish departamenti bosh mutaxassisi",
+      "ru": "Главный специалист управления внедрения технологий искусственного интеллекта"
+    },
+    "summary": {
+      "en": "Evaluated and piloted AI/ML solutions for statistical data processing, building prototypes with Python, vector databases and LLM tooling — RAG and semantic search.",
+      "uz": "Statistik ma’lumotlarni qayta ishlash uchun sun’iy intellekt va mashinali o‘qitish yechimlarini baholagan hamda sinovdan o‘tkazgan; Python, vektor ma’lumotlar bazalari va LLM vositalari — RAG va semantik qidiruv asosida prototiplar qurgan.",
+      "ru": "Оценивал и пилотировал решения ИИ/ML для обработки статистических данных, собирал прототипы на Python, векторных базах данных и инструментах LLM — RAG и семантический поиск."
+    },
+    "bullets": {
+      "en": [
+        "Evaluated and piloted AI/ML solutions for statistical data processing",
+        "Built prototypes with Python, vector databases and LLM tooling (RAG, semantic search)",
+        "Prepared implementation plans for AI adoption"
+      ],
+      "uz": [
+        "Statistik ma’lumotlarni qayta ishlash uchun sun’iy intellekt va mashinali o‘qitish yechimlarini baholagan hamda sinovdan o‘tkazgan",
+        "Python, vektor ma’lumotlar bazalari va LLM vositalari (RAG, semantik qidiruv) yordamida prototiplar qurgan",
+        "Sun’iy intellektni joriy etish rejalarini tayyorlagan"
+      ],
+      "ru": [
+        "Оценивал и пилотировал решения ИИ/ML для обработки статистических данных",
+        "Собирал прототипы на Python, векторных базах данных и инструментах LLM (RAG, семантический поиск)",
+        "Готовил планы внедрения ИИ"
+      ]
+    }
+  },
+  {
+    "id": "lead-dbe",
+    "period": {
+      "en": "Sep 2024 – Mar 2025",
+      "uz": "2024 sentabr – 2025 mart",
+      "ru": "Сентябрь 2024 — март 2025"
+    },
+    "role": {
+      "en": "Lead Database Engineer",
+      "uz": "Yetakchi ma’lumotlar bazasi muhandisi",
+      "ru": "Ведущий инженер баз данных"
+    },
+    "summary": {
+      "en": "Designed, maintained and optimized the PostgreSQL databases holding national statistical datasets: data models, migrations, indexing and query optimization.",
+      "uz": "Milliy statistik ma’lumotlar to‘plamlarini saqlaydigan PostgreSQL bazalarini loyihalagan, qo‘llab-quvvatlagan va optimallashtirgan: ma’lumot modellari, migratsiyalar, indekslash va so‘rovlarni optimallashtirish.",
+      "ru": "Проектировал, поддерживал и оптимизировал базы PostgreSQL с национальными статистическими наборами данных: модели данных, миграции, индексы и оптимизация запросов."
+    },
+    "bullets": {
+      "en": [
+        "Designed, maintained and optimized PostgreSQL databases for national statistical datasets",
+        "Data models, migrations, indexing and query optimization",
+        "Data integrity, backup and access control"
+      ],
+      "uz": [
+        "Milliy statistik ma’lumotlar to‘plamlari uchun PostgreSQL bazalarini loyihalagan, qo‘llab-quvvatlagan va optimallashtirgan",
+        "Ma’lumot modellari, migratsiyalar, indekslash va so‘rovlarni optimallashtirish",
+        "Ma’lumotlar yaxlitligi, zaxira nusxalar va kirish huquqlarini nazorat qilish"
+      ],
+      "ru": [
+        "Проектировал, поддерживал и оптимизировал базы PostgreSQL для национальных статистических наборов данных",
+        "Модели данных, миграции, индексирование и оптимизация запросов",
+        "Целостность данных, резервное копирование и управление доступом"
+      ]
+    }
+  },
+  {
+    "id": "ict-academy",
+    "secondary": true,
+    "org": {
+      "en": "ICT Academy · part-time",
+      "uz": "ICT Academy · yarim stavka",
+      "ru": "ICT Academy · частичная занятость"
+    },
+    "period": {
+      "en": "Jun 2023 – Sep 2025",
+      "uz": "2023 iyun – 2025 sentabr",
+      "ru": "Июнь 2023 — сентябрь 2025"
+    },
+    "role": {
+      "en": "Backend Developer",
+      "uz": "Backend dasturchi",
+      "ru": "Backend-разработчик"
+    },
+    "summary": {
+      "en": "REST APIs and Telegram-bot / LMS integrations built with Python and Django.",
+      "uz": "Python va Django yordamida REST API hamda Telegram bot / LMS integratsiyalari.",
+      "ru": "REST API и интеграции Telegram-ботов с LMS на Python и Django."
+    },
+    "bullets": {
+      "en": ["Built REST APIs and Telegram-bot / LMS integrations with Python and Django"],
+      "uz": ["Python va Django yordamida REST API va Telegram bot / LMS integratsiyalarini qurgan"],
+      "ru": ["Разрабатывал REST API и интеграции Telegram-ботов с LMS на Python и Django"]
+    }
+  }
+]

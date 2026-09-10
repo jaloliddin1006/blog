@@ -1,0 +1,306 @@
+---
+import { existsSync } from 'node:fs';
+import ExternalIcon from './ExternalIcon.astro';
+import MailLink from './MailLink.astro';
+import { profile } from '../lib/content';
+import { pick, t, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
+
+const hasPortrait = existsSync(new URL('../../public/portrait.avif', import.meta.url));
+const initials = profile.name
+  .split(' ')
+  .map((part) => part[0])
+  .join('');
+const [firstName, ...rest] = profile.name.split(' ');
+---
+
+<section id="top" class="hero">
+  <div class="shell inner">
+    <div class="text hero-out">
+      <p class="eyebrow reveal">
+        <span class="pulse" aria-hidden="true"></span>
+        {pick(profile.org, locale)}
+      </p>
+
+      <h1 class="reveal" data-reveal-delay="60">
+        <span class="line">{firstName}</span>{' '}
+        <span class="line surname">{rest.join(' ')}</span>
+      </h1>
+
+      <p class="role reveal" data-reveal-delay="120">{pick(profile.title, locale)}</p>
+      <p class="lede measure reveal" data-reveal-delay="180">{pick(profile.lede, locale)}</p>
+
+      <div class="actions reveal" data-reveal-delay="240">
+        <MailLink label={strings.hero.primary} class="button primary" />
+        <a
+          class="button ghost"
+          href={profile.links.linkedin}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          {strings.hero.secondary}<ExternalIcon />
+        </a>
+      </div>
+    </div>
+
+    <div class="figure reveal drift">
+      <div class="frame glass glass-sheen">
+        {
+          hasPortrait ? (
+            <picture>
+              <source srcset="/portrait.avif" type="image/avif" />
+              <source srcset="/portrait.webp" type="image/webp" />
+              <img
+                src="/portrait.jpg"
+                alt={strings.hero.portraitAlt}
+                width="560"
+                height="700"
+                fetchpriority="high"
+                decoding="async"
+              />
+            </picture>
+          ) : (
+            <span class="monogram" aria-hidden="true">
+              {initials}
+            </span>
+          )
+        }
+      </div>
+      <p class="stamp">{pick(profile.location, locale)}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block: 7rem 2rem;
+    scroll-margin-top: 6rem;
+  }
+
+  .inner {
+    display: grid;
+    gap: 2.25rem;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin: 0 0 1.25rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+
+  .pulse {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--accent);
+    box-shadow: 0 0 0 0 var(--accent-glow);
+    animation: pulse 2.8s ease-out infinite;
+    flex: none;
+  }
+
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 var(--accent-glow);
+    }
+    70% {
+      box-shadow: 0 0 0 9px transparent;
+    }
+    100% {
+      box-shadow: 0 0 0 0 transparent;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pulse {
+      animation: none;
+    }
+  }
+
+  h1 {
+    margin: 0;
+    font-size: var(--text-display);
+    line-height: 1.02;
+  }
+
+  .line {
+    display: block;
+  }
+
+  .surname {
+    position: relative;
+    width: fit-content;
+  }
+
+  /* One hairline of teal under the surname — the only flourish in the type. */
+  .surname::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -0.12em;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    border-radius: 2px;
+  }
+
+  .role {
+    margin: 1.5rem 0 0;
+    font-size: var(--text-h3);
+    color: var(--ink);
+    font-weight: 400;
+  }
+
+  .lede {
+    margin: 1rem 0 0;
+    color: var(--ink-2);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    margin-top: 2rem;
+  }
+
+  .actions :global(.button) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.7rem 1.35rem;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition:
+      transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1),
+      box-shadow 0.25s ease,
+      background-color 0.25s ease,
+      border-color 0.25s ease;
+  }
+
+  .actions :global(.primary) {
+    background-color: var(--accent);
+    color: var(--on-accent);
+    box-shadow: 0 10px 26px -12px var(--accent-glow);
+  }
+
+  .actions :global(.primary:hover) {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 34px -14px var(--accent-glow);
+  }
+
+  .actions :global(.ghost) {
+    border-color: var(--glass-border);
+    background-color: var(--glass);
+    backdrop-filter: blur(10px);
+    color: var(--ink);
+  }
+
+  .actions :global(.ghost:hover) {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .figure {
+    justify-self: start;
+    grid-row: 1;
+  }
+
+  .text {
+    grid-row: 2;
+  }
+
+  .frame {
+    padding: 0.45rem;
+    border-radius: 20px;
+    overflow: hidden;
+    width: 128px;
+  }
+
+  .frame img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+  }
+
+  .monogram {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 4 / 5;
+    border-radius: 16px;
+    background-color: var(--accent-soft);
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 2.5rem;
+    color: var(--accent);
+  }
+
+  .stamp {
+    margin: 0.6rem 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+
+  @media (min-width: 900px) {
+    .hero {
+      padding-block: 9.5rem 3rem;
+    }
+
+    .inner {
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 3.5rem;
+      align-items: center;
+    }
+
+    .text {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .figure {
+      grid-column: 2;
+      grid-row: 1;
+      justify-self: end;
+    }
+
+    .frame {
+      width: 300px;
+      transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+
+    .frame:hover {
+      transform: translateY(-4px);
+    }
+
+    .stamp {
+      text-align: end;
+    }
+  }
+
+  @media print {
+    .hero {
+      display: none;
+    }
+  }
+</style>

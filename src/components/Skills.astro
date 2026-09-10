@@ -1,0 +1,90 @@
+---
+import Section from './Section.astro';
+import { skills } from '../lib/content';
+import { pick, t, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
+---
+
+<Section id="skills" index="04" title={strings.sections.skills}>
+  <dl class="rows">
+    {
+      skills.map((group) => (
+        <div class="row">
+          <dt>{pick(group.label, locale)}</dt>
+          <dd>
+            <ul class="chips">
+              {group.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+</Section>
+
+<style>
+  .rows {
+    margin: 0;
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .row {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .chips li {
+    font-size: var(--text-micro);
+    font-family: var(--font-mono);
+    border: 1px solid var(--glass-border);
+    background-color: var(--glass);
+    border-radius: 999px;
+    padding: 0.25rem 0.7rem;
+    transition:
+      border-color 0.25s ease,
+      color 0.25s ease;
+  }
+
+  .chips li:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  @media (min-width: 768px) {
+    .row {
+      grid-template-columns: 12rem minmax(0, 1fr);
+      gap: 1.5rem;
+      align-items: baseline;
+    }
+  }
+</style>

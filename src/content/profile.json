@@ -1,0 +1,100 @@
+{
+  "name": "Jaloliddin Mamatmusayev",
+  "wordmark": "J. Mamatmusayev",
+  "photo": "/portrait.jpg",
+  "email": "jmamatmusayev@gmail.com",
+  "links": {
+    "linkedin": "https://www.linkedin.com/in/mamatmusayev",
+    "github": "https://github.com/jaloliddin1006",
+    "telegram": "https://t.me/mamatmusayev_uz",
+    "source": null
+  },
+  "title": {
+    "en": "Head of Information Systems Development & Implementation",
+    "uz": "Axborot tizimlarini ishlab chiqish va joriy etish departamenti boshlig‘i",
+    "ru": "Начальник управления разработки и внедрения информационных систем"
+  },
+  "org": {
+    "en": "National Statistics Committee of Uzbekistan",
+    "uz": "O‘zbekiston Milliy statistika qo‘mitasi",
+    "ru": "Национальный комитет по статистике Узбекистана"
+  },
+  "orgFull": {
+    "en": "National Statistics Committee of the Republic of Uzbekistan",
+    "uz": "O‘zbekiston Respublikasi Milliy statistika qo‘mitasi",
+    "ru": "Национальный комитет по статистике Республики Узбекистан"
+  },
+  "location": {
+    "en": "Tashkent, Uzbekistan",
+    "uz": "Toshkent, O‘zbekiston",
+    "ru": "Ташкент, Узбекистан"
+  },
+  "lede": {
+    "en": "I build and run the information systems behind Uzbekistan's national statistics — from PostgreSQL data architecture and backend services to piloting AI in statistical workflows. Previously Lead Database Engineer and AI implementation specialist at the Committee; B.Sc. in Artificial Intelligence, TUIT.",
+    "uz": "O‘zbekiston milliy statistikasi ortidagi axborot tizimlarini quraman va boshqaraman — PostgreSQL ma’lumotlar arxitekturasi va backend xizmatlardan tortib statistik jarayonlarda sun’iy intellektni sinovdan o‘tkazishgacha. Ilgari Qo‘mitada yetakchi ma’lumotlar bazasi muhandisi va sun’iy intellektni joriy etish bo‘yicha mutaxassis; TATU, sun’iy intellekt yo‘nalishi bakalavri.",
+    "ru": "Я строю и сопровождаю информационные системы, на которых держится национальная статистика Узбекистана, — от архитектуры данных в PostgreSQL и бэкенд-сервисов до пилотного внедрения ИИ в статистические процессы. Ранее — ведущий инженер баз данных и специалист по внедрению ИИ в Комитете; бакалавр по искусственному интеллекту, ТУИТ."
+  },
+  "about": {
+    "en": [
+      "I work at the National Statistics Committee of Uzbekistan, where I lead the team that designs, builds and rolls out the information systems behind national statistical data collection, processing and reporting. My path there went from database engineering to AI implementation to running the department.",
+      "Day to day that means data architecture in PostgreSQL, backend services in Python and Django, integrations over REST APIs, and working out where AI genuinely helps official statistics — vector search, RAG and LLM tooling — rather than where it merely looks impressive."
+    ],
+    "uz": [
+      "Men O‘zbekiston Respublikasi Milliy statistika qo‘mitasida ishlayman va milliy statistik ma’lumotlarni yig‘ish, qayta ishlash hamda hisobot berishni ta’minlaydigan axborot tizimlarini loyihalash, ishlab chiqish va joriy etuvchi jamoaga rahbarlik qilaman. Bu yo‘l ma’lumotlar bazasi muhandisligidan sun’iy intellektni joriy etishga, so‘ngra departament boshqaruviga olib keldi.",
+      "Kundalik ish — PostgreSQL asosidagi ma’lumotlar arxitekturasi, Python va Django yordamidagi backend xizmatlar, REST API orqali integratsiyalar hamda sun’iy intellekt rasmiy statistikaga qayerda haqiqatan foyda keltirishini baholash: vektorli qidiruv, RAG va LLM vositalari — shunchaki ta’sirli ko‘ringan joyda emas."
+    ],
+    "ru": [
+      "Я работаю в Национальном комитете по статистике Республики Узбекистан и руковожу командой, которая проектирует, разрабатывает и внедряет информационные системы для сбора, обработки и публикации национальной статистики. Мой путь здесь шёл от инженерии баз данных к внедрению ИИ и затем к руководству управлением.",
+      "На практике это архитектура данных в PostgreSQL, бэкенд-сервисы на Python и Django, интеграции через REST API и оценка того, где ИИ действительно помогает официальной статистике — векторный поиск, RAG и инструменты LLM, — а где лишь выглядит эффектно."
+    ]
+  },
+  "languages": {
+    "en": "Uzbek (native) · Russian (full professional) · English (professional working)",
+    "uz": "O‘zbek (ona tili) · Rus (erkin) · Ingliz (professional daraja)",
+    "ru": "Узбекский (родной) · Русский (свободно) · Английский (профессиональный)"
+  },
+  "now": {
+    "en": [
+      {
+        "label": "Leading",
+        "value": "a department of engineers building statistical information systems"
+      },
+      {
+        "label": "Stack",
+        "value": "Python, Django, PostgreSQL, Redis, Docker"
+      },
+      {
+        "label": "Exploring",
+        "value": "pgvector, RAG and LLMs on official statistics"
+      }
+    ],
+    "uz": [
+      {
+        "label": "Rahbarlik",
+        "value": "statistik axborot tizimlarini quruvchi muhandislar departamenti"
+      },
+      {
+        "label": "Stek",
+        "value": "Python, Django, PostgreSQL, Redis, Docker"
+      },
+      {
+        "label": "O‘rganmoqda",
+        "value": "rasmiy statistikada pgvector, RAG va LLM"
+      }
+    ],
+    "ru": [
+      {
+        "label": "Руковожу",
+        "value": "отделом инженеров, которые строят статистические информационные системы"
+      },
+      {
+        "label": "Стек",
+        "value": "Python, Django, PostgreSQL, Redis, Docker"
+      },
+      {
+        "label": "Изучаю",
+        "value": "pgvector, RAG и LLM в официальной статистике"
+      }
+    ]
+  }
+}

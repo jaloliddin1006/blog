@@ -1,0 +1,106 @@
+---
+import ExternalIcon from './ExternalIcon.astro';
+import { profile } from '../lib/content';
+import { t, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="shell inner">
+    <p class="copy">
+      {`© ${year} ${profile.name} · ${strings.footer.location}`}
+    </p>
+    <ul class="links">
+      <li>
+        <a href={profile.links.github} rel="noopener noreferrer" target="_blank">
+          GitHub<ExternalIcon />
+        </a>
+      </li>
+      <li>
+        <a href={profile.links.linkedin} rel="noopener noreferrer" target="_blank">
+          LinkedIn<ExternalIcon />
+        </a>
+      </li>
+      {
+        profile.links.source && (
+          <li>
+            <a href={profile.links.source} rel="noopener noreferrer" target="_blank">
+              {strings.footer.source}
+              <ExternalIcon />
+            </a>
+          </li>
+        )
+      }
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    position: relative;
+    margin-top: 4rem;
+    padding-block: 2.5rem 3rem;
+  }
+
+  .site-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(1120px, calc(100% - 2.2rem));
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+  }
+
+  .inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: center;
+  }
+
+  .copy,
+  .links a {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.08em;
+    color: var(--ink-2);
+  }
+
+  .copy {
+    margin: 0;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .links a {
+    text-decoration: none;
+  }
+
+  .links a:hover {
+    color: var(--accent);
+  }
+
+  @media print {
+    .site-footer {
+      display: none;
+    }
+  }
+</style>

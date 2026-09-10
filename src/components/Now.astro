@@ -1,0 +1,80 @@
+---
+import { profile } from '../lib/content';
+import { pick, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const items = pick(profile.now, locale);
+---
+
+<section class="now" aria-label="Now">
+  <div class="shell grid stagger">
+    {
+      items.map((item, index) => (
+        <div class="cell glass glass-sheen reveal" data-reveal-delay={index * 90}>
+          <p class="label">{item.label}</p>
+          <p class="value">{item.value}</p>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .now {
+    padding-block: 1.1rem;
+  }
+
+  .grid {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .cell {
+    padding: 1.4rem 1.5rem;
+    border-radius: 16px;
+    transition:
+      transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
+      border-color 0.35s ease;
+  }
+
+  .cell:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+  }
+
+  .label {
+    margin: 0 0 0.4rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .value {
+    margin: 0;
+    font-size: var(--text-meta);
+    color: var(--ink-2);
+  }
+
+  @media (min-width: 768px) {
+    .now {
+      padding-block: 1.75rem;
+    }
+
+    .grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.1rem;
+    }
+  }
+
+  @media print {
+    .now {
+      display: none;
+    }
+  }
+</style>

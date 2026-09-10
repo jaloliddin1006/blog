@@ -1,0 +1,45 @@
+---
+import ExternalIcon from './ExternalIcon.astro';
+import Section from './Section.astro';
+import PostList from './PostList.astro';
+import { getPosts } from '../lib/posts';
+import { localePath, t, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
+const posts = (await getPosts(locale)).slice(0, 3);
+---
+
+{
+  posts.length > 0 && (
+    <Section id="blog" index="06" title={strings.sections.blog}>
+      <PostList locale={locale} posts={posts} />
+      <p class="all">
+        <a href={localePath(locale, 'blog')}>
+          {strings.blog.all}
+          <ExternalIcon direction="right" />
+        </a>
+      </p>
+    </Section>
+  )
+}
+
+<style>
+  .all {
+    margin: 1.5rem 0 0;
+  }
+
+  .all a {
+    font-size: var(--text-meta);
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .all a:hover {
+    text-decoration: underline;
+  }
+</style>

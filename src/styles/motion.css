@@ -1,0 +1,141 @@
+/*
+ * Scroll motion.
+ *
+ * Where the browser has scroll-driven animations (Chrome, Edge, Safari 26+)
+ * every effect is tied to the scroll position itself: it runs on the
+ * compositor, it scrubs backwards when you scroll up, and it costs no JS.
+ * Older browsers fall back to the IntersectionObserver reveal in Base.astro,
+ * and anyone who asked for reduced motion gets no movement at all.
+ */
+
+/* ---------- progress ---------- */
+
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 40;
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+  pointer-events: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    animation: progress-grow linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+
+@keyframes progress-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* ---------- panels rising into view ---------- */
+
+@supports (animation-timeline: view()) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    animation: rise-in linear both;
+    animation-timeline: view();
+    animation-range: entry 8% cover 34%;
+  }
+
+  /* Cards carry their own timeline, so a grid staggers itself as it arrives. */
+  .stagger > * {
+    animation: rise-in linear both;
+    animation-timeline: view();
+    animation-range: entry 2% cover 30%;
+  }
+
+  /* The hero hands the page over: it lifts, softens and steps back. */
+  .hero-out {
+    animation: hand-over linear both;
+    animation-timeline: view();
+    animation-range: exit 0% exit 95%;
+  }
+
+  /* The portrait drifts a little slower than the text beside it. */
+  .drift {
+    animation: drift-up linear both;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 30px, 0) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hand-over {
+  from {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+  to {
+    opacity: 0.12;
+    transform: translate3d(0, -48px, 0) scale(0.985);
+    filter: blur(4px);
+  }
+}
+
+@keyframes drift-up {
+  from {
+    transform: translate3d(0, 26px, 0);
+  }
+  to {
+    transform: translate3d(0, -26px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress {
+    display: none;
+  }
+
+  @supports (animation-timeline: view()) {
+    .reveal,
+    .stagger > *,
+    .hero-out,
+    .drift {
+      animation: none;
+      opacity: 1;
+      transform: none;
+      filter: none;
+    }
+  }
+}
+
+@media print {
+  .scroll-progress {
+    display: none;
+  }
+
+  .reveal,
+  .stagger > *,
+  .hero-out,
+  .drift {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}

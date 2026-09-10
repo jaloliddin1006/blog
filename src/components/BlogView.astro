@@ -1,0 +1,178 @@
+---
+import { render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ExternalIcon from './ExternalIcon.astro';
+import PostList from './PostList.astro';
+import { formatDate, localePath, t, type Locale } from '../lib/i18n';
+import type { Post } from '../lib/posts';
+
+interface Props {
+  locale: Locale;
+  posts?: Post[];
+  post?: Post;
+}
+
+const { locale, posts, post } = Astro.props;
+const strings = t(locale);
+const rendered = post ? await render(post) : undefined;
+const Content = rendered?.Content;
+const slug = post ? post.id.split('/').pop() : undefined;
+---
+
+{
+  post && Content ? (
+    <Base
+      locale={locale}
+      title={`${post.data.title} — ${strings.meta.blogTitle}`}
+      description={post.data.summary}
+      route={`blog/${slug}`}
+      ogType="article"
+      showBlogNav
+    >
+      <article class="post shell">
+        <p class="back">
+          <a href={localePath(locale, 'blog')}>{strings.blog.back}</a>
+        </p>
+        <p class="date">
+          <time datetime={post.data.date.toISOString().slice(0, 10)}>
+            {formatDate(post.data.date, locale)}
+          </time>
+        </p>
+        <h1>{post.data.title}</h1>
+        <div class="prose">
+          <Content />
+        </div>
+        <p class="back bottom">
+          <a href={localePath(locale, 'blog')}>
+            {strings.blog.back}
+            <ExternalIcon direction="right" />
+          </a>
+        </p>
+      </article>
+    </Base>
+  ) : (
+    <Base
+      locale={locale}
+      title={strings.meta.blogTitle}
+      description={strings.meta.blogDescription}
+      route="blog"
+      showBlogNav
+    >
+      <div class="index shell">
+        <h1>{strings.sections.blog}</h1>
+        <p class="intro measure">{strings.blog.index}</p>
+        <PostList locale={locale} posts={posts ?? []} />
+      </div>
+    </Base>
+  )
+}
+
+<style>
+  .index,
+  .post {
+    padding-block: 6.5rem 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .index,
+    .post {
+      padding-block: 8rem 2rem;
+    }
+  }
+
+  h1 {
+    font-size: var(--text-h1);
+    margin: 0 0 1rem;
+    max-width: 24ch;
+  }
+
+  .intro {
+    margin: 0 0 2.5rem;
+    color: var(--ink-2);
+  }
+
+  .back {
+    margin: 0 0 1.5rem;
+  }
+
+  .back.bottom {
+    margin: 3rem 0 0;
+    border-top: 1px solid var(--line);
+    padding-top: 1.5rem;
+  }
+
+  .back a {
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .back a:hover {
+    text-decoration: underline;
+  }
+
+  .date {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    color: var(--ink-2);
+  }
+
+  .prose {
+    max-width: 68ch;
+  }
+
+  .prose :global(p),
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: 0 0 1.15rem;
+  }
+
+  .prose :global(h2) {
+    font-size: var(--text-h3);
+    margin: 2rem 0 0.75rem;
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    padding-inline-start: 1.25rem;
+  }
+
+  .prose :global(li) {
+    margin-bottom: 0.35rem;
+  }
+
+  .prose :global(a) {
+    color: var(--accent);
+  }
+
+  .prose :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background-color: var(--accent-soft);
+    border-radius: 3px;
+    padding: 0.1em 0.35em;
+  }
+
+  .prose :global(pre) {
+    background-color: var(--glass);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 0 0 1.15rem;
+  }
+
+  .prose :global(pre code) {
+    background: none;
+    padding: 0;
+  }
+
+  .prose :global(blockquote) {
+    margin: 0 0 1.15rem;
+    padding-inline-start: 1rem;
+    border-inline-start: 2px solid var(--accent);
+    color: var(--ink-2);
+  }
+</style>

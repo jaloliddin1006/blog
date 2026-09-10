@@ -1,0 +1,95 @@
+{
+  "locale": "uz",
+  "htmlLang": "uz",
+  "dir": "ltr",
+  "nav": {
+    "about": "Men haqimda",
+    "work": "Tajriba",
+    "projects": "Loyihalar",
+    "blog": "Blog",
+    "contact": "Bog‘lanish",
+    "cv": "CV",
+    "main": "Asosiy menyu",
+    "skip": "Asosiy qismga o‘tish",
+    "top": "Boshi"
+  },
+  "sections": {
+    "about": "Men haqimda",
+    "work": "Ish tajribasi",
+    "projects": "Loyihalar",
+    "skills": "Ko‘nikmalar",
+    "education": "Ta’lim",
+    "certifications": "Sertifikatlar",
+    "blog": "Blog",
+    "contact": "Bog‘lanish"
+  },
+  "hero": {
+    "primary": "Bog‘lanish",
+    "secondary": "LinkedIn",
+    "portraitAlt": "Jaloliddin Mamatmusayev surati"
+  },
+  "work": {
+    "since": "2024 sentabr – hozirgacha",
+    "fullCv": "To‘liq rezyume"
+  },
+  "projects": {
+    "all": "GitHub sahifasidagi barcha repozitoriylar",
+    "view": "GitHub",
+    "viewLabel": "{name} loyihasini GitHub’da ochish"
+  },
+  "blog": {
+    "all": "Barcha yozuvlar",
+    "read": "O‘qish",
+    "readLabel": "{title} — o‘qish",
+    "back": "Blog",
+    "empty": "Hozircha yozuvlar yo‘q.",
+    "index": "Ma’lumot tizimlari, backend muhandisligi va rasmiy statistikada sun’iy intellekt haqida qisqa yozuvlar.",
+    "external": "LinkedIn’da o‘qish"
+  },
+  "contact": {
+    "sentence": "Eng tez yo‘l — elektron pochta; LinkedIn va Telegram ham ochiq.",
+    "email": "Elektron pochta",
+    "linkedin": "LinkedIn",
+    "telegram": "Telegram"
+  },
+  "cv": {
+    "title": "Rezyume",
+    "download": "PDF yuklab olish",
+    "summary": "Qisqacha",
+    "experience": "Ish tajribasi",
+    "education": "Ta’lim",
+    "certifications": "Sertifikatlar",
+    "skills": "Ko‘nikmalar",
+    "projects": "Tanlangan loyihalar",
+    "languages": "Tillar"
+  },
+  "footer": {
+    "location": "Toshkent",
+    "source": "Manba kodi GitHub’da"
+  },
+  "theme": {
+    "toggle": "Mavzuni almashtirish",
+    "light": "Yorug‘",
+    "dark": "Qorong‘i"
+  },
+  "language": {
+    "switch": "Til",
+    "en": "English",
+    "uz": "O‘zbekcha",
+    "ru": "Русский"
+  },
+  "notFound": {
+    "title": "Sahifa topilmadi",
+    "body": "Bunday sahifa mavjud emas yoki ko‘chirilgan.",
+    "home": "Bosh sahifaga o‘tish"
+  },
+  "meta": {
+    "homeTitle": "Jaloliddin Mamatmusayev — axborot tizimlari va ma’lumotlar",
+    "homeDescription": "O‘zbekiston milliy statistikasi ortidagi axborot tizimlarini quruvchi jamoaga rahbarlik qilaman: PostgreSQL, Django, sun’iy intellekt.",
+    "blogTitle": "Blog — Jaloliddin Mamatmusayev",
+    "blogDescription": "Ma’lumot tizimlari, backend muhandisligi va rasmiy statistikada sun’iy intellekt haqida qisqa yozuvlar.",
+    "cvTitle": "Rezyume — Jaloliddin Mamatmusayev",
+    "cvDescription": "Rezyume: ish tajribasi, ta’lim, sertifikatlar, ko‘nikmalar va tanlangan loyihalar.",
+    "notFoundTitle": "Sahifa topilmadi — Jaloliddin Mamatmusayev"
+  }
+}

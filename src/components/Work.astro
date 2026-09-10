@@ -1,0 +1,137 @@
+---
+import ExternalIcon from './ExternalIcon.astro';
+import Section from './Section.astro';
+import { experience, profile } from '../lib/content';
+import { localePath, pick, t, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
+const caption = `${pick(profile.orgFull, locale)} · ${strings.work.since}`;
+---
+
+<Section id="work" index="02" title={strings.sections.work} caption={caption}>
+  <ol class="timeline stagger">
+    {
+      experience.map((entry) => (
+        <li class:list={['entry', { secondary: entry.secondary }]}>
+          <p class="period">{pick(entry.period, locale)}</p>
+          <div class="body">
+            <h3>{pick(entry.role, locale)}</h3>
+            {entry.org && <p class="org">{pick(entry.org, locale)}</p>}
+            <p class="summary">{pick(entry.summary, locale)}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+
+  <p class="cv">
+    <a href={localePath(locale, 'cv')}>
+      {strings.work.fullCv}<ExternalIcon direction="right" />
+    </a>
+  </p>
+</Section>
+
+<style>
+  .timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-inline-start: 1px solid var(--glass-border);
+  }
+
+  .entry {
+    position: relative;
+    padding: 0 0 2rem 1.5rem;
+  }
+
+  .entry:last-of-type {
+    padding-bottom: 0;
+  }
+
+  .entry::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: -5px;
+    top: 0.45rem;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+    transition:
+      box-shadow 0.35s ease,
+      transform 0.35s ease;
+  }
+
+  .entry:hover::before {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 7px var(--accent-soft);
+  }
+
+  .entry.secondary::before {
+    background-color: var(--ink-2);
+    opacity: 0.55;
+    box-shadow: none;
+  }
+
+  .entry.secondary .body {
+    color: var(--ink-2);
+  }
+
+  .period {
+    margin: 0 0 0.35rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    color: var(--ink-2);
+  }
+
+  h3 {
+    margin: 0;
+    font-size: var(--text-h3);
+  }
+
+  .org {
+    margin: 0.25rem 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    color: var(--ink-2);
+  }
+
+  .summary {
+    margin: 0.5rem 0 0;
+    max-width: 68ch;
+    color: var(--ink-2);
+  }
+
+  .cv {
+    margin: 2rem 0 0;
+  }
+
+  .cv a {
+    font-size: var(--text-meta);
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .cv a:hover {
+    text-decoration: underline;
+  }
+
+  @media (min-width: 768px) {
+    .entry {
+      display: grid;
+      grid-template-columns: 12rem minmax(0, 1fr);
+      gap: 1.5rem;
+      padding-inline-start: 2rem;
+    }
+
+    .period {
+      margin: 0;
+    }
+  }
+</style>

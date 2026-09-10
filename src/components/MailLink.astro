@@ -1,0 +1,22 @@
+---
+import { profile } from '../lib/content';
+
+interface Props {
+  label?: string;
+  class?: string;
+}
+
+const { label, class: className } = Astro.props;
+
+/** HTML entities keep the address out of plain-text scrapes; browsers decode it. */
+const encode = (value: string) =>
+  Array.from(value)
+    .map((char) => `&#${char.codePointAt(0)};`)
+    .join('');
+
+const href = encode(`mailto:${profile.email}`);
+const body = label ?? encode(profile.email);
+const html = `<a${className ? ` class="${className}"` : ''} href="${href}">${body}</a>`;
+---
+
+<Fragment set:html={html} />

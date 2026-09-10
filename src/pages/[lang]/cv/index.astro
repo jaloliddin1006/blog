@@ -1,0 +1,13 @@
+---
+import type { GetStaticPaths } from 'astro';
+import CvView from '../../../components/CvView.astro';
+import { PREFIXED_LOCALES, isLocale } from '../../../lib/i18n';
+
+export const getStaticPaths = (() =>
+  PREFIXED_LOCALES.map((lang) => ({ params: { lang } }))) satisfies GetStaticPaths;
+
+const { lang } = Astro.params;
+if (!isLocale(lang)) throw new Error(`Unknown locale: ${lang}`);
+---
+
+<CvView locale={lang} />

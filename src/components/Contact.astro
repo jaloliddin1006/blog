@@ -1,0 +1,94 @@
+---
+import ExternalIcon from './ExternalIcon.astro';
+import MailLink from './MailLink.astro';
+import Section from './Section.astro';
+import { profile } from '../lib/content';
+import { t, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
+---
+
+<Section id="contact" index="07" title={strings.sections.contact}>
+  <p class="sentence measure">{strings.contact.sentence}</p>
+  <ul class="links stagger">
+    <li>
+      <span class="label">{strings.contact.email}</span>
+      <MailLink />
+    </li>
+    <li>
+      <span class="label">{strings.contact.linkedin}</span>
+      <a href={profile.links.linkedin} rel="noopener noreferrer" target="_blank">
+        linkedin.com/in/mamatmusayev<ExternalIcon />
+      </a>
+    </li>
+    <li>
+      <span class="label">{strings.contact.telegram}</span>
+      <a href={profile.links.telegram} rel="noopener noreferrer" target="_blank">
+        t.me/mamatmusayev_uz<ExternalIcon />
+      </a>
+    </li>
+  </ul>
+</Section>
+
+<style>
+  .sentence {
+    margin: 0 0 1.75rem;
+  }
+
+  .links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .links li {
+    display: grid;
+    gap: 0.3rem;
+    padding: 1.25rem 1.35rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    background-color: var(--glass);
+    transition:
+      transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+      border-color 0.3s ease;
+  }
+
+  .links li:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+
+  .links :global(a) {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: var(--text-meta);
+    justify-self: start;
+    overflow-wrap: anywhere;
+  }
+
+  .links :global(a:hover) {
+    text-decoration: underline;
+  }
+
+  @media (min-width: 768px) {
+    .links {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 2rem;
+    }
+  }
+</style>

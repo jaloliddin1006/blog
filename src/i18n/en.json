@@ -1,0 +1,95 @@
+{
+  "locale": "en",
+  "htmlLang": "en",
+  "dir": "ltr",
+  "nav": {
+    "about": "About",
+    "work": "Work",
+    "projects": "Projects",
+    "blog": "Blog",
+    "contact": "Contact",
+    "cv": "CV",
+    "main": "Main navigation",
+    "skip": "Skip to content",
+    "top": "Start"
+  },
+  "sections": {
+    "about": "About",
+    "work": "Work",
+    "projects": "Projects",
+    "skills": "Skills",
+    "education": "Education",
+    "certifications": "Certifications",
+    "blog": "Blog",
+    "contact": "Contact"
+  },
+  "hero": {
+    "primary": "Get in touch",
+    "secondary": "LinkedIn",
+    "portraitAlt": "Portrait of Jaloliddin Mamatmusayev"
+  },
+  "work": {
+    "since": "Sep 2024 – present",
+    "fullCv": "Full CV"
+  },
+  "projects": {
+    "all": "All repositories on GitHub",
+    "view": "GitHub",
+    "viewLabel": "Open {name} on GitHub"
+  },
+  "blog": {
+    "all": "All posts",
+    "read": "Read",
+    "readLabel": "Read {title}",
+    "back": "Blog",
+    "empty": "No posts yet.",
+    "index": "Writing about data systems, backend engineering and AI in official statistics.",
+    "external": "Read on LinkedIn"
+  },
+  "contact": {
+    "sentence": "The quickest way to reach me is email; LinkedIn and Telegram work too.",
+    "email": "Email",
+    "linkedin": "LinkedIn",
+    "telegram": "Telegram"
+  },
+  "cv": {
+    "title": "CV",
+    "download": "Download PDF",
+    "summary": "Summary",
+    "experience": "Experience",
+    "education": "Education",
+    "certifications": "Certifications",
+    "skills": "Skills",
+    "projects": "Selected projects",
+    "languages": "Languages"
+  },
+  "footer": {
+    "location": "Tashkent",
+    "source": "Source on GitHub"
+  },
+  "theme": {
+    "toggle": "Switch theme",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "language": {
+    "switch": "Language",
+    "en": "English",
+    "uz": "O‘zbekcha",
+    "ru": "Русский"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "That page does not exist. It may have moved.",
+    "home": "Go to the homepage"
+  },
+  "meta": {
+    "homeTitle": "Jaloliddin Mamatmusayev — Information Systems & Data",
+    "homeDescription": "I lead the team building the information systems behind Uzbekistan's national statistics: PostgreSQL architecture, Django backends, AI pilots.",
+    "blogTitle": "Blog — Jaloliddin Mamatmusayev",
+    "blogDescription": "Short notes on data systems, backend engineering and AI in official statistics.",
+    "cvTitle": "CV — Jaloliddin Mamatmusayev",
+    "cvDescription": "Curriculum vitae: experience, education, certifications, skills and selected projects.",
+    "notFoundTitle": "Page not found — Jaloliddin Mamatmusayev"
+  }
+}

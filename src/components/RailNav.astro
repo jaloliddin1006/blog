@@ -1,0 +1,250 @@
+---
+/**
+ * Section navigation as a rail rather than a menu: a column of nodes down the
+ * right edge that fills in as you pass each section. It is a real <nav> with
+ * real links, so keyboard and screen-reader users get the same map.
+ */
+import { hasPosts } from '../lib/posts';
+import { t, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
+const blogLive = await hasPosts(locale);
+
+const stops = [
+  { id: 'top', label: strings.nav.top },
+  { id: 'about', label: strings.sections.about },
+  { id: 'work', label: strings.sections.work },
+  { id: 'projects', label: strings.sections.projects },
+  { id: 'skills', label: strings.sections.skills },
+  { id: 'education', label: strings.sections.education },
+  ...(blogLive ? [{ id: 'blog', label: strings.sections.blog }] : []),
+  { id: 'contact', label: strings.sections.contact },
+];
+---
+
+<nav class="rail" aria-label={strings.nav.main} data-rail>
+  <ul class="glass glass-sheen">
+    {
+      stops.map((stop) => (
+        <li>
+          <a href={`#${stop.id}`} data-rail-link={stop.id}>
+            <span class="dot" aria-hidden="true" />
+            <span class="text">{stop.label}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<script is:inline>
+  (function () {
+    var rail = document.querySelector('[data-rail]');
+    if (!rail || !('IntersectionObserver' in window)) return;
+
+    var links = {};
+    rail.querySelectorAll('[data-rail-link]').forEach(function (link) {
+      links[link.dataset.railLink] = link;
+    });
+
+    var targets = Object.keys(links)
+      .map(function (id) {
+        return document.getElementById(id);
+      })
+      .filter(Boolean);
+
+    var current = null;
+    var setActive = function (id) {
+      if (id === current) return;
+      if (current && links[current]) links[current].removeAttribute('aria-current');
+      current = id;
+      if (links[id]) links[id].setAttribute('aria-current', 'true');
+    };
+
+    var observer = new IntersectionObserver(
+      function (entries) {
+        var visible = entries
+          .filter(function (entry) {
+            return entry.isIntersecting;
+          })
+          .sort(function (a, b) {
+            return b.intersectionRatio - a.intersectionRatio;
+          });
+        if (visible.length) setActive(visible[0].target.id);
+      },
+      { rootMargin: '-45% 0px -45% 0px', threshold: [0, 0.25, 0.6, 1] },
+    );
+
+    targets.forEach(function (target) {
+      observer.observe(target);
+    });
+  })();
+</script>
+
+<style>
+  /* Below the desktop breakpoint the rail lies down: a compact glass bar of
+     nodes at the bottom of the screen, same links, same active state. */
+  .rail {
+    position: fixed;
+    bottom: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 25;
+    max-width: calc(100vw - 1.5rem);
+  }
+
+  .rail ul {
+    list-style: none;
+    margin: 0;
+    padding: 0.55rem 0.7rem;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    border-radius: 999px;
+  }
+
+  .rail a {
+    display: block;
+    padding: 0.3rem;
+    text-decoration: none;
+  }
+
+  .rail .text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .rail .dot {
+    display: block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--ink-2);
+    opacity: 0.45;
+    transition:
+      transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+      background-color 0.3s ease,
+      box-shadow 0.3s ease,
+      opacity 0.3s ease;
+  }
+
+  .rail a[aria-current='true'] .dot {
+    opacity: 1;
+    background-color: var(--accent);
+    transform: scale(1.4);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  @media (min-width: 1180px) {
+    .rail {
+      top: 50%;
+      bottom: auto;
+      left: auto;
+      inset-inline-end: 1.1rem;
+      transform: translateY(-50%);
+      max-width: none;
+    }
+
+    .rail .text {
+      position: static;
+      width: auto;
+      height: auto;
+      clip-path: none;
+    }
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0.7rem 0.55rem;
+      display: grid;
+      gap: 0.15rem;
+      border-radius: 999px;
+    }
+
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.6rem;
+      padding: 0.32rem 0.35rem;
+      text-decoration: none;
+      border-radius: 999px;
+    }
+
+    .rail .dot {
+      display: block;
+    }
+
+    .text {
+      font-family: var(--font-mono);
+      font-size: var(--text-micro);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-2);
+      max-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      opacity: 0;
+      transition:
+        max-width 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
+        opacity 0.25s ease;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: var(--ink-2);
+      opacity: 0.45;
+      flex: none;
+      transition:
+        transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+        background-color 0.3s ease,
+        box-shadow 0.3s ease,
+        opacity 0.3s ease;
+    }
+
+    /* The whole rail opens on hover; the active stop is always lit. */
+    .rail:hover .text,
+    .rail:focus-within .text,
+    a[aria-current='true'] .text {
+      max-width: 11rem;
+      opacity: 1;
+    }
+
+    a:hover .dot {
+      opacity: 1;
+      background-color: var(--accent);
+    }
+
+    a:hover .text {
+      color: var(--ink);
+    }
+
+    a[aria-current='true'] .dot {
+      opacity: 1;
+      background-color: var(--accent);
+      transform: scale(1.5);
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+
+    a[aria-current='true'] .text {
+      color: var(--accent);
+    }
+  }
+
+  @media print {
+    .rail {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,23 @@
+---
+import type { GetStaticPaths } from 'astro';
+import HomeSections from '../../components/HomeSections.astro';
+import Base from '../../layouts/Base.astro';
+import { PREFIXED_LOCALES, isLocale, t } from '../../lib/i18n';
+
+export const getStaticPaths = (() =>
+  PREFIXED_LOCALES.map((lang) => ({ params: { lang } }))) satisfies GetStaticPaths;
+
+const { lang } = Astro.params;
+if (!isLocale(lang)) throw new Error(`Unknown locale: ${lang}`);
+const strings = t(lang);
+---
+
+<Base
+  locale={lang}
+  title={strings.meta.homeTitle}
+  description={strings.meta.homeDescription}
+  route=""
+  rail
+>
+  <HomeSections locale={lang} />
+</Base>

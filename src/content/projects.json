@@ -1,0 +1,137 @@
+[
+  {
+    "name": "chatbot-with-llm",
+    "url": "https://github.com/jaloliddin1006/chatbot-with-llm",
+    "featured": true,
+    "stack": ["Python", "Vector DB", "RAG"],
+    "description": {
+      "en": "Chatbot built on a vector database and an LLM (RAG).",
+      "uz": "Vektor ma’lumotlar bazasi va LLM asosidagi chatbot (RAG).",
+      "ru": "Чат-бот на векторной базе данных и LLM (RAG)."
+    }
+  },
+  {
+    "name": "llama-3.2-1b-fine-tuned-model",
+    "url": "https://github.com/jaloliddin1006/llama-3.2-1b-fine-tuned-model",
+    "featured": true,
+    "stack": ["Python", "Jupyter"],
+    "description": {
+      "en": "Llama 3.2 1B fine-tuned on Uzbek-language data.",
+      "uz": "O‘zbek tilidagi ma’lumotlarda fine-tuning qilingan Llama 3.2 1B.",
+      "ru": "Llama 3.2 1B, дообученная на данных на узбекском языке."
+    }
+  },
+  {
+    "name": "surdo-ai",
+    "url": "https://github.com/jaloliddin1006/surdo-ai",
+    "featured": true,
+    "license": "MIT",
+    "stack": ["Python", "AI"],
+    "description": {
+      "en": "Real-time sign-language translator.",
+      "uz": "Real vaqtda ishlaydigan imo-ishora tili tarjimoni.",
+      "ru": "Переводчик жестового языка в реальном времени."
+    }
+  },
+  {
+    "name": "real-time-translator",
+    "url": "https://github.com/jaloliddin1006/real-time-translator",
+    "featured": true,
+    "license": "MIT",
+    "stack": ["JavaScript", "Python"],
+    "description": {
+      "en": "Real-time speech-to-text, translation and text-to-speech.",
+      "uz": "Real vaqtda nutqni matnga, tarjima va matnni nutqqa aylantirish.",
+      "ru": "Распознавание речи, перевод и синтез речи в реальном времени."
+    }
+  },
+  {
+    "name": "insta-clone",
+    "url": "https://github.com/jaloliddin1006/insta-clone",
+    "featured": true,
+    "stack": ["Python", "Django REST Framework"],
+    "description": {
+      "en": "Instagram-style REST API.",
+      "uz": "Instagram uslubidagi REST API.",
+      "ru": "REST API в стиле Instagram."
+    }
+  },
+  {
+    "name": "django-aiogram3-bot-template",
+    "url": "https://github.com/jaloliddin1006/django-aiogram3-bot-template",
+    "featured": true,
+    "license": "MIT",
+    "stack": ["Python", "Django", "aiogram 3"],
+    "description": {
+      "en": "Template for Telegram bots on Django and aiogram 3.",
+      "uz": "Django va aiogram 3 asosidagi Telegram botlar uchun shablon.",
+      "ru": "Шаблон Telegram-ботов на Django и aiogram 3."
+    }
+  },
+  {
+    "name": "Imlo-xato-tekshiruvchi-bot",
+    "url": "https://github.com/jaloliddin1006/Imlo-xato-tekshiruvchi-bot",
+    "featured": false,
+    "stack": ["Python", "NLP"],
+    "description": {
+      "en": "Uzbek spell-checker Telegram bot (Latin and Cyrillic).",
+      "uz": "O‘zbek tili imlo tekshiruvchi Telegram bot (lotin va kirill).",
+      "ru": "Telegram-бот проверки узбекской орфографии (латиница и кириллица)."
+    }
+  },
+  {
+    "name": "tift_bot",
+    "url": "https://github.com/jaloliddin1006/tift_bot",
+    "featured": false,
+    "stack": ["Python", "Telegram Bot API"],
+    "description": {
+      "en": "Telegram bot integrated with TIFT University LMS: courses, schedule, grades, library.",
+      "uz": "TIFT universiteti LMS bilan integratsiya qilingan Telegram bot: kurslar, jadval, baholar, kutubxona.",
+      "ru": "Telegram-бот с интеграцией LMS университета TIFT: курсы, расписание, оценки, библиотека."
+    }
+  },
+  {
+    "name": "aiogram3-bot-template",
+    "url": "https://github.com/jaloliddin1006/aiogram3-bot-template",
+    "featured": false,
+    "stack": ["Python", "aiogram 3"],
+    "description": {
+      "en": "Minimal aiogram 3 starter.",
+      "uz": "Minimal aiogram 3 shabloni.",
+      "ru": "Минимальный стартовый шаблон aiogram 3."
+    }
+  },
+  {
+    "name": "resume-builder",
+    "url": "https://github.com/jaloliddin1006/resume-builder",
+    "featured": false,
+    "stack": ["TypeScript"],
+    "description": {
+      "en": "Web app that generates résumés and CVs.",
+      "uz": "Rezyume va CV yaratuvchi veb-ilova.",
+      "ru": "Веб-приложение для создания резюме."
+    }
+  },
+  {
+    "name": "Urban.Tech_Uzbekistan",
+    "url": "https://github.com/jaloliddin1006/Urban.Tech_Uzbekistan",
+    "featured": false,
+    "stack": ["Python", "AI"],
+    "description": {
+      "en": "AI market software, built at a hackathon.",
+      "uz": "Hakatonda yaratilgan sun’iy intellekt bozori uchun dastur.",
+      "ru": "Программа для рынка ИИ, созданная на хакатоне."
+    }
+  },
+  {
+    "name": "LeetCodeSolves",
+    "url": "https://github.com/jaloliddin1006/LeetCodeSolves",
+    "featured": false,
+    "stack": ["Python"],
+    "description": {
+      "en": "Algorithm solutions.",
+      "uz": "Algoritm masalalari yechimlari.",
+      "ru": "Решения алгоритмических задач."
+    }
+  }
+]

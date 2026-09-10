@@ -1,0 +1,24 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BlogView from '../../components/BlogView.astro';
+import { getPosts } from '../../lib/posts';
+
+export const getStaticPaths = (async () => {
+  const posts = await getPosts('en');
+  // No posts, no route: the blog hides itself entirely (SPEC A3.8).
+  if (posts.length === 0) return [];
+  return [
+    { params: { slug: undefined }, props: { posts, post: undefined } },
+    ...posts
+      .filter((post) => !post.data.external)
+      .map((post) => ({
+        params: { slug: post.id.split('/').pop() },
+        props: { post, posts: undefined },
+      })),
+  ];
+}) satisfies GetStaticPaths;
+
+const { posts, post } = Astro.props;
+---
+
+<BlogView locale="en" posts={posts} post={post} />

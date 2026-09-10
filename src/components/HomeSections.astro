@@ -1,0 +1,28 @@
+---
+import About from './About.astro';
+import BlogTeaser from './BlogTeaser.astro';
+import Contact from './Contact.astro';
+import EducationCerts from './EducationCerts.astro';
+import Hero from './Hero.astro';
+import Now from './Now.astro';
+import Projects from './Projects.astro';
+import Skills from './Skills.astro';
+import Work from './Work.astro';
+import type { Locale } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<Hero locale={locale} />
+<Now locale={locale} />
+<About locale={locale} />
+<Work locale={locale} />
+<Projects locale={locale} />
+<Skills locale={locale} />
+<EducationCerts locale={locale} />
+<BlogTeaser locale={locale} />
+<Contact locale={locale} />

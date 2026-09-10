@@ -1,0 +1,28 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BlogView from '../../../components/BlogView.astro';
+import { PREFIXED_LOCALES, isLocale } from '../../../lib/i18n';
+import { getPosts } from '../../../lib/posts';
+
+export const getStaticPaths = (async () => {
+  const routes = [];
+  for (const lang of PREFIXED_LOCALES) {
+    const posts = await getPosts(lang);
+    if (posts.length === 0) continue;
+    routes.push({ params: { lang, slug: undefined }, props: { posts, post: undefined } });
+    for (const post of posts.filter((entry) => !entry.data.external)) {
+      routes.push({
+        params: { lang, slug: post.id.split('/').pop() },
+        props: { post, posts: undefined },
+      });
+    }
+  }
+  return routes;
+}) satisfies GetStaticPaths;
+
+const { lang } = Astro.params;
+const { posts, post } = Astro.props;
+if (!isLocale(lang)) throw new Error(`Unknown locale: ${lang}`);
+---
+
+<BlogView locale={lang} posts={posts} post={post} />

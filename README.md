@@ -1,0 +1,129 @@
+# mamatmusayev.uz
+
+A one-page personal site for **Jaloliddin Mamatmusayev**, Head of Information Systems
+Development and Implementation at the National Statistics Committee of Uzbekistan —
+with a CV page and a short blog, in English, Uzbek and Russian.
+
+Built with Astro, Tailwind and a Three.js backdrop. Everything ships as static HTML.
+The full brief lives in [`SPEC.md`](./SPEC.md); the code map is in
+[`ARCHITECTURE.md`](./ARCHITECTURE.md).
+
+```bash
+npm install
+npm run dev      # http://localhost:4321
+npm run build    # type check + static build into dist/
+npm run lint     # formatting + Uzbek orthography
+npm test         # Playwright, desktop and mobile
+```
+
+## Editing the content
+
+Nothing on the site is written in a component. All of it lives in JSON, and every
+translatable field carries its three languages together:
+
+| File                              | What it holds                                         |
+| --------------------------------- | ----------------------------------------------------- |
+| `src/content/profile.json`        | name, links, title, lede, About paragraphs, Now strip |
+| `src/content/experience.json`     | the work timeline and the CV bullets                  |
+| `src/content/projects.json`       | repositories — `featured: true` puts one on the home  |
+| `src/content/skills.json`         | the four skill rows                                   |
+| `src/content/education.json`      | degrees                                               |
+| `src/content/certifications.json` | certificates; set `url` to link a credential          |
+| `src/i18n/{en,uz,ru}.json`        | interface strings: nav, buttons, labels, meta tags    |
+
+A field shaped `{ "en": …, "uz": …, "ru": … }` must have all three. `npm run build`
+validates every file against a zod schema and fails on a missing or malformed field,
+so a typo never reaches the site.
+
+**Changing the headline?** Edit `profile.title` and `profile.lede`. The homepage, the
+CV, the `<title>`, the Open Graph card and the JSON-LD all read from there.
+
+### Uzbek apostrophes
+
+Write `o‘`/`g‘` with U+2018 and the tutuq belgisi with U+2019 (`ma’lumot`). The ASCII
+`'` and the technically-correct U+02BB/U+02BC are rejected by `npm run lint` — IBM Plex
+draws the latter two full-width, which visibly breaks up Uzbek words. macOS: `⌥]` and
+`⌥⇧]`. Linux: `Ctrl+Shift+U 2018`.
+
+## Adding a blog post
+
+Create a Markdown file under `src/content/posts/<lang>/`:
+
+```markdown
+---
+title: 'What I changed about our ETL'
+date: 2026-10-02
+lang: uz
+summary: 'One sentence, 155 characters or fewer — it becomes the card and the meta description.'
+---
+
+Your text. Headings, lists, links, code — all standard Markdown.
+```
+
+- `draft: true` keeps it out of the build.
+- `external: 'https://www.linkedin.com/…'` turns the post into a card that links to
+  LinkedIn instead of getting its own page — useful for a post you do not want to rewrite.
+- A post is listed only under its own language. With no published posts in a language,
+  the blog section, the nav item and the `/blog/` route all disappear by themselves.
+
+## Replacing the portrait
+
+Drop a new photo at `assets/portrait-source.jpg` and run:
+
+```bash
+node scripts/process-portrait.mjs
+```
+
+It crops to 4:5 from the top and writes `public/portrait.avif|webp|jpg`, reporting the
+size of each — the budget is 60 KB. With no portrait present the hero falls back to a
+monogram rather than a stand-in face.
+
+The Open Graph cards and the touch icon are generated the same way:
+
+```bash
+node scripts/generate-og.mjs
+```
+
+## Deploying to Cloudflare Pages
+
+1. Push the repository to GitHub.
+2. Cloudflare dashboard → **Workers & Pages** → **Create** → **Pages** → connect the repo.
+3. Build command `npm run build`, output directory `dist`, Node version `22`.
+4. **Custom domains** → add `mamatmusayev.uz` and `www.mamatmusayev.uz`.
+
+### Fixing the certificate (SPEC A0)
+
+`https://mamatmusayev.uz` currently serves a browser privacy/SSL warning, which is why
+LinkedIn cannot generate a preview for it. To clear it:
+
+1. Point the domain's nameservers at Cloudflare.
+2. DNS: `A`/`CNAME` for the apex → Pages, proxied (orange cloud). Same for `www`.
+3. SSL/TLS → **Full (strict)**. Edge Certificates → **Always Use HTTPS** on,
+   **Automatic HTTPS Rewrites** on, HSTS on (start with a short max-age).
+4. Rules → Redirect `www.mamatmusayev.uz/*` → `https://mamatmusayev.uz/$1`, 301.
+5. Verify:
+
+   ```bash
+   curl -I https://mamatmusayev.uz          # 200, valid chain
+   curl -I http://mamatmusayev.uz           # 301 → https
+   curl -I https://www.mamatmusayev.uz      # 301 → apex
+   ```
+
+6. Re-run the LinkedIn Post Inspector so the preview is regenerated.
+
+Then set `profile.links.source` in `profile.json` to the repository URL if you want the
+"Source on GitHub" link in the footer, and fix the LinkedIn URL on your GitHub profile —
+it currently points at a slug that does not exist.
+
+## Assumptions
+
+- **Content model.** SPEC A5 puts the lede and the "Now" strip in `profile.json`; since
+  both need translating, every translatable field is stored as `{ en, uz, ru }` in the
+  same file rather than split across `src/i18n/`. Interface chrome stays in `src/i18n/`.
+- **Certification links.** The brief says to link each certificate "where available".
+  No credential URLs were supplied, so every `url` is `null` and no link is rendered.
+  Fill them in and the links appear.
+- **Star counts and repo totals** are deliberately absent — see `SPEC.md` A2.
+- **Design direction.** The palette, motion and navigation follow the revised A4
+  ("Glass Atlas"), which replaced the original flat institutional direction at the
+  owner's request. The revised JavaScript budget in A5 comes with it.

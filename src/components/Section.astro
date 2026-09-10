@@ -1,0 +1,102 @@
+---
+interface Props {
+  id: string;
+  title?: string;
+  /** Two-digit index shown in the panel's corner, e.g. "03". */
+  index?: string;
+  caption?: string;
+  /** Wide panels drop the inner max-width (grids, cards). */
+  wide?: boolean;
+}
+
+const { id, title, index, caption, wide = false } = Astro.props;
+---
+
+<section id={id} class="section">
+  <div class="shell">
+    <div class="panel glass glass-sheen reveal">
+      {
+        title && (
+          <header class="head">
+            <div class="marker">
+              {index && <span class="index">{index}</span>}
+              <span class="rule" aria-hidden="true" />
+            </div>
+            <div>
+              <h2>{title}</h2>
+              {caption && <p class="caption">{caption}</p>}
+            </div>
+          </header>
+        )
+      }
+      <div class:list={['body', { wide }]}>
+        <slot />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .section {
+    scroll-margin-top: 6rem;
+    padding-block: 1.1rem;
+  }
+
+  .panel {
+    padding: 1.9rem 1.5rem;
+  }
+
+  .head {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 1.6rem;
+  }
+
+  .marker {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    max-width: 20rem;
+  }
+
+  .index {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.14em;
+    color: var(--accent);
+  }
+
+  .rule {
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(90deg, var(--accent-glow), transparent);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: var(--text-h2);
+  }
+
+  .caption {
+    margin: 0.5rem 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.06em;
+    color: var(--ink-2);
+  }
+
+  @media (min-width: 768px) {
+    .section {
+      padding-block: 1.75rem;
+    }
+
+    .panel {
+      padding: 3.25rem 3rem;
+    }
+
+    .head {
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+  }
+</style>
