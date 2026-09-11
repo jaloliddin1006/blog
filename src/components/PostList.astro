@@ -15,7 +15,9 @@ const strings = t(locale);
 <ul class="posts">
   {
     posts.map((post) => {
-      const href = post.data.external ?? localePath(locale, `blog/${post.id}`);
+      // The entry id is "<lang>/<slug>"; the route only carries the slug.
+      const slug = post.id.split('/').pop() ?? post.id;
+      const href = post.data.external ?? localePath(locale, `blog/${slug}`);
       const external = Boolean(post.data.external);
       return (
         <li>
