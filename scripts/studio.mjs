@@ -96,12 +96,46 @@ async function readBody(request, limit = 25 * 1024 * 1024) {
 
 const readJsonBody = async (request) => JSON.parse((await readBody(request)).toString('utf8'));
 
+/**
+ * Everything the studio writes goes through Prettier, so `npm run lint` stays
+ * green afterwards. If Prettier is missing the raw text is written instead —
+ * the file is still valid, it just needs `npm run format`.
+ */
+async function writeFormatted(file, content) {
+  let output = content;
+  try {
+    const prettier = await import('prettier');
+    const options = (await prettier.resolveConfig(file)) ?? {};
+    output = await prettier.format(content, { ...options, filepath: file });
+  } catch {
+    /* no prettier available — write it as-is */
+  }
+  await writeFile(file, output, 'utf8');
+}
+
 const loadProjects = async () => JSON.parse(await readFile(paths.projects, 'utf8'));
 const saveProjects = (projects) =>
-  writeFile(paths.projects, `${JSON.stringify(projects, null, 2)}\n`, 'utf8');
+  writeFormatted(paths.projects, `${JSON.stringify(projects, null, 2)}\n`);
 
 /** YAML-safe single-quoted scalar. */
 const quote = (value) => `'${String(value).replace(/'/g, "''")}'`;
+
+/**
+ * Uzbek orthography, the same rule `npm run lint` enforces: U+02BB/U+02BC are
+ * swapped for the correctly-metered U+2018/U+2019, and a word-internal ASCII
+ * apostrophe is rejected — only the author knows which of the two it should be.
+ */
+function uzbek(value, field) {
+  const fixed = String(value ?? '')
+    .replace(/ʻ/g, '‘')
+    .replace(/ʼ/g, '’');
+  if (/\p{L}'/u.test(fixed)) {
+    throw new Error(
+      `${field}: replace the ASCII apostrophe with ‘ (as in o‘, g‘) or ’ (as in ma’lumot)`,
+    );
+  }
+  return fixed;
+}
 
 async function listPosts() {
   const out = [];
@@ -122,7 +156,9 @@ async function listPosts() {
 
 /* ------------------------------------------------------------------ actions */
 
-async function writePost({ locale, slug, title, date, summary, body, draft, external }) {
+async function writePost(input) {
+  let { title, summary, body } = input;
+  const { locale, slug, date, draft, external } = input;
   if (!LOCALES.includes(locale)) throw new Error(`Unknown language: ${locale}`);
   if (!title?.trim()) throw new Error('A title is required');
   if (!summary?.trim()) throw new Error('A summary is required');
@@ -131,6 +167,12 @@ async function writePost({ locale, slug, title, date, summary, body, draft, exte
 
   const name = slugify(slug?.trim() || title);
   if (!name) throw new Error('Could not derive a slug — type one in');
+
+  if (locale === 'uz') {
+    title = uzbek(title, 'Title');
+    summary = uzbek(summary, 'Summary');
+    body = uzbek(body ?? '', 'Body');
+  }
 
   const frontmatter = [
     '---',
@@ -147,7 +189,7 @@ async function writePost({ locale, slug, title, date, summary, body, draft, exte
   const dir = join(paths.posts, locale);
   await mkdir(dir, { recursive: true });
   const file = join(dir, `${name}.md`);
-  await writeFile(file, `${frontmatter}${(body ?? '').trim()}\n`, 'utf8');
+  await writeFormatted(file, `${frontmatter}${(body ?? '').trim()}\n`);
   return { file: file.replace(`${root}/`, ''), slug: name, locale };
 }
 
@@ -164,20 +206,31 @@ async function upsertProject(incoming) {
     .slice(0, 3);
   if (stack.length === 0) throw new Error('At least one stack chip is required');
 
-  const localized = (source) =>
-    Object.fromEntries(LOCALES.map((locale) => [locale, (source?.[locale] ?? '').trim()]));
-  const paragraphs = (source) =>
+  const localized = (source, field) =>
     Object.fromEntries(
-      LOCALES.map((locale) => [
-        locale,
-        (source?.[locale] ?? '')
-          .split(/\n{2,}/)
-          .map((part) => part.trim())
-          .filter(Boolean),
-      ]),
+      LOCALES.map((locale) => {
+        const value = (source?.[locale] ?? '').trim();
+        return [locale, locale === 'uz' ? uzbek(value, `${field} · UZ`) : value];
+      }),
+    );
+  const paragraphs = (source, field) =>
+    Object.fromEntries(
+      LOCALES.map((locale) => {
+        const raw =
+          locale === 'uz'
+            ? uzbek(source?.[locale] ?? '', `${field} · UZ`)
+            : (source?.[locale] ?? '');
+        return [
+          locale,
+          raw
+            .split(/\n{2,}/)
+            .map((part) => part.trim())
+            .filter(Boolean),
+        ];
+      }),
     );
 
-  const description = localized(incoming.description);
+  const description = localized(incoming.description, 'Description');
   for (const locale of LOCALES) {
     if (!description[locale]) throw new Error(`The ${locale.toUpperCase()} description is empty`);
   }
@@ -192,7 +245,7 @@ async function upsertProject(incoming) {
     ...(incoming.license?.trim() ? { license: incoming.license.trim() } : {}),
     stack,
     description,
-    details: paragraphs(incoming.details),
+    details: paragraphs(incoming.details, 'Details'),
     screenshots: incoming.screenshots ?? existing?.screenshots ?? [],
   };
 

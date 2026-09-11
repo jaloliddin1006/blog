@@ -65,6 +65,10 @@ A small authoring tool that runs **only on your machine**. It has two tabs:
   with `alt` and caption fields for each language. Fill the alt text in — it is the one
   field a screenshot must have.
 
+It keeps the Uzbek orthography rule for you: `ʻ`/`ʼ` are swapped for `‘`/`’` as you save,
+and an ASCII apostrophe inside an Uzbek word is refused with a note about which of the two
+it should be. English and Russian keep their own punctuation.
+
 The studio binds to `127.0.0.1`, is never built into the site, and adds nothing to what
 gets deployed. It writes plain files; review them with `npm run dev`, then commit. If it
 writes something malformed, `npm run build` refuses it — the zod schemas still apply.
