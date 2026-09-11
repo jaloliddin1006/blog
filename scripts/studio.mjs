@@ -1,30 +1,25 @@
 /**
- * The studio: a local authoring tool for posts, projects and screenshots.
+ * The studio: one page for adding posts and projects.
  *
- * It runs only on your machine (127.0.0.1), writes straight into src/content/
- * and public/projects/, and is never part of the built site. Author here, then
- * review with `npm run dev` and commit — the repository stays the source of
- * truth and `npm run build` still validates everything.
+ * Posts and projects live in the content database (data/site.db); everything
+ * else — the profile, the roles, the skills, the certificates — stays in
+ * src/content/*.json, because it is settled and reads better as a diff.
+ *
+ * This server runs only on your machine (127.0.0.1) and is never part of the
+ * built site. Write here, check with `npm run dev`, then commit the database.
  *
  *   npm run studio        → http://localhost:4322
  */
 import { createServer } from 'node:http';
-import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rm } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { dirname, extname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { basename, extname, join, resolve } from 'node:path';
 import sharp from 'sharp';
+import { LOCALES, openDb, readPosts, readProjects, ROOT } from '../src/lib/db.mjs';
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const port = Number(process.env.STUDIO_PORT ?? 4322);
-const LOCALES = ['en', 'uz', 'ru'];
-
-const paths = {
-  projects: join(root, 'src/content/projects.json'),
-  posts: join(root, 'src/content/posts'),
-  shots: join(root, 'public/projects'),
-  ui: join(root, 'scripts/studio/index.html'),
-};
+const SHOTS = resolve(ROOT, 'public/projects');
+const UI = resolve(ROOT, 'scripts/studio/index.html');
 
 /* ------------------------------------------------------------------ helpers */
 
@@ -65,7 +60,7 @@ const CYRILLIC = {
 };
 
 export function slugify(value) {
-  return value
+  return String(value ?? '')
     .toLowerCase()
     .replace(/[‘’ʻʼ']/g, '')
     .split('')
@@ -77,48 +72,6 @@ export function slugify(value) {
     .replace(/^-+|-+$/g, '')
     .slice(0, 60);
 }
-
-const json = (response, status, body) => {
-  response.writeHead(status, { 'content-type': 'application/json; charset=utf-8' });
-  response.end(JSON.stringify(body));
-};
-
-async function readBody(request, limit = 25 * 1024 * 1024) {
-  const chunks = [];
-  let size = 0;
-  for await (const chunk of request) {
-    size += chunk.length;
-    if (size > limit) throw new Error('Body too large');
-    chunks.push(chunk);
-  }
-  return Buffer.concat(chunks);
-}
-
-const readJsonBody = async (request) => JSON.parse((await readBody(request)).toString('utf8'));
-
-/**
- * Everything the studio writes goes through Prettier, so `npm run lint` stays
- * green afterwards. If Prettier is missing the raw text is written instead —
- * the file is still valid, it just needs `npm run format`.
- */
-async function writeFormatted(file, content) {
-  let output = content;
-  try {
-    const prettier = await import('prettier');
-    const options = (await prettier.resolveConfig(file)) ?? {};
-    output = await prettier.format(content, { ...options, filepath: file });
-  } catch {
-    /* no prettier available — write it as-is */
-  }
-  await writeFile(file, output, 'utf8');
-}
-
-const loadProjects = async () => JSON.parse(await readFile(paths.projects, 'utf8'));
-const saveProjects = (projects) =>
-  writeFormatted(paths.projects, `${JSON.stringify(projects, null, 2)}\n`);
-
-/** YAML-safe single-quoted scalar. */
-const quote = (value) => `'${String(value).replace(/'/g, "''")}'`;
 
 /**
  * Uzbek orthography, the same rule `npm run lint` enforces: U+02BB/U+02BC are
@@ -137,201 +90,255 @@ function uzbek(value, field) {
   return fixed;
 }
 
-async function listPosts() {
-  const out = [];
-  for (const locale of LOCALES) {
-    const dir = join(paths.posts, locale);
-    if (!existsSync(dir)) continue;
-    for (const file of await readdir(dir)) {
-      if (!file.endsWith('.md')) continue;
-      const raw = await readFile(join(dir, file), 'utf8');
-      const title = /^title:\s*'?(.*?)'?\s*$/m.exec(raw)?.[1] ?? file;
-      const date = /^date:\s*(.*)$/m.exec(raw)?.[1]?.trim() ?? '';
-      const draft = /^draft:\s*true\s*$/m.test(raw);
-      out.push({ locale, file, slug: file.replace(/\.md$/, ''), title, date, draft });
-    }
+const json = (response, status, body) => {
+  response.writeHead(status, { 'content-type': 'application/json; charset=utf-8' });
+  response.end(JSON.stringify(body));
+};
+
+async function readBody(request, limit = 25 * 1024 * 1024) {
+  const chunks = [];
+  let size = 0;
+  for await (const chunk of request) {
+    size += chunk.length;
+    if (size > limit) throw new Error('That file is larger than 25 MB');
+    chunks.push(chunk);
   }
-  return out.sort((a, b) => b.date.localeCompare(a.date));
+  return Buffer.concat(chunks);
 }
+
+const readJsonBody = async (request) => JSON.parse((await readBody(request)).toString('utf8'));
+
+const localized = (source, field, { required = true } = {}) =>
+  Object.fromEntries(
+    LOCALES.map((locale) => {
+      const value = String(source?.[locale] ?? '').trim();
+      if (required && !value) throw new Error(`${field} · ${locale.toUpperCase()} is empty`);
+      return [locale, locale === 'uz' ? uzbek(value, `${field} · UZ`) : value];
+    }),
+  );
+
+const paragraphs = (source, field) =>
+  Object.fromEntries(
+    LOCALES.map((locale) => {
+      const raw =
+        locale === 'uz'
+          ? uzbek(source?.[locale] ?? '', `${field} · UZ`)
+          : String(source?.[locale] ?? '');
+      return [
+        locale,
+        raw
+          .split(/\n{2,}/)
+          .map((part) => part.trim())
+          .filter(Boolean),
+      ];
+    }),
+  );
 
 /* ------------------------------------------------------------------ actions */
 
-async function writePost(input) {
-  let { title, summary, body } = input;
-  const { locale, slug, date, draft, external } = input;
+function savePost(db, input) {
+  const { locale, date, draft, external } = input;
   if (!LOCALES.includes(locale)) throw new Error(`Unknown language: ${locale}`);
-  if (!title?.trim()) throw new Error('A title is required');
-  if (!summary?.trim()) throw new Error('A summary is required');
-  if (summary.length > 155)
-    throw new Error(`Summary is ${summary.length} characters; the limit is 155`);
 
-  const name = slugify(slug?.trim() || title);
-  if (!name) throw new Error('Could not derive a slug — type one in');
-
+  let { title, summary, body } = input;
   if (locale === 'uz') {
     title = uzbek(title, 'Title');
     summary = uzbek(summary, 'Summary');
     body = uzbek(body ?? '', 'Body');
   }
+  if (!title?.trim()) throw new Error('A title is required');
+  if (!summary?.trim()) throw new Error('A summary is required');
+  if (summary.length > 155) {
+    throw new Error(`The summary is ${summary.length} characters; the limit is 155`);
+  }
 
-  const frontmatter = [
-    '---',
-    `title: ${quote(title.trim())}`,
-    `date: ${date || new Date().toISOString().slice(0, 10)}`,
-    `lang: ${locale}`,
-    `summary: ${quote(summary.trim())}`,
-    ...(draft ? ['draft: true'] : []),
-    ...(external?.trim() ? [`external: ${quote(external.trim())}`] : []),
-    '---',
-    '',
-  ].join('\n');
+  const slug = slugify(input.slug?.trim() || title);
+  if (!slug) throw new Error('Could not derive a slug — type one in');
 
-  const dir = join(paths.posts, locale);
-  await mkdir(dir, { recursive: true });
-  const file = join(dir, `${name}.md`);
-  await writeFormatted(file, `${frontmatter}${(body ?? '').trim()}\n`);
-  return { file: file.replace(`${root}/`, ''), slug: name, locale };
+  db.prepare(
+    `INSERT INTO posts (slug, lang, title, summary, body, date, draft, external, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+     ON CONFLICT(slug, lang) DO UPDATE SET
+       title = excluded.title, summary = excluded.summary, body = excluded.body,
+       date = excluded.date, draft = excluded.draft, external = excluded.external,
+       updated_at = datetime('now')`,
+  ).run(
+    slug,
+    locale,
+    title.trim(),
+    summary.trim(),
+    (body ?? '').trim(),
+    (date || new Date().toISOString().slice(0, 10)).slice(0, 10),
+    draft ? 1 : 0,
+    external?.trim() || null,
+  );
+
+  return { slug, locale };
 }
 
-async function upsertProject(incoming) {
-  const projects = await loadProjects();
+function saveProject(db, incoming) {
   const slug = slugify(incoming.slug || incoming.name);
   if (!slug) throw new Error('A slug is required');
   if (!incoming.name?.trim()) throw new Error('A name is required');
   if (!incoming.repo?.trim()) throw new Error('A repository URL is required');
 
   const stack = (incoming.stack ?? [])
-    .map((item) => item.trim())
+    .map((item) => String(item).trim())
     .filter(Boolean)
     .slice(0, 3);
   if (stack.length === 0) throw new Error('At least one stack chip is required');
 
-  const localized = (source, field) =>
-    Object.fromEntries(
-      LOCALES.map((locale) => {
-        const value = (source?.[locale] ?? '').trim();
-        return [locale, locale === 'uz' ? uzbek(value, `${field} · UZ`) : value];
-      }),
-    );
-  const paragraphs = (source, field) =>
-    Object.fromEntries(
-      LOCALES.map((locale) => {
-        const raw =
-          locale === 'uz'
-            ? uzbek(source?.[locale] ?? '', `${field} · UZ`)
-            : (source?.[locale] ?? '');
-        return [
-          locale,
-          raw
-            .split(/\n{2,}/)
-            .map((part) => part.trim())
-            .filter(Boolean),
-        ];
-      }),
-    );
+  const existing = db.prepare('SELECT position FROM projects WHERE slug = ?').get(slug);
+  const next = db.prepare('SELECT COALESCE(MAX(position), -1) + 1 AS p FROM projects').get().p;
 
-  const description = localized(incoming.description, 'Description');
-  for (const locale of LOCALES) {
-    if (!description[locale]) throw new Error(`The ${locale.toUpperCase()} description is empty`);
+  db.prepare(
+    `INSERT INTO projects (slug, name, repo, demo, license, featured, position, stack, description, details, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+     ON CONFLICT(slug) DO UPDATE SET
+       name = excluded.name, repo = excluded.repo, demo = excluded.demo,
+       license = excluded.license, featured = excluded.featured,
+       stack = excluded.stack, description = excluded.description,
+       details = excluded.details, updated_at = datetime('now')`,
+  ).run(
+    slug,
+    incoming.name.trim(),
+    incoming.repo.trim(),
+    incoming.demo?.trim() || null,
+    incoming.license?.trim() || null,
+    incoming.featured ? 1 : 0,
+    existing?.position ?? next,
+    JSON.stringify(stack),
+    JSON.stringify(localized(incoming.description, 'Description')),
+    JSON.stringify(paragraphs(incoming.details, 'Details')),
+  );
+
+  // Alt text and captions travel with the project form.
+  for (const [index, shot] of (incoming.screenshots ?? []).entries()) {
+    const caption = localized(shot.caption ?? {}, 'Caption', { required: false });
+    const hasCaption = LOCALES.some((locale) => caption[locale]);
+    db.prepare(
+      `UPDATE screenshots SET alt = ?, caption = ?, position = ? WHERE project = ? AND file = ?`,
+    ).run(
+      JSON.stringify(localized(shot.alt ?? {}, 'Alt text')),
+      hasCaption ? JSON.stringify(caption) : null,
+      index,
+      slug,
+      shot.file,
+    );
   }
 
-  const existing = projects.find((project) => project.slug === slug);
-  const next = {
-    slug,
-    name: incoming.name.trim(),
-    repo: incoming.repo.trim(),
-    demo: incoming.demo?.trim() ? incoming.demo.trim() : null,
-    featured: Boolean(incoming.featured),
-    ...(incoming.license?.trim() ? { license: incoming.license.trim() } : {}),
-    stack,
-    description,
-    details: paragraphs(incoming.details, 'Details'),
-    screenshots: incoming.screenshots ?? existing?.screenshots ?? [],
-  };
-
-  if (existing) Object.assign(existing, next);
-  else projects.push(next);
-
-  await saveProjects(projects);
-  return next;
+  return { slug };
 }
 
-async function addScreenshot({ slug, name, buffer }) {
-  const projects = await loadProjects();
-  const project = projects.find((entry) => entry.slug === slug);
+async function addScreenshot(db, { slug, name, buffer }) {
+  const project = db.prepare('SELECT slug, name FROM projects WHERE slug = ?').get(slug);
   if (!project) throw new Error(`No project with slug "${slug}" — save the project first`);
 
-  const base = slugify(name.replace(extname(name), '')) || `shot-${Date.now()}`;
-  const dir = join(paths.shots, slug);
+  const base = slugify(basename(name, extname(name))) || `shot-${Date.now()}`;
+  const dir = join(SHOTS, slug);
   await mkdir(dir, { recursive: true });
 
   const image = sharp(buffer).rotate();
   const { width } = await image.metadata();
   const resized = image.resize({ width: Math.min(width ?? 1600, 1600), withoutEnlargement: true });
 
-  const written = [];
   for (const [ext, encode] of [
     ['avif', (pipe) => pipe.avif({ quality: 55, effort: 5 })],
     ['webp', (pipe) => pipe.webp({ quality: 78 })],
     ['jpg', (pipe) => pipe.jpeg({ quality: 80, mozjpeg: true, progressive: true })],
   ]) {
-    const file = join(dir, `${base}.${ext}`);
-    await encode(resized.clone()).toFile(file);
-    written.push(file.replace(`${root}/`, ''));
+    await encode(resized.clone()).toFile(join(dir, `${base}.${ext}`));
   }
 
-  if (!project.screenshots.some((shot) => shot.file === base)) {
-    project.screenshots.push({
-      file: base,
-      alt: Object.fromEntries(LOCALES.map((locale) => [locale, `${project.name} — screenshot`])),
-    });
-    await saveProjects(projects);
-  }
+  const position = db
+    .prepare('SELECT COALESCE(MAX(position), -1) + 1 AS p FROM screenshots WHERE project = ?')
+    .get(slug).p;
 
-  return { file: base, written, screenshots: project.screenshots };
+  db.prepare(
+    `INSERT INTO screenshots (project, file, alt, caption, position) VALUES (?, ?, ?, NULL, ?)
+     ON CONFLICT(project, file) DO NOTHING`,
+  ).run(
+    slug,
+    base,
+    JSON.stringify(Object.fromEntries(LOCALES.map((l) => [l, `${project.name} — screenshot`]))),
+    position,
+  );
+
+  return { file: base };
 }
 
-async function removeScreenshot({ slug, file }) {
-  const projects = await loadProjects();
-  const project = projects.find((entry) => entry.slug === slug);
-  if (!project) throw new Error(`No project with slug "${slug}"`);
-  project.screenshots = project.screenshots.filter((shot) => shot.file !== file);
-  await saveProjects(projects);
+async function removeScreenshotFiles(slug, file) {
   for (const ext of ['avif', 'webp', 'jpg']) {
-    await rm(join(paths.shots, slug, `${file}.${ext}`), { force: true });
+    await rm(join(SHOTS, slug, `${file}.${ext}`), { force: true });
   }
-  return { screenshots: project.screenshots };
 }
 
 /* ------------------------------------------------------------------- server */
 
 const server = createServer(async (request, response) => {
   const url = new URL(request.url ?? '/', `http://localhost:${port}`);
+  let db;
 
   try {
     if (request.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {
-      const html = await readFile(paths.ui, 'utf8');
       response.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-      response.end(html);
+      response.end(await readFile(UI, 'utf8'));
       return;
     }
 
+    // Screenshot previews come straight from public/.
+    if (request.method === 'GET' && url.pathname.startsWith('/projects/')) {
+      const file = join(SHOTS, url.pathname.replace('/projects/', ''));
+      if (file.startsWith(SHOTS) && existsSync(file)) {
+        response.writeHead(200, { 'content-type': 'image/jpeg', 'cache-control': 'no-store' });
+        response.end(await readFile(file));
+        return;
+      }
+      json(response, 404, { error: 'Not found' });
+      return;
+    }
+
+    if (!url.pathname.startsWith('/api/')) {
+      json(response, 404, { error: 'Not found' });
+      return;
+    }
+
+    db = openDb();
+
     if (request.method === 'GET' && url.pathname === '/api/state') {
       json(response, 200, {
-        projects: await loadProjects(),
-        posts: await listPosts(),
         locales: LOCALES,
+        posts: readPosts(db, { includeDrafts: true }),
+        projects: readProjects(db),
       });
       return;
     }
 
     if (request.method === 'POST' && url.pathname === '/api/post') {
-      json(response, 200, await writePost(await readJsonBody(request)));
+      json(response, 200, savePost(db, await readJsonBody(request)));
+      return;
+    }
+
+    if (request.method === 'POST' && url.pathname === '/api/post/delete') {
+      const { slug, lang } = await readJsonBody(request);
+      db.prepare('DELETE FROM posts WHERE slug = ? AND lang = ?').run(slug, lang);
+      json(response, 200, { deleted: `${lang}/${slug}` });
       return;
     }
 
     if (request.method === 'POST' && url.pathname === '/api/project') {
-      json(response, 200, await upsertProject(await readJsonBody(request)));
+      json(response, 200, saveProject(db, await readJsonBody(request)));
+      return;
+    }
+
+    if (request.method === 'POST' && url.pathname === '/api/project/delete') {
+      const { slug } = await readJsonBody(request);
+      for (const shot of db.prepare('SELECT file FROM screenshots WHERE project = ?').all(slug)) {
+        await removeScreenshotFiles(slug, shot.file);
+      }
+      await rm(join(SHOTS, slug), { recursive: true, force: true });
+      db.prepare('DELETE FROM projects WHERE slug = ?').run(slug);
+      json(response, 200, { deleted: slug });
       return;
     }
 
@@ -339,32 +346,27 @@ const server = createServer(async (request, response) => {
       const slug = url.searchParams.get('slug');
       const name = url.searchParams.get('name') ?? 'screenshot.png';
       if (!slug) throw new Error('slug is required');
-      json(response, 200, await addScreenshot({ slug, name, buffer: await readBody(request) }));
+      json(response, 200, await addScreenshot(db, { slug, name, buffer: await readBody(request) }));
       return;
     }
 
     if (request.method === 'POST' && url.pathname === '/api/screenshot/delete') {
-      json(response, 200, await removeScreenshot(await readJsonBody(request)));
+      const { slug, file } = await readJsonBody(request);
+      db.prepare('DELETE FROM screenshots WHERE project = ? AND file = ?').run(slug, file);
+      await removeScreenshotFiles(slug, file);
+      json(response, 200, { deleted: file });
       return;
-    }
-
-    // Screenshot previews come straight from public/.
-    if (request.method === 'GET' && url.pathname.startsWith('/projects/')) {
-      const file = join(paths.shots, url.pathname.replace('/projects/', ''));
-      if (file.startsWith(paths.shots) && existsSync(file)) {
-        response.writeHead(200, { 'content-type': 'image/jpeg', 'cache-control': 'no-store' });
-        response.end(await readFile(file));
-        return;
-      }
     }
 
     json(response, 404, { error: 'Not found' });
   } catch (error) {
     json(response, 400, { error: error instanceof Error ? error.message : String(error) });
+  } finally {
+    db?.close();
   }
 });
 
 server.listen(port, '127.0.0.1', () => {
   console.log(`Studio on http://localhost:${port}  (local only — never deployed)`);
-  console.log('Write here, check with `npm run dev`, then commit.');
+  console.log('Posts and projects go into data/site.db. Check with `npm run dev`, then commit.');
 });

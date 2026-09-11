@@ -42,8 +42,8 @@
     "name": "surdo-ai",
     "repo": "https://github.com/jaloliddin1006/surdo-ai",
     "demo": null,
-    "featured": true,
     "license": "MIT",
+    "featured": true,
     "stack": ["Python", "AI"],
     "description": {
       "en": "Real-time sign-language translator.",
@@ -62,8 +62,8 @@
     "name": "real-time-translator",
     "repo": "https://github.com/jaloliddin1006/real-time-translator",
     "demo": null,
-    "featured": true,
     "license": "MIT",
+    "featured": true,
     "stack": ["JavaScript", "Python"],
     "description": {
       "en": "Real-time speech-to-text, translation and text-to-speech.",
@@ -101,8 +101,8 @@
     "name": "django-aiogram3-bot-template",
     "repo": "https://github.com/jaloliddin1006/django-aiogram3-bot-template",
     "demo": null,
-    "featured": true,
     "license": "MIT",
+    "featured": true,
     "stack": ["Python", "Django", "aiogram 3"],
     "description": {
       "en": "Template for Telegram bots on Django and aiogram 3.",

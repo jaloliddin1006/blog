@@ -4,8 +4,18 @@ import certificationsRaw from '../content/certifications.json';
 import educationRaw from '../content/education.json';
 import experienceRaw from '../content/experience.json';
 import profileRaw from '../content/profile.json';
-import projectsRaw from '../content/projects.json';
 import skillsRaw from '../content/skills.json';
+import { openDb, readProjects } from './db.mjs';
+
+/** Projects live in the content database; everything else is settled JSON. */
+function loadProjects(): unknown {
+  const db = openDb({ readonly: true });
+  try {
+    return readProjects(db);
+  } finally {
+    db.close();
+  }
+}
 
 /**
  * Content lives in plain JSON so the owner can edit it without touching layout
@@ -52,6 +62,8 @@ const experienceSchema = z.array(
     org: l10nText.optional(),
     period: l10nText,
     role: l10nText,
+    /** A label short enough for the time-axis chart. */
+    short: l10nText,
     summary: l10nText,
     bullets: l10n(z.array(text).min(1)),
   }),
@@ -113,7 +125,7 @@ function parse<T extends z.ZodType>(schema: T, data: unknown, file: string): z.i
 
 export const profile = parse(profileSchema, profileRaw, 'content/profile.json');
 export const experience = parse(experienceSchema, experienceRaw, 'content/experience.json');
-export const projects = parse(projectsSchema, projectsRaw, 'content/projects.json');
+export const projects = parse(projectsSchema, loadProjects(), 'the projects table');
 export const skills = parse(skillsSchema, skillsRaw, 'content/skills.json');
 export const education = parse(educationSchema, educationRaw, 'content/education.json');
 export const certifications = parse(

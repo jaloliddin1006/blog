@@ -14,6 +14,11 @@
       "uz": "Axborot tizimlarini ishlab chiqish va joriy etish bo‘limi boshlig‘i",
       "ru": "Начальник отдела разработки и внедрения информационных систем"
     },
+    "short": {
+      "en": "Head, IS department",
+      "uz": "Bo‘lim boshlig‘i",
+      "ru": "Начальник отдела"
+    },
     "summary": {
       "en": "Leads design, development and rollout of the information systems supporting national statistical data collection, processing and reporting. Manages the development team, sets technical standards and reviews architecture.",
       "uz": "Milliy statistik ma’lumotlarni yig‘ish, qayta ishlash va hisobot berishni qo‘llab-quvvatlaydigan axborot tizimlarini loyihalash, ishlab chiqish va joriy etishga rahbarlik qiladi. Ishlab chiqish jamoasini boshqaradi, texnik standartlarni belgilaydi va arxitekturani ko‘rib chiqadi.",
@@ -50,6 +55,11 @@
       "en": "Chief Specialist, Information Systems Development and Implementation Department",
       "uz": "Axborot tizimlarini ishlab chiqish va joriy etish bo‘limi bosh mutaxassisi",
       "ru": "Главный специалист отдела разработки и внедрения информационных систем"
+    },
+    "short": {
+      "en": "Chief specialist, IS",
+      "uz": "Bosh mutaxassis, AT",
+      "ru": "Гл. специалист, ИС"
     },
     "summary": {
       "en": "Designed and developed internal information systems with Python, Django and PostgreSQL, and led their technical implementation across departments, including REST API integrations.",
@@ -88,6 +98,11 @@
       "uz": "Sun’iy intellekt texnologiyalarini joriy etish bo‘limi bosh mutaxassisi",
       "ru": "Главный специалист отдела внедрения технологий искусственного интеллекта"
     },
+    "short": {
+      "en": "Chief specialist, AI",
+      "uz": "Bosh mutaxassis, SI",
+      "ru": "Гл. специалист, ИИ"
+    },
     "summary": {
       "en": "Evaluated and piloted AI/ML solutions for statistical data processing, building prototypes with Python, vector databases and LLM tooling — RAG and semantic search.",
       "uz": "Statistik ma’lumotlarni qayta ishlash uchun sun’iy intellekt va mashinali o‘qitish yechimlarini baholagan hamda sinovdan o‘tkazgan; Python, vektor ma’lumotlar bazalari va LLM vositalari — RAG va semantik qidiruv asosida prototiplar qurgan.",
@@ -124,6 +139,11 @@
       "en": "Lead Database Engineer",
       "uz": "Yetakchi ma’lumotlar bazasi muhandisi",
       "ru": "Ведущий инженер баз данных"
+    },
+    "short": {
+      "en": "Lead DB engineer",
+      "uz": "Yetakchi MB muhandisi",
+      "ru": "Ведущий инженер БД"
     },
     "summary": {
       "en": "Designed, maintained and optimized the PostgreSQL databases holding national statistical datasets: data models, migrations, indexing and query optimization.",
@@ -167,6 +187,11 @@
       "en": "Backend Developer",
       "uz": "Backend dasturchi",
       "ru": "Backend-разработчик"
+    },
+    "short": {
+      "en": "Backend dev, ICT",
+      "uz": "Backend dasturchi, ICT",
+      "ru": "Backend-разработчик, ICT"
     },
     "summary": {
       "en": "REST APIs and Telegram-bot / LMS integrations built with Python and Django.",

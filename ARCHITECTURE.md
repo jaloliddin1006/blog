@@ -6,13 +6,16 @@ time; what reaches the browser is markup, one stylesheet, and about 2 KB of Java
 ## Layout
 
 ```
+data/
+  site.db             posts, projects and screenshots (SQLite)
+  export/             a diffable JSON snapshot of the same, for review
 src/
-  content/            the site's facts, as JSON — one file per kind
-    posts/{en,uz,ru}/ blog posts as Markdown + frontmatter
-  content.config.ts   the posts collection (glob loader + zod schema)
+  content/            the settled facts, as JSON — one file per kind
+  content.config.ts   the posts collection (SQLite loader + zod schema)
   i18n/{en,uz,ru}.json interface strings
   lib/
-    content.ts        loads and validates the JSON; throws at build time on bad data
+    db.mjs            opens the database; the one place SQLite is touched
+    content.ts        loads and validates JSON and projects; throws on bad data
     i18n.ts           locales, translation lookup, URL and date helpers
     posts.ts          published posts per language
   styles/
@@ -52,14 +55,26 @@ Blog routes are `[...slug].astro`, where `slug: undefined` is the index. When a 
 has no published posts, `getStaticPaths` returns nothing, so `/blog/` does not exist for
 that language and the nav item and homepage section hide themselves.
 
-## Content and validation
+## Content: two stores, one contract
 
-Structured content is plain JSON, imported and parsed through zod in `lib/content.ts`.
-A missing field or a malformed URL throws during `npm run build` with the file name and
-the path to the bad field. Blog posts use an Astro content collection because they need
-Markdown rendering; their frontmatter is validated the same way.
+Content is split by how often it changes.
+
+- **`data/site.db`** holds posts, projects and screenshots, because those keep being added.
+  It is SQLite through Node's own `node:sqlite`, so it costs no dependency. `src/lib/db.mjs`
+  is the only module that opens it, and it resolves the path from the working directory —
+  the module is bundled into `dist/` during the build, where a path relative to
+  `import.meta.url` would point at the output instead of the repository.
+- **`src/content/*.json`** holds the profile, the roles, the skills, the certificates and
+  the education. These are settled, and a JSON diff reviews far better than a binary one.
+
+Both go through the same gate: zod schemas in `lib/content.ts` and `content.config.ts`. A
+missing field or a malformed URL throws during `npm run build`, naming the field. Posts are
+an Astro content collection whose loader reads the database and renders the Markdown body
+with the loader context's `renderMarkdown`; in dev the loader watches the database file, so
+saving in the studio reloads the site.
 
 Translatable fields are `{ en, uz, ru }` objects and are read with `pick(field, locale)`.
+In the database they are stored as JSON columns and parsed on the way out.
 
 ## The dataset layer
 
@@ -147,9 +162,9 @@ Routes, hreflang, the switch and the CV follow automatically.
 ## The studio
 
 `scripts/studio.mjs` is a plain Node server — no Astro, no adapter, no framework — that
-serves `scripts/studio/index.html` and a handful of JSON endpoints. It writes Markdown
-posts, upserts `projects.json`, and runs uploaded screenshots through sharp into AVIF,
-WebP and JPEG under `public/projects/<slug>/`.
+serves `scripts/studio/index.html` and a handful of JSON endpoints. It upserts posts and
+projects in the database, and runs uploaded screenshots through sharp into AVIF, WebP and
+JPEG under `public/projects/<slug>/`, recording the row next to the files.
 
 It binds to `127.0.0.1` and is deliberately outside the Astro app. Astro builds static
 output with no adapter, so an on-demand route would need one, and adding one would put a
@@ -157,8 +172,9 @@ writable surface on the deployed site. Keeping the studio separate means what ge
 deployed stays exactly what it was — static files.
 
 The studio validates only enough to fail fast: required fields, the 155-character summary
-limit, at least one stack chip. Real validation stays where it belongs, in the zod schemas
-that run on every `npm run build`.
+limit, at least one stack chip, and the Uzbek apostrophe rule. Real validation stays where
+it belongs, in the zod schemas that run on every `npm run build` — and `npm run lint` reads
+the database too, so a wrong apostrophe cannot slip in through SQL either.
 
 Screenshot uploads skip multipart entirely — the browser posts the raw file as the request
 body with the slug and filename in the query string, which is why the server needs no

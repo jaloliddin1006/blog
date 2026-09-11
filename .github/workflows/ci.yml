@@ -19,7 +19,7 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Lint (formatting + Uzbek orthography)
+      - name: Lint (formatting + Uzbek orthography, including the database)
         run: npm run lint
 
       - name: Build (type check + static build)

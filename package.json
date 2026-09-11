@@ -10,7 +10,9 @@
     "lint": "prettier --check . && node scripts/check-uz-apostrophes.mjs",
     "format": "prettier --write .",
     "test": "playwright test",
-    "studio": "node scripts/studio.mjs"
+    "studio": "node scripts/studio.mjs",
+    "db:migrate": "node scripts/db-migrate.mjs",
+    "db:export": "node scripts/db-export.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.4",

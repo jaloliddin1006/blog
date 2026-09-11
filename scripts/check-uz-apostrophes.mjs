@@ -9,6 +9,7 @@
  */
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { openDb, readPosts, readProjects } from '../src/lib/db.mjs';
 
 const BANNED = [
   { char: "'", code: "ASCII '", hint: 'use ‘ (U+2018) or ’ (U+2019)' },
@@ -48,9 +49,44 @@ function walk(path) {
   }
 }
 
-for (const target of ['src/i18n/uz.json', 'src/content/posts/uz']) {
-  walk(resolve(process.cwd(), target));
+walk(resolve(process.cwd(), 'src/i18n/uz.json'));
+
+/** Posts and projects live in the content database, not in files. */
+function checkDatabase() {
+  const db = openDb({ readonly: true });
+  try {
+    for (const post of readPosts(db, { includeDrafts: true })) {
+      if (post.lang !== 'uz') continue;
+      for (const [field, value] of Object.entries({
+        title: post.title,
+        summary: post.summary,
+        body: post.body,
+      })) {
+        for (const { code, hint } of hits(value)) {
+          offenders.push(
+            `posts/${post.lang}/${post.slug} → ${field}  ${code} — ${hint}\n    ${value}`,
+          );
+        }
+      }
+    }
+
+    for (const project of readProjects(db)) {
+      const uzbek = [project.description.uz, ...project.details.uz];
+      for (const shot of project.screenshots) {
+        uzbek.push(shot.alt.uz, shot.caption?.uz ?? '');
+      }
+      for (const value of uzbek) {
+        for (const { code, hint } of hits(value)) {
+          offenders.push(`projects/${project.slug}  ${code} — ${hint}\n    ${value}`);
+        }
+      }
+    }
+  } finally {
+    db.close();
+  }
 }
+
+checkDatabase();
 
 /** Uzbek values inside the shared, multi-language content files. */
 function checkLocalized(file) {
@@ -80,7 +116,6 @@ function checkLocalized(file) {
 for (const file of [
   'src/content/profile.json',
   'src/content/experience.json',
-  'src/content/projects.json',
   'src/content/skills.json',
   'src/content/education.json',
   'src/content/certifications.json',

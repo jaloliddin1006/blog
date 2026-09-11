@@ -9,8 +9,7 @@
         color-scheme: dark;
         --ground-1: #060c14;
         --ground-2: #0d1826;
-        --glass: rgba(255, 255, 255, 0.055);
-        --glass-strong: rgba(255, 255, 255, 0.085);
+        --panel: rgba(255, 255, 255, 0.05);
         --border: rgba(255, 255, 255, 0.12);
         --ink: #eaf0f7;
         --ink-2: #9db0c6;
@@ -35,7 +34,7 @@
           sans-serif;
         color: var(--ink);
         background:
-          radial-gradient(120% 90% at 12% 8%, rgba(95, 192, 210, 0.2), transparent 55%),
+          radial-gradient(120% 90% at 12% 8%, rgba(95, 192, 210, 0.18), transparent 55%),
           linear-gradient(170deg, var(--ground-1), var(--ground-2));
         background-attachment: fixed;
       }
@@ -47,8 +46,9 @@
         display: flex;
         align-items: center;
         gap: 1rem;
+        flex-wrap: wrap;
         padding: 0.9rem 1.5rem;
-        background: rgba(6, 12, 20, 0.75);
+        background: rgba(6, 12, 20, 0.8);
         backdrop-filter: blur(14px);
         border-bottom: 1px solid var(--border);
       }
@@ -57,7 +57,6 @@
         margin: 0;
         font-size: 1rem;
         font-weight: 600;
-        letter-spacing: -0.01em;
       }
 
       h1 span {
@@ -65,59 +64,65 @@
         font-weight: 400;
       }
 
-      .tabs {
-        margin-left: auto;
-        display: flex;
-        gap: 0.4rem;
-      }
-
-      .tabs button {
+      .store {
         font-family: var(--mono);
         font-size: 0.72rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        padding: 0.45rem 0.9rem;
-        border-radius: 999px;
-        border: 1px solid var(--border);
-        background: transparent;
         color: var(--ink-2);
-        cursor: pointer;
-      }
-
-      .tabs button[aria-selected='true'] {
-        background: var(--accent);
-        border-color: var(--accent);
-        color: #05131a;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.2rem 0.6rem;
       }
 
       main {
-        max-width: 1080px;
+        max-width: 1500px;
         margin: 0 auto;
-        padding: 1.75rem 1.25rem 5rem;
+        padding: 1.5rem 1.25rem 5rem;
+        display: grid;
+        gap: 1.25rem;
+        align-items: start;
+      }
+
+      @media (min-width: 1180px) {
+        main {
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+        }
+      }
+
+      .col {
+        display: grid;
+        gap: 1.25rem;
+        align-content: start;
       }
 
       .panel {
-        background: var(--glass);
+        background: var(--panel);
         border: 1px solid var(--border);
         border-radius: 18px;
-        padding: 1.5rem;
-        margin-bottom: 1.25rem;
+        padding: 1.4rem;
         backdrop-filter: blur(16px);
       }
 
       h2 {
-        margin: 0 0 1.25rem;
+        margin: 0 0 1.1rem;
         font-size: 0.72rem;
         font-family: var(--mono);
         letter-spacing: 0.14em;
         text-transform: uppercase;
         color: var(--accent);
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+
+      h2 .badge {
+        color: var(--ink-2);
+        letter-spacing: 0.06em;
       }
 
       label {
         display: block;
-        margin-bottom: 0.9rem;
-        font-size: 0.8rem;
+        margin-bottom: 0.85rem;
+        font-size: 0.78rem;
         color: var(--ink-2);
       }
 
@@ -132,16 +137,16 @@
       select,
       textarea {
         width: 100%;
-        padding: 0.55rem 0.7rem;
+        padding: 0.5rem 0.65rem;
         font: inherit;
         color: var(--ink);
-        background: rgba(0, 0, 0, 0.25);
+        background: rgba(0, 0, 0, 0.28);
         border: 1px solid var(--border);
         border-radius: 9px;
       }
 
       textarea {
-        min-height: 8rem;
+        min-height: 7rem;
         resize: vertical;
         line-height: 1.6;
       }
@@ -155,31 +160,32 @@
 
       .row {
         display: grid;
-        gap: 1rem;
-      }
-
-      .cols-3 {
-        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 0.9rem;
       }
 
       .cols-2 {
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      }
+
+      .cols-3 {
+        grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
       }
 
       .check {
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        font-size: 0.85rem;
+        font-size: 0.82rem;
       }
 
       button.primary,
-      button.ghost {
+      button.ghost,
+      button.danger {
         font-family: var(--mono);
         font-size: 0.72rem;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        padding: 0.65rem 1.3rem;
+        padding: 0.6rem 1.2rem;
         border-radius: 999px;
         cursor: pointer;
         border: 1px solid var(--accent);
@@ -196,35 +202,32 @@
         color: var(--ink);
       }
 
+      button.danger {
+        background: transparent;
+        border-color: rgba(232, 139, 139, 0.5);
+        color: var(--danger);
+      }
+
       button.ghost:hover {
         border-color: var(--accent);
         color: var(--accent);
       }
 
-      button.link {
-        background: none;
-        border: 0;
-        color: var(--danger);
-        font-size: 0.75rem;
-        cursor: pointer;
-        padding: 0;
+      button.danger:hover {
+        border-color: var(--danger);
       }
 
       .actions {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: 0.6rem;
         flex-wrap: wrap;
-        margin-top: 0.5rem;
+        margin-top: 0.4rem;
       }
 
       .note {
-        font-size: 0.75rem;
+        font-size: 0.74rem;
         color: var(--ink-2);
-      }
-
-      .note.warn {
-        color: var(--danger);
       }
 
       .list {
@@ -232,23 +235,31 @@
         margin: 0;
         padding: 0;
         display: grid;
-        gap: 0.4rem;
+        gap: 0.35rem;
+        max-height: 22rem;
+        overflow-y: auto;
       }
 
       .list li {
-        display: flex;
-        gap: 0.75rem;
-        align-items: baseline;
-        padding: 0.5rem 0.7rem;
+        display: grid;
+        grid-template-columns: 2.4rem 6rem minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.45rem 0.6rem;
         border: 1px solid var(--border);
         border-radius: 10px;
-        font-size: 0.82rem;
+        font-size: 0.8rem;
+      }
+
+      .list li.is-editing {
+        border-color: var(--accent);
+        background: var(--accent-soft);
       }
 
       .list .tag,
       .list .date {
         font-family: var(--mono);
-        font-size: 0.7rem;
+        font-size: 0.68rem;
         color: var(--ink-2);
       }
 
@@ -256,13 +267,33 @@
         color: var(--accent);
       }
 
+      .list .title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        cursor: pointer;
+      }
+
+      .list .title:hover {
+        color: var(--accent);
+      }
+
+      .list button {
+        background: none;
+        border: 0;
+        color: var(--danger);
+        font-size: 0.72rem;
+        cursor: pointer;
+        padding: 0.1rem 0.2rem;
+      }
+
       .drop {
         border: 1px dashed var(--border);
         border-radius: 14px;
-        padding: 1.5rem;
+        padding: 1.35rem;
         text-align: center;
         color: var(--ink-2);
-        font-size: 0.85rem;
+        font-size: 0.82rem;
         cursor: pointer;
       }
 
@@ -274,16 +305,16 @@
 
       .shots {
         display: grid;
-        gap: 1rem;
-        margin-top: 1rem;
+        gap: 0.9rem;
+        margin-top: 0.9rem;
       }
 
       .shot {
         display: grid;
         gap: 0.75rem;
-        grid-template-columns: 190px minmax(0, 1fr);
+        grid-template-columns: 170px minmax(0, 1fr);
         align-items: start;
-        padding: 0.85rem;
+        padding: 0.8rem;
         border: 1px solid var(--border);
         border-radius: 14px;
       }
@@ -297,9 +328,9 @@
 
       .shot .file {
         font-family: var(--mono);
-        font-size: 0.7rem;
+        font-size: 0.68rem;
         color: var(--ink-2);
-        margin-top: 0.4rem;
+        margin: 0.4rem 0 0.2rem;
         word-break: break-all;
       }
 
@@ -310,7 +341,7 @@
         transform: translateX(-50%);
         padding: 0.7rem 1.2rem;
         border-radius: 999px;
-        background: var(--glass-strong);
+        background: rgba(12, 22, 35, 0.95);
         border: 1px solid var(--border);
         backdrop-filter: blur(14px);
         font-size: 0.82rem;
@@ -318,6 +349,7 @@
         transition: opacity 0.25s ease;
         pointer-events: none;
         max-width: 90vw;
+        z-index: 10;
       }
 
       .toast.show {
@@ -337,23 +369,32 @@
         .shot {
           grid-template-columns: 1fr;
         }
+
+        .list li {
+          grid-template-columns: 2.4rem minmax(0, 1fr) auto;
+        }
+
+        .list .date {
+          display: none;
+        }
       }
     </style>
   </head>
   <body>
     <header>
       <h1>Studio <span>· mamatmusayev.uz</span></h1>
-      <div class="tabs" role="tablist">
-        <button role="tab" data-tab="posts" aria-selected="true">Posts</button>
-        <button role="tab" data-tab="projects" aria-selected="false">Projects</button>
-      </div>
+      <span class="store">data/site.db</span>
+      <span class="note" style="margin-left: auto">
+        Posts and projects live in the database. Everything else stays in src/content/*.json.
+      </span>
     </header>
 
     <main>
       <!-- ------------------------------------------------------------ posts -->
-      <section id="tab-posts">
-        <div class="panel">
-          <h2>New post</h2>
+      <div class="col">
+        <section class="panel">
+          <h2>Post <span class="badge" id="post-mode">new</span></h2>
+
           <div class="row cols-3">
             <label>
               <span>Language</span>
@@ -367,9 +408,9 @@
               <span>Date</span>
               <input type="date" id="post-date" />
             </label>
-            <label class="check" style="align-self: end; margin-bottom: 1.4rem">
+            <label class="check" style="align-self: end; margin-bottom: 1.3rem">
               <input type="checkbox" id="post-draft" />
-              Draft — keep it out of the build
+              Draft
             </label>
           </div>
 
@@ -379,7 +420,7 @@
           </label>
 
           <label>
-            <span>Slug <em id="post-slug-hint" class="note"></em></span>
+            <span>Slug <em class="note" id="post-slug-hint"></em></span>
             <input type="text" id="post-slug" placeholder="left blank, it comes from the title" />
           </label>
 
@@ -389,7 +430,7 @@
           </label>
 
           <label>
-            <span>Link out instead of writing a page (optional LinkedIn URL)</span>
+            <span>Link out instead of writing a page (optional)</span>
             <input type="url" id="post-external" placeholder="https://www.linkedin.com/posts/…" />
           </label>
 
@@ -400,20 +441,21 @@
 
           <div class="actions">
             <button class="primary" id="post-save">Save post</button>
-            <span class="note">Writes src/content/posts/&lt;lang&gt;/&lt;slug&gt;.md</span>
+            <button class="ghost" id="post-reset" hidden>New post</button>
           </div>
-        </div>
+        </section>
 
-        <div class="panel">
-          <h2>Existing posts</h2>
+        <section class="panel">
+          <h2>Posts <span class="badge" id="post-count"></span></h2>
           <ul class="list" id="post-list"></ul>
-        </div>
-      </section>
+        </section>
+      </div>
 
       <!-- --------------------------------------------------------- projects -->
-      <section id="tab-projects" hidden>
-        <div class="panel">
-          <h2>Project</h2>
+      <div class="col">
+        <section class="panel">
+          <h2>Project <span class="badge" id="project-mode">new</span></h2>
+
           <label>
             <span>Edit an existing one, or start a new one</span>
             <select id="project-picker"></select>
@@ -453,7 +495,7 @@
 
           <div class="row cols-3">
             <label>
-              <span>Description · EN — one line</span>
+              <span>Description · EN</span>
               <input type="text" id="project-description-en" />
             </label>
             <label>
@@ -467,8 +509,8 @@
           </div>
 
           <p class="note">
-            Details below fill the project page. Leave a blank line between paragraphs. A project
-            with no details and no screenshots has no page — the card just links to GitHub.
+            Details fill the project page. Leave a blank line between paragraphs. A project with no
+            details and no screenshots has no page — the card just links to GitHub.
           </p>
 
           <div class="row cols-3">
@@ -488,21 +530,22 @@
 
           <div class="actions">
             <button class="primary" id="project-save">Save project</button>
-            <span class="note">Writes src/content/projects.json</span>
+            <button class="ghost" id="project-reset">New project</button>
+            <button class="danger" id="project-delete" hidden>Delete</button>
           </div>
-        </div>
+        </section>
 
-        <div class="panel">
-          <h2>Screenshots</h2>
+        <section class="panel">
+          <h2>Screenshots <span class="badge" id="shot-count"></span></h2>
           <p class="note" id="shot-hint">Save the project first, then add screenshots.</p>
           <div class="drop" id="shot-drop" hidden>
-            Drop an image here, or click to choose one. It is resized to 1600px and written as AVIF,
+            Drop images here, or click to choose. Each one is resized to 1600px and written as AVIF,
             WebP and JPEG.
           </div>
           <input type="file" id="shot-input" accept="image/*" hidden multiple />
           <div class="shots" id="shot-list"></div>
-        </div>
-      </section>
+        </section>
+      </div>
     </main>
 
     <div class="toast" id="toast"></div>
@@ -510,8 +553,9 @@
     <script type="module">
       const $ = (id) => document.getElementById(id);
       const LOCALES = ['en', 'uz', 'ru'];
-      let state = { projects: [], posts: [] };
-      let current = null;
+      let state = { posts: [], projects: [] };
+      let project = null;
+      let editingPost = null;
 
       const toast = (message, isError = false) => {
         const node = $('toast');
@@ -519,7 +563,7 @@
         node.classList.toggle('error', isError);
         node.classList.add('show');
         clearTimeout(node._timer);
-        node._timer = setTimeout(() => node.classList.remove('show'), 3200);
+        node._timer = setTimeout(() => node.classList.remove('show'), 3400);
       };
 
       async function api(path, options = {}) {
@@ -538,31 +582,58 @@
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/^-+|-+$/g, '');
 
-      /* ---------------------------------------------------------- tabs */
-      document.querySelectorAll('[role="tab"]').forEach((tab) => {
-        tab.addEventListener('click', () => {
-          document.querySelectorAll('[role="tab"]').forEach((other) => {
-            const selected = other === tab;
-            other.setAttribute('aria-selected', String(selected));
-            $(`tab-${other.dataset.tab}`).hidden = !selected;
-          });
-        });
-      });
+      const text = (node, value) => {
+        node.textContent = value;
+        return node;
+      };
 
-      /* --------------------------------------------------------- posts */
-      $('post-date').value = new Date().toISOString().slice(0, 10);
+      /* ---------------------------------------------------------- posts */
+
+      function resetPost() {
+        editingPost = null;
+        $('post-mode').textContent = 'new';
+        $('post-reset').hidden = true;
+        $('post-date').value = new Date().toISOString().slice(0, 10);
+        ['post-title', 'post-slug', 'post-summary', 'post-external', 'post-body'].forEach((id) => {
+          $(id).value = '';
+        });
+        $('post-draft').checked = false;
+        $('post-summary-count').textContent = '0/155';
+        $('post-slug-hint').textContent = '';
+        renderPosts();
+      }
+
+      function editPost(post) {
+        editingPost = { slug: post.slug, lang: post.lang };
+        $('post-mode').textContent = `editing ${post.lang}/${post.slug}`;
+        $('post-reset').hidden = false;
+        $('post-lang').value = post.lang;
+        $('post-date').value = post.date;
+        $('post-title').value = post.title;
+        $('post-slug').value = post.slug;
+        $('post-summary').value = post.summary;
+        $('post-external').value = post.external ?? '';
+        $('post-body').value = post.body;
+        $('post-draft').checked = post.draft;
+        $('post-summary-count').textContent = `${post.summary.length}/155`;
+        renderPosts();
+        $('post-title').focus();
+      }
+
       $('post-summary').addEventListener('input', (event) => {
         $('post-summary-count').textContent = `${event.target.value.length}/155`;
       });
+
       $('post-title').addEventListener('input', (event) => {
-        $('post-slug-hint').textContent = $('post-slug').value
-          ? ''
-          : `→ ${slugify(event.target.value) || '…'}`;
+        $('post-slug-hint').textContent =
+          $('post-slug').value || editingPost ? '' : `→ ${slugify(event.target.value) || '…'}`;
       });
+
+      $('post-reset').addEventListener('click', resetPost);
 
       $('post-save').addEventListener('click', async () => {
         try {
-          const created = await api('/api/post', {
+          const saved = await api('/api/post', {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify({
@@ -576,191 +647,242 @@
               draft: $('post-draft').checked,
             }),
           });
-          toast(`Saved ${created.file}`);
-          ['post-title', 'post-slug', 'post-summary', 'post-external', 'post-body'].forEach(
-            (id) => {
-              $(id).value = '';
-            },
-          );
-          $('post-summary-count').textContent = '0/155';
-          $('post-slug-hint').textContent = '';
+          toast(`Saved ${saved.locale}/${saved.slug}`);
           await load();
+          resetPost();
         } catch (error) {
           toast(error.message, true);
         }
       });
 
       function renderPosts() {
-        $('post-list').innerHTML =
-          state.posts
-            .map(
-              (post) => `<li>
-                <span class="tag">${post.locale.toUpperCase()}</span>
-                <span class="date">${post.date}</span>
-                <span>${post.title}${post.draft ? ' <span class="tag">draft</span>' : ''}</span>
-              </li>`,
-            )
-            .join('') || '<li><span class="note">Nothing yet.</span></li>';
-      }
+        const list = $('post-list');
+        list.replaceChildren();
+        $('post-count').textContent = `${state.posts.length} in the database`;
 
-      /* ------------------------------------------------------ projects */
-      function renderPicker() {
-        $('project-picker').innerHTML = [
-          '<option value="">+ New project</option>',
-          ...state.projects.map(
-            (project) =>
-              `<option value="${project.slug}">${project.name}${project.featured ? ' ★' : ''}</option>`,
-          ),
-        ].join('');
-        $('project-picker').value = current?.slug ?? '';
-      }
-
-      function fillProject(project) {
-        current = project;
-        $('project-name').value = project?.name ?? '';
-        $('project-slug').value = project?.slug ?? '';
-        $('project-repo').value = project?.repo ?? '';
-        $('project-demo').value = project?.demo ?? '';
-        $('project-stack').value = (project?.stack ?? []).join(', ');
-        $('project-license').value = project?.license ?? '';
-        $('project-featured').checked = Boolean(project?.featured);
-        for (const locale of LOCALES) {
-          $(`project-description-${locale}`).value = project?.description?.[locale] ?? '';
-          $(`project-details-${locale}`).value = (project?.details?.[locale] ?? []).join('\n\n');
+        if (state.posts.length === 0) {
+          const empty = document.createElement('li');
+          empty.className = 'note';
+          list.append(text(empty, 'Nothing yet.'));
+          return;
         }
+
+        for (const post of state.posts) {
+          const item = document.createElement('li');
+          if (editingPost?.slug === post.slug && editingPost?.lang === post.lang) {
+            item.classList.add('is-editing');
+          }
+          item.append(text(document.createElement('span'), post.lang.toUpperCase()));
+          item.firstChild.className = 'tag';
+          item.append(text(document.createElement('span'), post.date));
+          item.lastChild.className = 'date';
+
+          const title = text(
+            document.createElement('span'),
+            post.title + (post.draft ? ' · draft' : ''),
+          );
+          title.className = 'title';
+          title.addEventListener('click', () => editPost(post));
+          item.append(title);
+
+          const remove = text(document.createElement('button'), 'delete');
+          remove.addEventListener('click', async () => {
+            if (!confirm(`Delete ${post.lang}/${post.slug}?`)) return;
+            try {
+              await api('/api/post/delete', {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ slug: post.slug, lang: post.lang }),
+              });
+              toast(`Deleted ${post.lang}/${post.slug}`);
+              await load();
+              if (editingPost?.slug === post.slug) resetPost();
+              else renderPosts();
+            } catch (error) {
+              toast(error.message, true);
+            }
+          });
+          item.append(remove);
+          list.append(item);
+        }
+      }
+
+      /* ------------------------------------------------------- projects */
+
+      function renderPicker() {
+        const picker = $('project-picker');
+        picker.replaceChildren();
+        const blank = document.createElement('option');
+        blank.value = '';
+        blank.textContent = '+ New project';
+        picker.append(blank);
+        for (const entry of state.projects) {
+          const option = document.createElement('option');
+          option.value = entry.slug;
+          option.textContent = entry.name + (entry.featured ? ' ★' : '');
+          picker.append(option);
+        }
+        picker.value = project?.slug ?? '';
+      }
+
+      function fillProject(entry) {
+        project = entry;
+        $('project-mode').textContent = entry ? `editing ${entry.slug}` : 'new';
+        $('project-delete').hidden = !entry;
+        $('project-name').value = entry?.name ?? '';
+        $('project-slug').value = entry?.slug ?? '';
+        $('project-repo').value = entry?.repo ?? '';
+        $('project-demo').value = entry?.demo ?? '';
+        $('project-stack').value = (entry?.stack ?? []).join(', ');
+        $('project-license').value = entry?.license ?? '';
+        $('project-featured').checked = Boolean(entry?.featured);
+        for (const locale of LOCALES) {
+          $(`project-description-${locale}`).value = entry?.description?.[locale] ?? '';
+          $(`project-details-${locale}`).value = (entry?.details?.[locale] ?? []).join('\n\n');
+        }
+        renderPicker();
         renderShots();
       }
 
       $('project-picker').addEventListener('change', (event) => {
-        fillProject(state.projects.find((project) => project.slug === event.target.value) ?? null);
+        fillProject(state.projects.find((entry) => entry.slug === event.target.value) ?? null);
       });
 
+      $('project-reset').addEventListener('click', () => fillProject(null));
+
       $('project-name').addEventListener('input', (event) => {
-        if (!current && !$('project-slug').value)
+        if (!project && !$('project-slug').value)
           $('project-slug').value = slugify(event.target.value);
       });
 
       $('project-save').addEventListener('click', async () => {
         try {
-          const payload = {
-            slug: $('project-slug').value || slugify($('project-name').value),
-            name: $('project-name').value,
-            repo: $('project-repo').value,
-            demo: $('project-demo').value,
-            license: $('project-license').value,
-            featured: $('project-featured').checked,
-            stack: $('project-stack')
-              .value.split(',')
-              .map((item) => item.trim()),
-            description: Object.fromEntries(
-              LOCALES.map((locale) => [locale, $(`project-description-${locale}`).value]),
-            ),
-            details: Object.fromEntries(
-              LOCALES.map((locale) => [locale, $(`project-details-${locale}`).value]),
-            ),
-            screenshots: current?.screenshots ?? [],
-          };
           const saved = await api('/api/project', {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
-            body: JSON.stringify(payload),
+            body: JSON.stringify({
+              slug: $('project-slug').value || slugify($('project-name').value),
+              name: $('project-name').value,
+              repo: $('project-repo').value,
+              demo: $('project-demo').value,
+              license: $('project-license').value,
+              featured: $('project-featured').checked,
+              stack: $('project-stack').value.split(','),
+              description: Object.fromEntries(
+                LOCALES.map((locale) => [locale, $(`project-description-${locale}`).value]),
+              ),
+              details: Object.fromEntries(
+                LOCALES.map((locale) => [locale, $(`project-details-${locale}`).value]),
+              ),
+              screenshots: project?.screenshots ?? [],
+            }),
           });
           toast(`Saved ${saved.slug}`);
           await load();
-          fillProject(state.projects.find((project) => project.slug === saved.slug) ?? null);
-          renderPicker();
+          fillProject(state.projects.find((entry) => entry.slug === saved.slug) ?? null);
         } catch (error) {
           toast(error.message, true);
         }
       });
 
-      /* --------------------------------------------------- screenshots */
+      $('project-delete').addEventListener('click', async () => {
+        if (!project || !confirm(`Delete ${project.slug} and its screenshots?`)) return;
+        try {
+          await api('/api/project/delete', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ slug: project.slug }),
+          });
+          toast(`Deleted ${project.slug}`);
+          await load();
+          fillProject(null);
+        } catch (error) {
+          toast(error.message, true);
+        }
+      });
+
+      /* ---------------------------------------------------- screenshots */
+
       function renderShots() {
-        const saved = Boolean(current);
+        const saved = Boolean(project);
         $('shot-drop').hidden = !saved;
         $('shot-hint').hidden = saved;
-        if (!saved) {
-          $('shot-list').innerHTML = '';
-          return;
-        }
+        const list = $('shot-list');
+        list.replaceChildren();
+        $('shot-count').textContent = saved ? `${project.screenshots.length}` : '';
+        if (!saved) return;
 
-        $('shot-list').innerHTML = (current.screenshots ?? [])
-          .map(
-            (shot, index) => `
-            <div class="shot" data-index="${index}">
-              <div>
-                <img src="/projects/${current.slug}/${shot.file}.jpg?v=${Date.now()}" alt="" />
-                <p class="file">${shot.file}</p>
-                <button class="link" data-remove="${shot.file}">Remove</button>
-              </div>
-              <div>
-                ${LOCALES.map(
-                  (locale) => `
-                  <label>
-                    <span>Alt · ${locale.toUpperCase()}</span>
-                    <input type="text" data-shot="alt" data-locale="${locale}"
-                      value="${(shot.alt?.[locale] ?? '').replace(/"/g, '&quot;')}" />
-                  </label>
-                  <label>
-                    <span>Caption · ${locale.toUpperCase()} (optional)</span>
-                    <input type="text" data-shot="caption" data-locale="${locale}"
-                      value="${(shot.caption?.[locale] ?? '').replace(/"/g, '&quot;')}" />
-                  </label>`,
-                ).join('')}
-              </div>
-            </div>`,
-          )
-          .join('');
+        project.screenshots.forEach((shot, index) => {
+          const card = document.createElement('div');
+          card.className = 'shot';
 
-        $('shot-list')
-          .querySelectorAll('[data-remove]')
-          .forEach((button) =>
-            button.addEventListener('click', async () => {
-              try {
-                const { screenshots } = await api('/api/screenshot/delete', {
-                  method: 'POST',
-                  headers: { 'content-type': 'application/json' },
-                  body: JSON.stringify({ slug: current.slug, file: button.dataset.remove }),
-                });
-                current.screenshots = screenshots;
-                toast('Screenshot removed');
-                renderShots();
-              } catch (error) {
-                toast(error.message, true);
-              }
-            }),
-          );
+          const left = document.createElement('div');
+          const image = document.createElement('img');
+          image.src = `/projects/${project.slug}/${shot.file}.jpg?v=${Date.now()}`;
+          image.alt = '';
+          left.append(image, text(document.createElement('p'), shot.file));
+          left.lastChild.className = 'file';
 
-        $('shot-list')
-          .querySelectorAll('input[data-shot]')
-          .forEach((input) =>
-            input.addEventListener('input', () => {
-              const index = Number(input.closest('.shot').dataset.index);
-              const shot = current.screenshots[index];
-              const field = input.dataset.shot;
-              shot[field] = shot[field] ?? {};
-              shot[field][input.dataset.locale] = input.value;
-              if (field === 'caption' && LOCALES.every((locale) => !shot.caption?.[locale])) {
-                delete shot.caption;
-              }
-            }),
-          );
+          const remove = text(document.createElement('button'), 'remove');
+          remove.className = 'danger';
+          remove.style.cssText = 'padding:.3rem .8rem;font-size:.68rem';
+          remove.addEventListener('click', async () => {
+            try {
+              await api('/api/screenshot/delete', {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ slug: project.slug, file: shot.file }),
+              });
+              toast('Screenshot removed');
+              await load();
+              fillProject(state.projects.find((entry) => entry.slug === project.slug) ?? null);
+            } catch (error) {
+              toast(error.message, true);
+            }
+          });
+          left.append(remove);
+
+          const right = document.createElement('div');
+          for (const locale of LOCALES) {
+            for (const field of ['alt', 'caption']) {
+              const label = document.createElement('label');
+              label.append(
+                text(
+                  document.createElement('span'),
+                  `${field === 'alt' ? 'Alt' : 'Caption'} · ${locale.toUpperCase()}${field === 'caption' ? ' (optional)' : ''}`,
+                ),
+              );
+              const input = document.createElement('input');
+              input.type = 'text';
+              input.value = shot[field]?.[locale] ?? '';
+              input.addEventListener('input', () => {
+                project.screenshots[index][field] = project.screenshots[index][field] ?? {};
+                project.screenshots[index][field][locale] = input.value;
+              });
+              label.append(input);
+              right.append(label);
+            }
+          }
+
+          card.append(left, right);
+          list.append(card);
+        });
       }
 
       async function upload(files) {
         for (const file of files) {
           try {
             const result = await api(
-              `/api/screenshot?slug=${encodeURIComponent(current.slug)}&name=${encodeURIComponent(file.name)}`,
+              `/api/screenshot?slug=${encodeURIComponent(project.slug)}&name=${encodeURIComponent(file.name)}`,
               { method: 'POST', body: file },
             );
-            current.screenshots = result.screenshots;
-            toast(`Added ${result.file} — remember to save the project`);
+            toast(`Added ${result.file} — remember to write the alt text and save`);
           } catch (error) {
             toast(error.message, true);
           }
         }
-        renderShots();
+        await load();
+        fillProject(state.projects.find((entry) => entry.slug === project.slug) ?? null);
       }
 
       $('shot-drop').addEventListener('click', () => $('shot-input').click());
@@ -775,22 +897,22 @@
         $('shot-drop').addEventListener(type, (event) => {
           event.preventDefault();
           $('shot-drop').classList.remove('over');
-          if (type === 'drop')
-            upload([...event.dataTransfer.files].filter((f) => f.type.startsWith('image/')));
+          if (type === 'drop') {
+            upload([...event.dataTransfer.files].filter((file) => file.type.startsWith('image/')));
+          }
         }),
       );
 
       /* ----------------------------------------------------------- boot */
+
       async function load() {
         state = await api('/api/state');
         renderPosts();
         renderPicker();
-        if (current) {
-          current = state.projects.find((project) => project.slug === current.slug) ?? current;
-        }
       }
 
       await load();
+      resetPost();
       fillProject(null);
     </script>
   </body>

@@ -5,3 +5,6 @@ test-results/
 playwright-report/
 .DS_Store
 *.log
+data/site.db-journal
+data/site.db-wal
+data/site.db-shm

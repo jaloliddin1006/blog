@@ -192,12 +192,11 @@ _Revised 10 Sep 2026, at the owner's request: the original brief called for a fl
 - **Content model** (so the owner can edit without touching layout):
   - `content/profile.json` — identity, links, lede, "Now" strip
   - `content/experience.json` — timeline entries
-  - `content/projects.json` — repositories (slug, name, repo, demo, stack[], description, details, screenshots[])
   - `content/certifications.json`
-  - `content/posts/*.md` — blog posts, Markdown + frontmatter (may be an empty folder)
+  - `data/site.db` — posts, projects and screenshots (SQLite; these keep being added)
 - **Quality gates**: `npm run build` with zero warnings, `npm run lint`, an HTML validator pass, a Playwright smoke test that loads `/`, `/uz/`, `/ru/`, toggles theme, and asserts every external link has `rel="noopener"`.
 - **Routes**: `/`, `/blog/`, `/blog/<slug>/`, `/projects/`, `/projects/<slug>/`, `/cv/`, `/404`, each mirrored under `/uz/` and `/ru/`, plus `/data.json`. All static — no server, no runtime rendering.
-- **Authoring**: a local studio (`npm run studio`) writes posts, projects and screenshots straight into `src/content/` and `public/projects/`. It binds to `127.0.0.1`, is never part of the build, and adds no runtime surface to the deployed site — the repository stays the source of truth, and `npm run build` still validates everything it wrote. Screenshots are resized to 1600px and written as AVIF, WebP and JPEG.
+- **Authoring**: a local studio (`npm run studio`) — one page, posts on the left and projects on the right — writes into `data/site.db` and `public/projects/`. It binds to `127.0.0.1`, is never part of the build, and adds no runtime surface to the deployed site — the repository stays the source of truth, and `npm run build` still validates everything it wrote. Screenshots are resized to 1600px and written as AVIF, WebP and JPEG.
 - **Out of scope for v1**: a hosted CMS, contact form backend, comments, blog tags/categories/pagination/RSS-beyond-a-single-feed, search.
 
 ---
@@ -316,7 +315,7 @@ Tasks:
 - [ ] OG image, JSON-LD Person, hreflang, canonical, sitemap, robots present and valid.
 - [ ] LinkedIn link preview shows title, description and image (test with LinkedIn Post Inspector).
 - [ ] All external links open correctly with `rel="noopener"`; GitHub profile link fixed to `/in/mamatmusayev`.
-- [ ] Content editable via JSON only; README explains how; CI runs lint, build, test on push.
+- [ ] Posts and projects editable from the studio without touching a file; the settled content stays editable as JSON; README explains both; CI runs lint, build and test on push.
 - [ ] No horizontal scroll at 360px; cards equal height; no clipped text at any breakpoint.
 - [ ] Blog section, nav item and `/blog/` hide themselves when there are no published posts; a post added as Markdown appears with no code change.
 - [ ] `/projects/` lists every repository; `/projects/<slug>/` exists only for projects with details or screenshots, in each language.

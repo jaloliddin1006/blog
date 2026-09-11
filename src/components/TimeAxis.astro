@@ -1,12 +1,11 @@
 ---
 /**
- * The work history on a real time axis.
+ * The work history as a table-chart: name · span · period.
  *
- * A list of roles cannot show duration or overlap; a span chart can. Here you
- * can see that the ICT Academy work ran alongside the first two years at the
- * Committee, and how short the AI department stint was. Built from the actual
- * start/end dates in experience.json, as a CSS grid of real elements — no SVG
- * paths, so it stays readable, selectable and responsive.
+ * A list can state that two roles overlapped; only a time axis can show it.
+ * Each row carries its own label, so the chart reads on its own — the bars are
+ * positioned as percentages of the full range rather than on a shared month
+ * grid, which keeps the label column independent and the whole thing fluid.
  */
 import { experience } from '../lib/content';
 import { pick, type Locale } from '../lib/i18n';
@@ -17,7 +16,7 @@ interface Props {
 
 const { locale } = Astro.props;
 
-const months = (value: string) => {
+const toMonths = (value: string) => {
   const [year, month] = value.split('-').map(Number);
   return year * 12 + (month - 1);
 };
@@ -25,84 +24,98 @@ const months = (value: string) => {
 const now = new Date();
 const today = now.getUTCFullYear() * 12 + now.getUTCMonth();
 
-const starts = experience.map((entry) => months(entry.start));
-const ends = experience.map((entry) => (entry.end ? months(entry.end) : today));
+const starts = experience.map((entry) => toMonths(entry.start));
+const ends = experience.map((entry) => (entry.end ? toMonths(entry.end) : today));
 const first = Math.min(...starts);
 const last = Math.max(...ends, today);
-const span = last - first + 1;
+// A month of air on each side so the first and last bars are not flush.
+const from = first - 1;
+const span = last - from + 2;
+const percent = (month: number) => ((month - from) / span) * 100;
 
-const bars = experience.map((entry, index) => ({
+const rows = experience.map((entry, index) => ({
   id: entry.id,
-  label: pick(entry.role, locale),
+  name: pick(entry.short, locale),
+  full: pick(entry.role, locale),
   period: pick(entry.period, locale),
   secondary: Boolean(entry.secondary),
   current: !entry.end,
-  from: starts[index] - first + 1,
-  to: ends[index] - first + 2,
-  length: ends[index] - starts[index] + 1,
+  left: percent(starts[index]),
+  width: percent(ends[index]) - percent(starts[index]),
+  months: ends[index] - starts[index],
 }));
 
-const years: { year: number; column: number }[] = [];
-for (let month = first; month <= last; month += 1) {
-  if (month % 12 === 0) years.push({ year: month / 12, column: month - first + 1 });
+const years: { year: number; left: number }[] = [];
+for (let month = from; month <= from + span; month += 1) {
+  if (month % 12 === 0) years.push({ year: month / 12, left: percent(month) });
 }
-const nowColumn = today - first + 1;
 ---
 
-<figure class="axis" style={`--span: ${span}`}>
+<figure class="axis">
   <figcaption class="sr-only">
-    {bars.map((bar) => `${bar.label}: ${bar.period}. `).join('')}
+    {rows.map((row) => `${row.full}: ${row.period}. `).join('')}
   </figcaption>
 
-  <div class="grid" aria-hidden="true">
-    {
-      years.map((tick) => (
-        <span class="tick" style={`grid-column: ${tick.column} / span 12; grid-row: 1 / -1`}>
-          <span class="year">{tick.year}</span>
-        </span>
-      ))
-    }
-    <span class="today" style={`grid-column: ${nowColumn}; grid-row: 1 / -1`}></span>
+  <div class="chart">
+    <div class="scale" aria-hidden="true">
+      {
+        years.map((tick) => (
+          <span class="year" style={`left: ${tick.left}%`}>
+            {tick.year}
+          </span>
+        ))
+      }
+    </div>
 
-    {
-      bars.map((bar, index) => (
-        <button
-          type="button"
-          class:list={['bar', { secondary: bar.secondary, current: bar.current }]}
-          style={`grid-column: ${bar.from} / ${bar.to}; grid-row: ${index + 2}`}
-          data-span={bar.id}
-          data-short={bar.length < 9 ? 'true' : undefined}
-          title={`${bar.label} · ${bar.period}`}
-          aria-label={`${bar.label} · ${bar.period}`}
-        >
-          <span class="bar-label">{bar.label}</span>
-        </button>
-      ))
-    }
+    <div class="rows">
+      <div class="lines" aria-hidden="true">
+        {years.map((tick) => <span class="line" style={`left: ${tick.left}%`} />)}
+        <span class="line today" style={`left: ${percent(today)}%`}></span>
+      </div>
+
+      {
+        rows.map((row) => (
+          <div class="row" data-span={row.id}>
+            <span class="name">{row.name}</span>
+            <span class="track">
+              <button
+                type="button"
+                class:list={['bar', { secondary: row.secondary, current: row.current }]}
+                style={`left: ${row.left}%; width: ${row.width}%`}
+                title={`${row.full} · ${row.period}`}
+                aria-label={`${row.full} · ${row.period}`}
+              />
+            </span>
+            <span class="period">{row.period}</span>
+          </div>
+        ))
+      }
+    </div>
   </div>
 </figure>
 
 <script>
-  // Selecting a span scrolls its entry into view and lights its record in the
-  // background field; the list below stays the accessible source of truth.
-  const spans = document.querySelectorAll<HTMLButtonElement>('[data-span]');
+  // Hovering a span lights its written entry and its record in the background
+  // field; the list below stays the accessible source of truth.
+  const rows = document.querySelectorAll<HTMLElement>('.row[data-span]');
 
   const setActive = (id: string | null) => {
     document.querySelectorAll<HTMLElement>('[data-entry]').forEach((entry) => {
       entry.classList.toggle('is-active', entry.dataset.entry === id);
     });
-    spans.forEach((span) => span.classList.toggle('is-active', span.dataset.span === id));
+    rows.forEach((row) => row.classList.toggle('is-active', row.dataset.span === id));
     window.atlas?.highlight(id ? [`role:${id}`] : null);
   };
 
-  spans.forEach((span) => {
-    span.addEventListener('mouseenter', () => setActive(span.dataset.span ?? null));
-    span.addEventListener('focus', () => setActive(span.dataset.span ?? null));
-    span.addEventListener('mouseleave', () => setActive(null));
-    span.addEventListener('blur', () => setActive(null));
-    span.addEventListener('click', () => {
+  rows.forEach((row) => {
+    const id = row.dataset.span ?? null;
+    row.addEventListener('mouseenter', () => setActive(id));
+    row.addEventListener('mouseleave', () => setActive(null));
+    row.querySelector('button')?.addEventListener('focus', () => setActive(id));
+    row.querySelector('button')?.addEventListener('blur', () => setActive(null));
+    row.querySelector('button')?.addEventListener('click', () => {
       document
-        .querySelector(`[data-entry="${span.dataset.span}"]`)
+        .querySelector(`[data-entry="${id}"]`)
         ?.scrollIntoView({ block: 'center', behavior: 'smooth' });
     });
   });
@@ -110,7 +123,7 @@ const nowColumn = today - first + 1;
 
 <style>
   .axis {
-    margin: 0 0 2.5rem;
+    margin: 0 0 2.75rem;
   }
 
   .sr-only {
@@ -122,88 +135,146 @@ const nowColumn = today - first + 1;
     white-space: nowrap;
   }
 
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(var(--span), minmax(0, 1fr));
-    grid-auto-rows: 1.75rem;
-    row-gap: 0.35rem;
-    align-items: center;
+  .chart {
+    --label: 12rem;
+    --period: 10rem;
   }
 
-  .tick {
-    border-left: 1px solid var(--glass-border);
-    height: 100%;
-    display: block;
+  .scale {
     position: relative;
+    height: 1.25rem;
+    margin-inline-start: var(--label);
+    margin-inline-end: var(--period);
   }
 
   .year {
     position: absolute;
-    top: -0.35rem;
-    left: 0.35rem;
+    top: 0;
+    transform: translateX(-50%);
     font-family: var(--font-mono);
     font-size: var(--text-micro);
     color: var(--ink-2);
   }
 
-  .today {
+  .rows {
+    position: relative;
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .lines {
+    position: absolute;
+    inset: 0;
+    margin-inline-start: var(--label);
+    margin-inline-end: var(--period);
+    pointer-events: none;
+  }
+
+  .line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: var(--glass-border);
+  }
+
+  .line.today {
+    background: none;
     border-left: 1px dashed var(--accent);
-    opacity: 0.6;
-    height: 100%;
+    opacity: 0.7;
+  }
+
+  .row {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--label) minmax(0, 1fr) var(--period);
+    align-items: center;
+    gap: 0 0.75rem;
+    padding-block: 0.45rem;
+  }
+
+  .row + .row {
+    border-top: 1px solid color-mix(in srgb, var(--glass-border) 55%, transparent);
+  }
+
+  .row.is-active {
+    background-color: color-mix(in srgb, var(--accent-soft) 60%, transparent);
+  }
+
+  .name,
+  .period {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .name {
+    color: var(--ink);
+    padding-inline-start: 0.15rem;
+  }
+
+  .period {
+    color: var(--ink-2);
+    text-align: end;
+    padding-inline-end: 0.15rem;
+  }
+
+  .track {
+    position: relative;
+    display: block;
+    height: 0.85rem;
   }
 
   .bar {
-    position: relative;
-    height: 1.15rem;
-    padding: 0 0.55rem;
-    border: 1px solid transparent;
+    position: absolute;
+    top: 0;
+    height: 100%;
+    min-width: 6px;
+    padding: 0;
+    border: 0;
     border-radius: 999px;
-    background-color: color-mix(in srgb, var(--accent) 32%, transparent);
-    color: var(--ink);
-    font: inherit;
-    text-align: start;
+    background-color: color-mix(in srgb, var(--accent) 45%, transparent);
     cursor: pointer;
-    overflow: hidden;
-    white-space: nowrap;
     transition:
       background-color 0.25s ease,
-      transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+      box-shadow 0.25s ease;
   }
 
   .bar.secondary {
-    background-color: color-mix(in srgb, var(--ink-2) 26%, transparent);
+    background-color: color-mix(in srgb, var(--ink-2) 40%, transparent);
   }
 
   .bar.current {
     background-color: var(--accent);
-    color: var(--on-accent);
   }
 
-  .bar:hover,
-  .bar:focus-visible,
-  .bar.is-active {
-    transform: translateY(-1px);
+  .row:hover .bar,
+  .row.is-active .bar,
+  .bar:focus-visible {
     background-color: var(--accent);
-    color: var(--on-accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
   }
 
-  .bar-label {
-    font-family: var(--font-mono);
-    font-size: var(--text-micro);
-    letter-spacing: 0.02em;
+  @media (max-width: 1023px) {
+    .chart {
+      --period: 0rem;
+    }
+
+    .period {
+      display: none;
+    }
   }
 
-  /* A short span cannot carry a label; hover, focus and the list below do. */
-  .bar[data-short='true'] .bar-label {
-    display: none;
-  }
-
-  .bar[data-short='true'] {
-    padding: 0 0.3rem;
-  }
-
-  /* Narrow screens cannot carry a three-year axis; the list below does the work. */
+  /* Below this a three-year axis cannot carry labels; the list does the work. */
   @media (max-width: 767px) {
+    .axis {
+      display: none;
+    }
+  }
+
+  @media print {
     .axis {
       display: none;
     }
