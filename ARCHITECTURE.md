@@ -180,6 +180,27 @@ Screenshot uploads skip multipart entirely — the browser posts the raw file as
 body with the slug and filename in the query string, which is why the server needs no
 parser dependency.
 
+## The container
+
+`server/app.mjs` is the only thing the image runs. It serves `dist/` as plain files, mounts
+the studio at `/studio/` behind `server/auth.mjs`, and rebuilds the site in the background
+whenever the studio changes something — debounced, queued if one is already running, with the
+status exposed at `/studio/api/build` and shown in a strip at the bottom of the studio.
+
+The build stays inside the container because the site is static: there is no other way for an
+edit to reach a visitor. That is also why the image keeps the toolchain rather than shipping
+only `dist/`.
+
+`server/auth.mjs` uses nothing but `node:crypto`: scrypt for the password, RFC 6238 for the
+one-time codes, an HMAC-signed cookie for the session. The secrets are generated on first run
+into `data/studio-secret.json` (mode 0600) so sessions and TOTP enrolment survive a restart.
+`tests/studio.spec.ts` boots the same server and checks the gate from the outside: the site is
+public, the studio is not, a password without a code fails and so does a code without a
+password, a forged cookie is rejected, and guessing is rate limited.
+
+The container runs as `node` (uid 1000), so files written into the mounted volumes stay owned
+by the host user rather than by root.
+
 ## Deployment
 
 Cloudflare Pages, `npm run build` → `dist/`. See the README for DNS, SSL and the redirect

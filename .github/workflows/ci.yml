@@ -40,3 +40,22 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the container
+        run: docker build -t mamatmusayev .
+
+      - name: It serves the site and guards the studio
+        run: |
+          docker run -d --name check -p 8080:8080 mamatmusayev
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8080/ >/dev/null && break
+            sleep 2
+          done
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/)" = 200
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/studio/)" = 302
+          docker rm -f check

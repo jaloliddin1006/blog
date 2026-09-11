@@ -16,9 +16,12 @@ function contentDatabase() {
   return {
     name: 'site-db-watcher',
     apply: 'serve',
+    /** @param {import('vite').ViteDevServer} server */
     configureServer(server) {
       server.watcher.add(file);
+      /** @type {ReturnType<typeof setTimeout> | undefined} */
       let pending;
+      /** @param {string} path */
       const changed = (path) => {
         if (resolve(path) !== file) return;
         // SQLite touches the file more than once per write; settle first.

@@ -11,7 +11,7 @@ The full brief lives in [`SPEC.md`](./SPEC.md); the code map is in
 ```bash
 npm install
 npm run dev        # http://localhost:4321
-npm run studio     # http://localhost:4322 — add posts and projects
+npm run studio     # http://localhost:4322 — add posts and projects (no login, local only)
 npm run build      # type check + static build into dist/
 npm run lint       # formatting + Uzbek orthography
 npm test           # Playwright, desktop and mobile
@@ -177,6 +177,68 @@ The Open Graph cards and the touch icon are generated the same way:
 ```bash
 node scripts/generate-og.mjs
 ```
+
+## Running it as one container
+
+```bash
+docker compose up --build
+```
+
+- **Site** — http://localhost:8080/
+- **Studio** — http://localhost:8080/studio/
+
+One image serves both. The site is still static files out of `dist/`; the studio sits behind
+a login at `/studio/`, and whenever it changes a post or a project the container rebuilds
+`dist/` itself, so the edit is live a few seconds later. Nothing needs restarting.
+
+### Signing in
+
+|               |                                             |
+| ------------- | ------------------------------------------- |
+| Username      | `defonic` — override with `STUDIO_USER`     |
+| Password      | `123` — **override with `STUDIO_PASSWORD`** |
+| One-time code | six digits from an authenticator app        |
+
+On first run the container generates a TOTP secret, prints it, and keeps it in
+`data/studio-secret.json` so it survives restarts:
+
+```
+TOTP   otpauth://totp/mamatmusayev.uz:defonic?secret=…&issuer=mamatmusayev.uz&digits=6&period=30
+       secret: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  — add it to your authenticator app
+```
+
+Read it with `docker compose logs site`, then add it to Google Authenticator, Aegis, 1Password
+or any other TOTP app — either by pasting the secret or by turning the `otpauth://` line into a
+QR code. To pin your own secret instead, set `STUDIO_TOTP_SECRET` (base32) before the first run.
+
+> **The default password is `123`.** It exists so the container runs out of the box on your own
+> machine. Set `STUDIO_PASSWORD` — and put TLS in front with `STUDIO_SECURE_COOKIE=true` — before
+> this is reachable from anywhere but localhost. Passwords are never stored in plain text
+> (scrypt), sessions are HMAC-signed HttpOnly cookies, and five wrong attempts from one address
+> buy a minute of silence.
+
+### What persists
+
+Two volumes, both owned by your user — the container runs unprivileged:
+
+| Volume              | Holds                                                                        |
+| ------------------- | ---------------------------------------------------------------------------- |
+| `./data`            | the database, the generated secrets, the write log, backups, the JSON export |
+| `./public/projects` | screenshots uploaded through the studio                                      |
+
+Every write is appended to `data/studio.log` and mirrored into `data/export/*.json`, and the
+database is copied into `data/backups/` before anything is deleted.
+
+### Environment
+
+| Variable               | Default   |                                                   |
+| ---------------------- | --------- | ------------------------------------------------- |
+| `PORT`                 | `8080`    |                                                   |
+| `STUDIO_USER`          | `defonic` |                                                   |
+| `STUDIO_PASSWORD`      | `123`     | change it                                         |
+| `STUDIO_TOTP_SECRET`   | generated | base32; pin it to keep one secret across rebuilds |
+| `STUDIO_SECURE_COOKIE` | `false`   | `true` behind TLS                                 |
+| `STUDIO_SESSION_HOURS` | `12`      | how long a sign-in lasts                          |
 
 ## Deploying to Cloudflare Pages
 

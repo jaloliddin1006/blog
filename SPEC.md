@@ -180,7 +180,9 @@ _Revised 10 Sep 2026, at the owner's request: the original brief called for a fl
 ### A5. Technical requirements
 
 - **Stack (default)**: Astro (latest stable) + TypeScript + Tailwind CSS (latest stable), content in `src/content/*.json|md`, deployed as static HTML. Rationale: fastest path to Lighthouse 100, trivial hosting, zero server to maintain. Acceptable alternative if the owner prefers his own stack: Django with a single template and WhiteNoise — but rendering must still be cached/static. No React/Next unless a real app feature appears later.
-- **Hosting**: Cloudflare Pages or Vercel (free tier), domain via Cloudflare DNS with proxied A/CNAME and Full (strict) SSL — this also resolves A0.
+- **Hosting**: two shapes, same output.
+  - **Static host** — Cloudflare Pages or Vercel (free tier), domain via Cloudflare DNS with proxied A/CNAME and Full (strict) SSL, which also resolves A0.
+  - **One container** — `docker compose up`, serving the built site at `/` and the studio at `/studio/` from the same port. The studio is behind a username, a password and a TOTP code; the container rebuilds the site itself after every content change. Defaults are `defonic` / `123`, which must be overridden before the container is reachable from anywhere but localhost.
 - **i18n**: EN default at `/`, UZ at `/uz/`, RU at `/ru/`. All strings in `src/i18n/{en,uz,ru}.json`. `hreflang` tags on every page, including `x-default` → EN. Language switch preserves the section anchor.
   - Uzbek Latin orthography: `o‘` and `g‘` use U+2018, and the tutuq belgisi uses U+2019 — never the ASCII apostrophe. _The strictly correct code points are U+02BB/U+02BC, but IBM Plex draws both with a full letter-width advance, which visibly spaces Uzbek words out ("yig ʻ iladi"); U+2018/U+2019 carry the same shapes with correct metrics in this typeface._ `npm run lint` fails the build on any of the three wrong characters in Uzbek content.
 - **Theme**: light/dark via `prefers-color-scheme` plus a manual toggle stored in `localStorage`; all colors via CSS custom properties; no flash of wrong theme (inline script sets `data-theme` before paint).

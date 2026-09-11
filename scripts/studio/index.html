@@ -553,6 +553,8 @@
     <script type="module">
       const $ = (id) => document.getElementById(id);
       const LOCALES = ['en', 'uz', 'ru'];
+      /** Empty locally; '/studio' when the container mounts this behind the login. */
+      const BASE = window.STUDIO_PREFIX ?? '';
       let state = { posts: [], projects: [] };
       let project = null;
       let editingPost = null;
@@ -567,7 +569,7 @@
       };
 
       async function api(path, options = {}) {
-        const response = await fetch(path, options);
+        const response = await fetch(BASE + path, options);
         const body = await response.json();
         if (!response.ok) throw new Error(body.error ?? 'Request failed');
         return body;
@@ -818,7 +820,7 @@
 
           const left = document.createElement('div');
           const image = document.createElement('img');
-          image.src = `/projects/${project.slug}/${shot.file}.jpg?v=${Date.now()}`;
+          image.src = `${BASE}/projects/${project.slug}/${shot.file}.jpg?v=${Date.now()}`;
           image.alt = '';
           left.append(image, text(document.createElement('p'), shot.file));
           left.lastChild.className = 'file';

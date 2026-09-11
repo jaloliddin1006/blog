@@ -1,0 +1,11 @@
+node_modules
+dist
+.astro
+.git
+.github
+test-results
+playwright-report
+data/backups
+data/studio-secret.json
+data/studio.log
+*.log
