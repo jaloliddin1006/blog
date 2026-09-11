@@ -1,10 +1,11 @@
 # One image: the built site and the studio behind it.
 #
-#   docker build -t mamatmusayev .
-#   docker run -p 8080:8080 -v ./data:/app/data -v ./public/projects:/app/public/projects mamatmusayev
+#   docker compose up --build
 #
 # The site is served from dist/. When the studio changes a post or a project the
-# container rebuilds dist/ itself, which is why the toolchain stays in the image.
+# container rebuilds dist/ itself, so the runtime keeps Astro and sharp — but
+# only the production dependencies, installed fresh in this stage rather than
+# copied from the builder, which keeps the image about half the size.
 
 FROM node:22-slim AS build
 WORKDIR /app
@@ -20,17 +21,23 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# Everything the build produced, plus the toolchain the rebuild needs.
-COPY --from=build /app /app
-RUN npm prune --omit=dev && npm cache clean --force
+# Unprivileged from here on, so files written into the mounted volumes stay
+# owned by uid 1000 rather than by root. Ownership is set as each layer is
+# copied — a recursive chown afterwards would duplicate the whole tree into a
+# layer of its own, which cost 359 MB when this was written that way.
+RUN chown node:node /app
+USER node
+
+COPY --chown=node:node package.json package-lock.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+# Source first, then the build output — .dockerignore keeps dist/ and
+# node_modules/ out of the source copy, so neither is clobbered.
+COPY --chown=node:node . .
+COPY --chown=node:node --from=build /app/dist ./dist
 
 # Content and uploads belong to the host, not to the image.
 VOLUME ["/app/data", "/app/public/projects"]
-
-# Runs unprivileged: files written into the mounted volumes stay owned by uid
-# 1000, not root. Give the host directories to the same uid before mounting.
-RUN chown -R node:node /app
-USER node
 
 EXPOSE 8080
 
