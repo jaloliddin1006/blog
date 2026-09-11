@@ -38,6 +38,9 @@
   /* Reading surfaces — a dialog has to be legible, not translucent. */
   --surface: rgba(252, 253, 255, 0.94);
   --scrim: rgba(20, 37, 59, 0.32);
+  /* Floating bars sit over live text, so they are denser than a panel. */
+  --bar: rgba(250, 252, 254, 0.72);
+  --bar-lifted: rgba(250, 252, 254, 0.9);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -73,6 +76,8 @@
 
     --surface: rgba(12, 22, 35, 0.95);
     --scrim: rgba(2, 6, 12, 0.6);
+    --bar: rgba(11, 20, 32, 0.66);
+    --bar-lifted: rgba(11, 20, 32, 0.88);
   }
 }
 
@@ -108,4 +113,6 @@
 
   --surface: rgba(12, 22, 35, 0.95);
   --scrim: rgba(2, 6, 12, 0.6);
+  --bar: rgba(11, 20, 32, 0.66);
+  --bar-lifted: rgba(11, 20, 32, 0.88);
 }
