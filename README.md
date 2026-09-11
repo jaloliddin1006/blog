@@ -45,6 +45,22 @@ Write `o‘`/`g‘` with U+2018 and the tutuq belgisi with U+2019 (`ma’lumot`)
 draws the latter two full-width, which visibly breaks up Uzbek words. macOS: `⌥]` and
 `⌥⇧]`. Linux: `Ctrl+Shift+U 2018`.
 
+## What is unusual about this site
+
+Three things, all built on the same idea — the content is a dataset, and the page is one
+view over it:
+
+- **Press ⌘K, Ctrl+K or `/`.** The site answers queries about itself: free text, or
+  `type:project`, `stack:python`, `year:2025`. It reports the result the way a query would,
+  and the background field filters to the same records as you type.
+- **The background is the dataset.** Every bright node behind the page is one record.
+  Scrolling a section lights its records; hovering a node names it; clicking one goes to it.
+- **`/data.json`** is the dataset itself — subject, counts and every record — so nobody has
+  to scrape the page to cite it.
+
+The work history is drawn on a real time axis, from the start and end months in
+`experience.json`, so duration and overlap are visible rather than merely stated.
+
 ## The studio — writing without touching files
 
 ```bash

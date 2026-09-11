@@ -128,7 +128,7 @@ const personSchema = {
   <body>
     <a href="#main" class="skip-link">{strings.nav.skip}</a>
     <div class="scroll-progress" aria-hidden="true"></div>
-    <Atlas />
+    <Atlas locale={locale} />
     {!bare && <Header locale={locale} route={route} showBlogNav={showBlogNav} />}
     {rail && <RailNav locale={locale} />}
     <div class="page">

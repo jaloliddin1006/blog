@@ -123,7 +123,7 @@ One page with anchored sections, plus two real routes: `/blog/` (with post pages
 > `I work at the National Statistics Committee of Uzbekistan, where I lead the team that designs, builds and rolls out the information systems behind national statistical data collection, processing and reporting. My path there went from database engineering to AI implementation to running the department.`
 > `Day to day that means data architecture in PostgreSQL, backend services in Python and Django, integrations over REST APIs, and evaluating where AI genuinely helps official statistics — vector search, RAG and LLM tooling — rather than where it merely looks impressive.`
 
-**4. Work (timeline)** — vertical timeline, four Committee roles from A2 with the period on the left, role on the right, 2-line description each; ICT Academy as a fifth, lighter entry. A single caption above: `National Statistics Committee of the Republic of Uzbekistan · Sep 2024 – present`. A `Full CV →` link to `/cv/` sits under the timeline.
+**4. Work** — a span chart on a real time axis (from the `start`/`end` months in `experience.json`) above a vertical timeline of the same five roles: period on the left, role on the right, 2-line description each; ICT Academy as a fifth, lighter entry. Hovering a span lights its entry and its record in the background field; below 768px the chart is dropped and the list carries it alone. A single caption above: `National Statistics Committee of the Republic of Uzbekistan · Sep 2024 – present`. A `Full CV →` link to `/cv/` sits under the timeline.
 
 **5. Projects** — grid of 6 featured cards (3×2 desktop, 1 column mobile). Each card: a cover screenshot when there is one, name, one-line description, 2–3 stack chips, and links. No star counts, no repo totals — nothing that goes stale. Cards are equal height, same padding; a 1px border and a hover lift. Below the grid: `All projects →` (to `/projects/`) and `All repositories on GitHub ↗`.
 
@@ -154,11 +154,15 @@ One page with anchored sections, plus two real routes: `/blog/` (with post pages
 - Print stylesheet: A4, black on white, header/nav/footer/theme toggle/button all `display: none`, links printed as `text (url)`, no page-break inside an entry, target 2 pages.
 - No photo on the CV, no skill bars, no "references available on request", no icons.
 
-### A4. Design direction — "Glass Atlas"
+### A4. Design direction — "The dataset is the interface"
 
 _Revised 10 Sep 2026, at the owner's request: the original brief called for a flat, institutional page with no motion. The owner asked instead for an unusual, glass-led interface with Three.js and scroll animation. That direction is recorded here and supersedes the earlier one; the trade-offs it forces are stated in A5._
 
-- **The idea**: every panel on the page is a sheet of frosted glass floating over a live field of data — a point-globe of nodes wired into a lattice, rendered in WebGL and pinned behind the whole document. The subject is national data infrastructure, so the background _is_ the data.
+- **The idea**: the subject runs the information systems behind a national statistics office, so the site is built the way one would be. Content becomes a dataset first, and the page, the background field, the query console and `/data.json` are four views over that same dataset.
+  - **The background is not decoration.** Every bright node in the WebGL field is one record — a role, a project, a skill, a certificate, a post — laid out in type order so each type owns a band of the sphere. The dim nodes are the lattice they sit in. Scrolling a section lights that section's records; hovering a node names it; clicking one goes to it.
+  - **The site answers queries about itself.** ⌘K, Ctrl+K or `/` opens a console over the dataset: free text plus `type:`, `stack:` and `year:`. It reports its result the way a query would — `12 records · 0.3 ms` — and the field filters to the same rows as you type. Rows are rendered at build time and merely shown or hidden, so the list is real HTML and nothing is built from strings at runtime.
+  - **The dataset is published.** `/data.json` carries the subject, the counts and every record. A line under the hero states it plainly — `this page is a view over a dataset · 52 records · 6 types · 3 languages · generated <date> · data.json` — and the record count is the button that opens the console.
+  - **The work history is a chart, not a list.** Roles are drawn as spans on a real time axis built from their start and end months, so duration and overlap are visible: the part-time ICT Academy work running alongside the first Committee roles is a fact the page can show rather than state. The written entries stay below it as the accessible source of truth.
 - **Palette (light)**: ground `#EEF3F8` → `#DFE9F1` with teal and blue glow blobs; glass `rgba(255,255,255,.58)`; border `rgba(20,37,59,.12)`; ink `#14253B`; ink-2 `#4A5D74`; accent `#10707F`. **Dark**: ground `#060C14` → `#0D1826`; glass `rgba(255,255,255,.055)`; border `rgba(255,255,255,.11)`; ink `#EAF0F7`; ink-2 `#9DB0C6`; accent `#5FC0D2`. Every text/background pair in both themes is verified ≥ 4.5:1.
 - **Material**: `backdrop-filter: blur(18px) saturate(150%)`, a 1px border, a soft drop shadow, and a hairline of light along the top edge. Radius 20px on panels, 999px on the header bar, rail, chips and buttons.
 - **Type**: IBM Plex Serif 600 for the name and section titles; IBM Plex Sans for body; IBM Plex Mono for indices, labels, dates and chips — uppercase, wide tracking. Self-hosted, Latin + Cyrillic subsets only, no font CDN. Body 16–17px, line-height 1.6, measure ≤ 66ch.
@@ -192,7 +196,7 @@ _Revised 10 Sep 2026, at the owner's request: the original brief called for a fl
   - `content/certifications.json`
   - `content/posts/*.md` — blog posts, Markdown + frontmatter (may be an empty folder)
 - **Quality gates**: `npm run build` with zero warnings, `npm run lint`, an HTML validator pass, a Playwright smoke test that loads `/`, `/uz/`, `/ru/`, toggles theme, and asserts every external link has `rel="noopener"`.
-- **Routes**: `/`, `/blog/`, `/blog/<slug>/`, `/projects/`, `/projects/<slug>/`, `/cv/`, `/404`, each mirrored under `/uz/` and `/ru/`. All static — no server, no runtime rendering.
+- **Routes**: `/`, `/blog/`, `/blog/<slug>/`, `/projects/`, `/projects/<slug>/`, `/cv/`, `/404`, each mirrored under `/uz/` and `/ru/`, plus `/data.json`. All static — no server, no runtime rendering.
 - **Authoring**: a local studio (`npm run studio`) writes posts, projects and screenshots straight into `src/content/` and `public/projects/`. It binds to `127.0.0.1`, is never part of the build, and adds no runtime surface to the deployed site — the repository stays the source of truth, and `npm run build` still validates everything it wrote. Screenshots are resized to 1600px and written as AVIF, WebP and JPEG.
 - **Out of scope for v1**: a hosted CMS, contact form backend, comments, blog tags/categories/pagination/RSS-beyond-a-single-feed, search.
 
@@ -317,6 +321,9 @@ Tasks:
 - [ ] Blog section, nav item and `/blog/` hide themselves when there are no published posts; a post added as Markdown appears with no code change.
 - [ ] `/projects/` lists every repository; `/projects/<slug>/` exists only for projects with details or screenshots, in each language.
 - [ ] `npm run studio` writes a post, a project and a screenshot that all survive `npm run build`; the studio never appears in `dist/`.
+- [ ] ⌘K opens the console; `type:`, `stack:` and `year:` narrow the rows, and the background field follows the same query.
+- [ ] `/data.json` is served, names the subject, and carries every record the console lists.
+- [ ] The work chart draws one span per role on a real axis and shows the overlap; the written timeline reads on its own.
 - [ ] `/cv/` renders in all three languages, prints to ≤ 2 A4 pages with no nav/footer/button, and every fact on it matches the homepage.
 - [ ] `npm run build` and `npm run lint` pass with zero warnings; W3C HTML validator clean on all three pages.
 - [ ] No hard-coded GitHub star counts or repo totals anywhere in content or markup.

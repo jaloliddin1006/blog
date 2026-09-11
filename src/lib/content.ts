@@ -41,6 +41,12 @@ const profileSchema = z.object({
 const experienceSchema = z.array(
   z.object({
     id: text,
+    /** Real dates, so the work history can be drawn on a time axis. */
+    start: z.string().regex(/^\d{4}-\d{2}$/, 'YYYY-MM'),
+    end: z
+      .string()
+      .regex(/^\d{4}-\d{2}$/, 'YYYY-MM')
+      .nullable(),
     current: z.boolean().optional(),
     secondary: z.boolean().optional(),
     org: l10nText.optional(),

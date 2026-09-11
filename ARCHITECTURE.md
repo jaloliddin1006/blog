@@ -61,6 +61,25 @@ Markdown rendering; their frontmatter is validated the same way.
 
 Translatable fields are `{ en, uz, ru }` objects and are read with `pick(field, locale)`.
 
+## The dataset layer
+
+`src/lib/dataset.ts` flattens the content files into one list of records — roles, projects,
+skills, certificates, education, posts — each with a label, a sub-line, match tags, a year
+where it has one, and an href per locale. Three surfaces read it and nothing else:
+
+- **`/data.json`** (`src/pages/data.json.ts`) publishes the subject, the counts and every
+  record as a static file.
+- **The query console** renders one `<li>` per record at build time. Typing shows and hides
+  rows; nothing is built from strings at runtime, so scoped styles apply, screen readers see
+  a real list, and there is no injection surface.
+- **The background field** reads those same rows out of the DOM rather than carrying a
+  second copy, which keeps the records in the page exactly once (~14 KB gzipped for the
+  whole homepage).
+
+The field exposes `window.atlas` — `records`, `highlight(ids)` and `section(id)` — which is
+how the console, the time-axis chart and the scroll observer all drive the same visual.
+`atlas.highlight` is a no-op when WebGL never starts, so every caller can be unconditional.
+
 ## Theme
 
 Three states: system, explicit light, explicit dark. Tokens are defined three times in

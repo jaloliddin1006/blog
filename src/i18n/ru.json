@@ -102,5 +102,26 @@
     "notFoundTitle": "Страница не найдена — Жалолиддин Маматмусаев",
     "projectsTitle": "Проекты — Жалолиддин Маматмусаев",
     "projectsDescription": "Открытый код и эксперименты: RAG-чат-боты, дообученные модели, Telegram-боты и REST API."
+  },
+  "console": {
+    "open": "Запрос",
+    "placeholder": "Запрос к данным — например stack:python или year:2025",
+    "hint": "Фильтры: type: · stack: · year: — ↑↓ выбор, ↵ открыть, esc закрыть",
+    "empty": "Записей не найдено.",
+    "rows": "записей",
+    "in": "—",
+    "types": {
+      "role": "должность",
+      "project": "проект",
+      "skill": "навык",
+      "certification": "сертификат",
+      "education": "образование",
+      "post": "заметка"
+    },
+    "dataset": "Эта страница — представление набора данных",
+    "languages": "языка",
+    "generated": "обновлено",
+    "source": "data.json",
+    "typesLabel": "типов"
   }
 }

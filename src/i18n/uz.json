@@ -102,5 +102,26 @@
     "notFoundTitle": "Sahifa topilmadi — Jaloliddin Mamatmusayev",
     "projectsTitle": "Loyihalar — Jaloliddin Mamatmusayev",
     "projectsDescription": "Ochiq kodli ishlar va tajribalar: RAG chatbotlar, fine-tuning modellar, Telegram botlar va REST API."
+  },
+  "console": {
+    "open": "So‘rov",
+    "placeholder": "Ma’lumotlarga so‘rov — stack:python yoki year:2025",
+    "hint": "Filtrlar: type: · stack: · year: — ↑↓ tanlash, ↵ ochish, esc yopish",
+    "empty": "Mos yozuv topilmadi.",
+    "rows": "yozuv",
+    "in": "—",
+    "types": {
+      "role": "lavozim",
+      "project": "loyiha",
+      "skill": "ko‘nikma",
+      "certification": "sertifikat",
+      "education": "ta’lim",
+      "post": "yozuv"
+    },
+    "dataset": "Bu sahifa — ma’lumotlar to‘plamining ko‘rinishi",
+    "languages": "til",
+    "generated": "yangilangan",
+    "source": "data.json",
+    "typesLabel": "tur"
   }
 }

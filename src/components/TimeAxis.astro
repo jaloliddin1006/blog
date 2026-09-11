@@ -1,0 +1,211 @@
+---
+/**
+ * The work history on a real time axis.
+ *
+ * A list of roles cannot show duration or overlap; a span chart can. Here you
+ * can see that the ICT Academy work ran alongside the first two years at the
+ * Committee, and how short the AI department stint was. Built from the actual
+ * start/end dates in experience.json, as a CSS grid of real elements — no SVG
+ * paths, so it stays readable, selectable and responsive.
+ */
+import { experience } from '../lib/content';
+import { pick, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const months = (value: string) => {
+  const [year, month] = value.split('-').map(Number);
+  return year * 12 + (month - 1);
+};
+
+const now = new Date();
+const today = now.getUTCFullYear() * 12 + now.getUTCMonth();
+
+const starts = experience.map((entry) => months(entry.start));
+const ends = experience.map((entry) => (entry.end ? months(entry.end) : today));
+const first = Math.min(...starts);
+const last = Math.max(...ends, today);
+const span = last - first + 1;
+
+const bars = experience.map((entry, index) => ({
+  id: entry.id,
+  label: pick(entry.role, locale),
+  period: pick(entry.period, locale),
+  secondary: Boolean(entry.secondary),
+  current: !entry.end,
+  from: starts[index] - first + 1,
+  to: ends[index] - first + 2,
+  length: ends[index] - starts[index] + 1,
+}));
+
+const years: { year: number; column: number }[] = [];
+for (let month = first; month <= last; month += 1) {
+  if (month % 12 === 0) years.push({ year: month / 12, column: month - first + 1 });
+}
+const nowColumn = today - first + 1;
+---
+
+<figure class="axis" style={`--span: ${span}`}>
+  <figcaption class="sr-only">
+    {bars.map((bar) => `${bar.label}: ${bar.period}. `).join('')}
+  </figcaption>
+
+  <div class="grid" aria-hidden="true">
+    {
+      years.map((tick) => (
+        <span class="tick" style={`grid-column: ${tick.column} / span 12; grid-row: 1 / -1`}>
+          <span class="year">{tick.year}</span>
+        </span>
+      ))
+    }
+    <span class="today" style={`grid-column: ${nowColumn}; grid-row: 1 / -1`}></span>
+
+    {
+      bars.map((bar, index) => (
+        <button
+          type="button"
+          class:list={['bar', { secondary: bar.secondary, current: bar.current }]}
+          style={`grid-column: ${bar.from} / ${bar.to}; grid-row: ${index + 2}`}
+          data-span={bar.id}
+          data-short={bar.length < 9 ? 'true' : undefined}
+          title={`${bar.label} · ${bar.period}`}
+          aria-label={`${bar.label} · ${bar.period}`}
+        >
+          <span class="bar-label">{bar.label}</span>
+        </button>
+      ))
+    }
+  </div>
+</figure>
+
+<script>
+  // Selecting a span scrolls its entry into view and lights its record in the
+  // background field; the list below stays the accessible source of truth.
+  const spans = document.querySelectorAll<HTMLButtonElement>('[data-span]');
+
+  const setActive = (id: string | null) => {
+    document.querySelectorAll<HTMLElement>('[data-entry]').forEach((entry) => {
+      entry.classList.toggle('is-active', entry.dataset.entry === id);
+    });
+    spans.forEach((span) => span.classList.toggle('is-active', span.dataset.span === id));
+    window.atlas?.highlight(id ? [`role:${id}`] : null);
+  };
+
+  spans.forEach((span) => {
+    span.addEventListener('mouseenter', () => setActive(span.dataset.span ?? null));
+    span.addEventListener('focus', () => setActive(span.dataset.span ?? null));
+    span.addEventListener('mouseleave', () => setActive(null));
+    span.addEventListener('blur', () => setActive(null));
+    span.addEventListener('click', () => {
+      document
+        .querySelector(`[data-entry="${span.dataset.span}"]`)
+        ?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    });
+  });
+</script>
+
+<style>
+  .axis {
+    margin: 0 0 2.5rem;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(var(--span), minmax(0, 1fr));
+    grid-auto-rows: 1.75rem;
+    row-gap: 0.35rem;
+    align-items: center;
+  }
+
+  .tick {
+    border-left: 1px solid var(--glass-border);
+    height: 100%;
+    display: block;
+    position: relative;
+  }
+
+  .year {
+    position: absolute;
+    top: -0.35rem;
+    left: 0.35rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    color: var(--ink-2);
+  }
+
+  .today {
+    border-left: 1px dashed var(--accent);
+    opacity: 0.6;
+    height: 100%;
+  }
+
+  .bar {
+    position: relative;
+    height: 1.15rem;
+    padding: 0 0.55rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--accent) 32%, transparent);
+    color: var(--ink);
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
+    transition:
+      background-color 0.25s ease,
+      transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .bar.secondary {
+    background-color: color-mix(in srgb, var(--ink-2) 26%, transparent);
+  }
+
+  .bar.current {
+    background-color: var(--accent);
+    color: var(--on-accent);
+  }
+
+  .bar:hover,
+  .bar:focus-visible,
+  .bar.is-active {
+    transform: translateY(-1px);
+    background-color: var(--accent);
+    color: var(--on-accent);
+  }
+
+  .bar-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.02em;
+  }
+
+  /* A short span cannot carry a label; hover, focus and the list below do. */
+  .bar[data-short='true'] .bar-label {
+    display: none;
+  }
+
+  .bar[data-short='true'] {
+    padding: 0 0.3rem;
+  }
+
+  /* Narrow screens cannot carry a three-year axis; the list below does the work. */
+  @media (max-width: 767px) {
+    .axis {
+      display: none;
+    }
+  }
+</style>

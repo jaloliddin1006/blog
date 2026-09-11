@@ -102,5 +102,26 @@
     "notFoundTitle": "Page not found — Jaloliddin Mamatmusayev",
     "projectsTitle": "Projects — Jaloliddin Mamatmusayev",
     "projectsDescription": "Open-source work and experiments: RAG chatbots, fine-tuned models, Telegram bots and REST APIs."
+  },
+  "console": {
+    "open": "Query",
+    "placeholder": "Query the dataset — try stack:python or year:2025",
+    "hint": "Filters: type: · stack: · year: — ↑↓ to move, ↵ to open, esc to close",
+    "empty": "No records match.",
+    "rows": "records",
+    "in": "in",
+    "types": {
+      "role": "role",
+      "project": "project",
+      "skill": "skill",
+      "certification": "certificate",
+      "education": "education",
+      "post": "post"
+    },
+    "dataset": "This page is a view over a dataset",
+    "languages": "languages",
+    "generated": "generated",
+    "source": "data.json",
+    "typesLabel": "types"
   }
 }

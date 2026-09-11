@@ -1,0 +1,93 @@
+---
+/**
+ * The claim, stated plainly and checkably: this page is one view over a
+ * dataset, the dataset is published, and you can query it from here. The
+ * record count is the button that opens the console.
+ */
+import ExternalIcon from './ExternalIcon.astro';
+import { buildRecords, postRecords, RECORD_TYPES } from '../lib/dataset';
+import { getPosts } from '../lib/posts';
+import { LOCALES, t, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
+const total = [...buildRecords(), ...postRecords(await getPosts(locale), locale)].length;
+const generated = new Date().toISOString().slice(0, 10);
+---
+
+<section class="dataset" aria-label={strings.console.dataset}>
+  <div class="shell line">
+    <span class="claim">{strings.console.dataset}</span>
+    <button type="button" data-console-open class="count">
+      {`${total} ${strings.console.rows}`}
+    </button>
+    <span class="fact">{`${RECORD_TYPES.length} ${strings.console.typesLabel}`}</span>
+    <span class="fact">{`${LOCALES.length} ${strings.console.languages}`}</span>
+    <span class="fact">{`${strings.console.generated} ${generated}`}</span>
+    <a class="fact link" href="/data.json">{strings.console.source}<ExternalIcon /></a>
+  </div>
+</section>
+
+<style>
+  .dataset {
+    padding-block: 0.75rem;
+  }
+
+  .line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4rem 1.1rem;
+    padding-block: 0.75rem;
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+
+  .claim {
+    color: var(--ink);
+    margin-inline-end: auto;
+    text-transform: none;
+    letter-spacing: 0.04em;
+  }
+
+  .count {
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid transparent;
+    border-radius: 999px;
+    padding: 0.15rem 0.6rem;
+    cursor: pointer;
+    transition: border-color 0.25s ease;
+  }
+
+  .count:hover {
+    border-color: var(--accent);
+  }
+
+  .link {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .link:hover {
+    text-decoration: underline;
+  }
+
+  @media print {
+    .dataset {
+      display: none;
+    }
+  }
+</style>

@@ -1,5 +1,6 @@
 ---
 import ExternalIcon from './ExternalIcon.astro';
+import TimeAxis from './TimeAxis.astro';
 import Section from './Section.astro';
 import { experience, profile } from '../lib/content';
 import { localePath, pick, t, type Locale } from '../lib/i18n';
@@ -14,10 +15,12 @@ const caption = `${pick(profile.orgFull, locale)} · ${strings.work.since}`;
 ---
 
 <Section id="work" index="02" title={strings.sections.work} caption={caption}>
+  <TimeAxis locale={locale} />
+
   <ol class="timeline stagger">
     {
       experience.map((entry) => (
-        <li class:list={['entry', { secondary: entry.secondary }]}>
+        <li class:list={['entry', { secondary: entry.secondary }]} data-entry={entry.id}>
           <p class="period">{pick(entry.period, locale)}</p>
           <div class="body">
             <h3>{pick(entry.role, locale)}</h3>
@@ -66,6 +69,15 @@ const caption = `${pick(profile.orgFull, locale)} · ${strings.work.since}`;
     transition:
       box-shadow 0.35s ease,
       transform 0.35s ease;
+  }
+
+  .entry.is-active::before {
+    transform: scale(1.3);
+    box-shadow: 0 0 0 8px var(--accent-soft);
+  }
+
+  .entry.is-active .body {
+    color: var(--ink);
   }
 
   .entry:hover::before {

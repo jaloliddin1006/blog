@@ -105,11 +105,13 @@ test.describe('cv', () => {
     test(`${locale.code} cv carries the same facts as the homepage`, async ({ page }) => {
       await page.goto(`${locale.path}cv/`.replace('//cv/', '/cv/'));
       await expect(page.locator('main h1')).toHaveText('Jaloliddin Mamatmusayev');
+      // Scoped to main: the query console carries the same strings in its rows.
+      const main = page.locator('main');
       await expect(
-        page
+        main
           .getByText('Jul 2026 – present')
-          .or(page.getByText('2026 iyul – hozirgacha'))
-          .or(page.getByText('Июль 2026 — наст. время')),
+          .or(main.getByText('2026 iyul – hozirgacha'))
+          .or(main.getByText('Июль 2026 — наст. время')),
       ).toBeVisible();
       await expect(page.locator('[data-print]')).toBeVisible();
     });
@@ -143,6 +145,71 @@ test.describe('projects', () => {
     });
     // The static host serves 404.html for a route that was never built.
     expect(await response!.text()).not.toContain('Selected projects');
+  });
+});
+
+test.describe('query console', () => {
+  test('opens with the keyboard and filters the dataset', async ({ page }) => {
+    await page.goto('/');
+    await page.keyboard.press('Control+k');
+
+    const input = page.locator('#console-input');
+    await expect(input).toBeFocused();
+
+    const rows = page.locator('#console-results li[data-index]:visible');
+    const everything = await rows.count();
+    expect(everything).toBeGreaterThan(30);
+
+    await input.fill('type:role');
+    await expect(rows).toHaveCount(5);
+
+    await input.fill('stack:python');
+    const python = await rows.count();
+    expect(python).toBeGreaterThan(5);
+    expect(python).toBeLessThan(everything);
+
+    await input.fill('zzzznothing');
+    await expect(rows).toHaveCount(0);
+    await expect(page.locator('#console-results li.empty')).toBeVisible();
+
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#console')).toBeHidden();
+  });
+
+  test('every row is a real link target', async ({ page }) => {
+    await page.goto('/');
+    await page.keyboard.press('Control+k');
+    const hrefs = await page
+      .locator('#console-results li[data-index]')
+      .evaluateAll((nodes) => nodes.map((node) => (node as HTMLElement).dataset.href));
+    expect(hrefs.length).toBeGreaterThan(30);
+    expect(hrefs.every((href) => typeof href === 'string' && href.length > 0)).toBe(true);
+  });
+});
+
+test.describe('dataset', () => {
+  test('is published and matches the page', async ({ page, request }) => {
+    const response = await request.get('/data.json');
+    expect(response.ok()).toBe(true);
+    const data = await response.json();
+    expect(data.subject.name).toBe('Jaloliddin Mamatmusayev');
+    expect(data.counts.roles).toBe(5);
+    expect(data.records.length).toBeGreaterThan(50);
+
+    await page.goto('/');
+    // The line on the page counts the records this locale can actually query.
+    const rows = await page.locator('#console-results li[data-index]').count();
+    await expect(page.getByRole('button', { name: new RegExp(`${rows} records`) })).toBeVisible();
+  });
+});
+
+test.describe('work history', () => {
+  test('is drawn on a time axis with one span per role', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('/');
+    await expect(page.locator('[data-span]')).toHaveCount(5);
+    // The part-time role overlaps the Committee roles; the chart must show it.
+    await expect(page.locator('[data-span="ict-academy"]')).toBeVisible();
   });
 });
 

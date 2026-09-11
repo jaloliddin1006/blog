@@ -1,37 +1,77 @@
 ---
 /**
- * The living backdrop: a point-globe of "data nodes" wired into a lattice,
- * rendered with Three.js and pinned behind every glass panel on the page.
- * It reads its colour from the theme tokens, follows the pointer, and stops
- * dead for anyone who asked for reduced motion.
+ * The field behind the page is the dataset.
+ *
+ * Every bright node is one record — a role, a project, a skill, a certificate,
+ * a post. The dim nodes are the lattice they sit in. Scrolling a section lights
+ * that section's records; the query console filters them; hovering a node names
+ * it; clicking one goes to it.
+ *
+ * The records are read from the console's own list rather than duplicated into
+ * a second payload, so the page carries them exactly once.
  */
 ---
 
 <canvas id="atlas" aria-hidden="true"></canvas>
+<div id="atlas-tip" role="status" aria-live="off" hidden></div>
 
 <script>
-  /*
-   * Three.js is ~120 KB gzipped, so it is never part of the initial payload:
-   * the module below is fetched only once we know the scene will actually run
-   * — not for reduced motion, not on Save-Data, not without WebGL.
-   */
+  interface AtlasRecord {
+    id: string;
+    type: string;
+    section: string;
+    label: string;
+    sub: string;
+    href: string;
+    external: boolean;
+  }
+
+  interface AtlasApi {
+    records: AtlasRecord[];
+    highlight(ids: string[] | null): void;
+    section(section: string | null): void;
+  }
+
+  declare global {
+    interface Window {
+      atlas?: AtlasApi;
+    }
+  }
+
   const canvas = document.getElementById('atlas') as HTMLCanvasElement | null;
+  const tip = document.getElementById('atlas-tip') as HTMLElement | null;
+
+  /** One source of truth for the records: the rows the console already renders. */
+  const records: AtlasRecord[] = Array.from(
+    document.querySelectorAll<HTMLLIElement>('#console-results li[data-index]'),
+  ).map((row) => ({
+    id: row.dataset.id ?? '',
+    type: row.dataset.type ?? '',
+    section: row.dataset.section ?? '',
+    label: row.querySelector('.label')?.textContent ?? '',
+    sub: row.querySelector('.sub')?.textContent ?? '',
+    href: row.dataset.href ?? '',
+    external: row.dataset.external === 'true',
+  }));
+
+  // The record list is the search index too, whether or not WebGL runs.
+  const api: AtlasApi = { records, highlight: () => {}, section: () => {} };
+  window.atlas = api;
+
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection
     ?.saveData;
 
   const supportsWebGl = () => {
     try {
-      return Boolean(
-        document.createElement('canvas').getContext('webgl2') ??
-          document.createElement('canvas').getContext('webgl'),
-      );
+      const probe = document.createElement('canvas');
+      return Boolean(probe.getContext('webgl2') ?? probe.getContext('webgl'));
     } catch {
       return false;
     }
   };
 
-  if (canvas && !reduced.matches && !saveData && supportsWebGl()) {
+  if (canvas && tip && !reduced.matches && !saveData && supportsWebGl()) {
     const {
       BufferAttribute,
       BufferGeometry,
@@ -42,42 +82,58 @@
       PerspectiveCamera,
       Points,
       PointsMaterial,
+      Raycaster,
       Scene,
+      Vector2,
       WebGLRenderer,
     } = await import('three');
 
     const small = window.matchMedia('(max-width: 767px)');
-
-    const COUNT = small.matches ? 420 : 780;
-    const RADIUS = 1;
+    const TOTAL = small.matches ? 460 : 820;
     const LINK_DISTANCE = small.matches ? 0.2 : 0.155;
-    const MAX_LINKS_PER_NODE = 2;
 
-    /** Even distribution on a sphere — the Fibonacci lattice. */
-    const positions = new Float32Array(COUNT * 3);
-    const golden = Math.PI * (3 - Math.sqrt(5));
-    for (let i = 0; i < COUNT; i += 1) {
-      const y = 1 - (i / (COUNT - 1)) * 2;
+    /** Fibonacci lattice: an even spread with no seams. */
+    const point = (index: number, count: number) => {
+      const y = 1 - (index / (count - 1)) * 2;
       const ring = Math.sqrt(Math.max(0, 1 - y * y));
-      const theta = golden * i;
-      positions[i * 3] = Math.cos(theta) * ring * RADIUS;
-      positions[i * 3 + 1] = y * RADIUS;
-      positions[i * 3 + 2] = Math.sin(theta) * ring * RADIUS;
-    }
+      const theta = Math.PI * (3 - Math.sqrt(5)) * index;
+      return [Math.cos(theta) * ring, y, Math.sin(theta) * ring] as const;
+    };
 
-    // Wire each node to its nearest couple of neighbours: a lattice, not a mesh.
+    const all = Array.from({ length: TOTAL }, (_, index) => point(index, TOTAL));
+
+    // Records are spread across the whole sphere in type order, so each type
+    // lands in its own band; everything left over is lattice.
+    const slotOf = new Map<string, number>();
+    const taken = new Set<number>();
+    records.forEach((record, index) => {
+      const slot = Math.min(TOTAL - 1, Math.round((index * TOTAL) / Math.max(1, records.length)));
+      slotOf.set(record.id, slot);
+      taken.add(slot);
+    });
+
+    const lattice = all.filter((_, index) => !taken.has(index));
+    const recordPositions = records.map((record) => all[slotOf.get(record.id)!]);
+
+    const flat = (list: readonly (readonly [number, number, number])[]) => {
+      const array = new Float32Array(list.length * 3);
+      list.forEach(([x, y, z], index) => {
+        array[index * 3] = x;
+        array[index * 3 + 1] = y;
+        array[index * 3 + 2] = z;
+      });
+      return array;
+    };
+
     const links: number[] = [];
-    for (let i = 0; i < COUNT; i += 1) {
-      const ax = positions[i * 3];
-      const ay = positions[i * 3 + 1];
-      const az = positions[i * 3 + 2];
+    for (let i = 0; i < lattice.length; i += 1) {
       let made = 0;
-      for (let j = i + 1; j < COUNT && made < MAX_LINKS_PER_NODE; j += 1) {
-        const dx = ax - positions[j * 3];
-        const dy = ay - positions[j * 3 + 1];
-        const dz = az - positions[j * 3 + 2];
+      for (let j = i + 1; j < lattice.length && made < 2; j += 1) {
+        const dx = lattice[i][0] - lattice[j][0];
+        const dy = lattice[i][1] - lattice[j][1];
+        const dz = lattice[i][2] - lattice[j][2];
         if (dx * dx + dy * dy + dz * dz < LINK_DISTANCE * LINK_DISTANCE) {
-          links.push(ax, ay, az, positions[j * 3], positions[j * 3 + 1], positions[j * 3 + 2]);
+          links.push(...lattice[i], ...lattice[j]);
           made += 1;
         }
       }
@@ -91,20 +147,42 @@
     globe.rotation.z = -0.32;
     scene.add(globe);
 
-    const pointGeometry = new BufferGeometry();
-    pointGeometry.setAttribute('position', new BufferAttribute(positions, 3));
-    const pointMaterial = new PointsMaterial({
-      size: small.matches ? 0.019 : 0.016,
+    const latticeMaterial = new PointsMaterial({
+      size: small.matches ? 0.016 : 0.013,
       sizeAttenuation: true,
       transparent: true,
       depthWrite: false,
     });
-    globe.add(new Points(pointGeometry, pointMaterial));
+    const latticeGeometry = new BufferGeometry();
+    latticeGeometry.setAttribute('position', new BufferAttribute(flat(lattice), 3));
+    globe.add(new Points(latticeGeometry, latticeMaterial));
 
+    const lineMaterial = new LineBasicMaterial({ transparent: true, depthWrite: false });
     const lineGeometry = new BufferGeometry();
     lineGeometry.setAttribute('position', new BufferAttribute(new Float32Array(links), 3));
-    const lineMaterial = new LineBasicMaterial({ transparent: true, depthWrite: false });
     globe.add(new LineSegments(lineGeometry, lineMaterial));
+
+    const recordMaterial = new PointsMaterial({
+      size: small.matches ? 0.03 : 0.026,
+      sizeAttenuation: true,
+      transparent: true,
+      depthWrite: false,
+    });
+    const recordGeometry = new BufferGeometry();
+    recordGeometry.setAttribute('position', new BufferAttribute(flat(recordPositions), 3));
+    const recordPoints = new Points(recordGeometry, recordMaterial);
+    globe.add(recordPoints);
+
+    const hotMaterial = new PointsMaterial({
+      size: small.matches ? 0.055 : 0.048,
+      sizeAttenuation: true,
+      transparent: true,
+      depthWrite: false,
+      opacity: 1,
+    });
+    const hotGeometry = new BufferGeometry();
+    hotGeometry.setAttribute('position', new BufferAttribute(new Float32Array(0), 3));
+    globe.add(new Points(hotGeometry, hotMaterial));
 
     const renderer = new WebGLRenderer({
       canvas,
@@ -119,9 +197,12 @@
       const styles = getComputedStyle(document.documentElement);
       const node = styles.getPropertyValue('--particle').trim() || '#5fc0d2';
       const link = styles.getPropertyValue('--particle-dim').trim() || node;
+      const accent = styles.getPropertyValue('--accent').trim() || node;
       baseOpacity = Number.parseFloat(styles.getPropertyValue('--particle-opacity')) || 0.8;
-      pointMaterial.color = new Color(node);
+      latticeMaterial.color = new Color(link);
       lineMaterial.color = new Color(link);
+      recordMaterial.color = new Color(node);
+      hotMaterial.color = new Color(accent);
     };
     readTheme();
 
@@ -132,7 +213,6 @@
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
       renderer.setSize(width, height, false);
       camera.aspect = width / height;
-      // Off-centre on desktop, centred on mobile: the composition, not a logo.
       globe.position.x = width >= 1024 ? 0.95 : 0;
       globe.position.y = width >= 1024 ? 0.1 : 0.35;
       baseScale = width >= 1024 ? 1 : width >= 768 ? 0.88 : 0.72;
@@ -140,24 +220,126 @@
     };
     resize();
 
+    /* ------------------------------------------------------------ highlight */
+
+    let hotIds: string[] = [];
+    const setHot = (ids: string[]) => {
+      hotIds = ids;
+      const positions = ids
+        .map((id) => slotOf.get(id))
+        .filter((slot): slot is number => slot !== undefined)
+        .map((slot) => all[slot]);
+      hotGeometry.setAttribute('position', new BufferAttribute(flat(positions), 3));
+      hotGeometry.computeBoundingSphere();
+      // Everything else steps back while a selection is live.
+      const dim = ids.length > 0 && ids.length < records.length;
+      recordMaterial.opacity = baseOpacity * (dim ? 0.28 : 1);
+      latticeMaterial.opacity = baseOpacity * (dim ? 0.25 : 1);
+    };
+
+    api.highlight = (ids) => setHot(ids ?? []);
+    api.section = (section) =>
+      setHot(
+        section ? records.filter((record) => record.section === section).map((r) => r.id) : [],
+      );
+
+    /* ---------------------------------------------------------------- input */
+
     const pointer = { x: 0, y: 0 };
     const eased = { x: 0, y: 0 };
+    const ndc = new Vector2(-2, -2);
+    const raycaster = new Raycaster();
+    raycaster.params.Points = { threshold: 0.05 };
     let scrollTilt = 0;
     let intro = 0;
     let frame = 0;
     let running = false;
+    let hovered: AtlasRecord | null = null;
+
+    const showTip = (record: AtlasRecord | null, x: number, y: number) => {
+      if (!record) {
+        tip.hidden = true;
+        document.body.style.removeProperty('cursor');
+        return;
+      }
+      tip.innerHTML = `<span class="type">${record.type}</span><span class="label"></span><span class="sub"></span>`;
+      (tip.querySelector('.label') as HTMLElement).textContent = record.label;
+      (tip.querySelector('.sub') as HTMLElement).textContent = record.sub;
+      tip.hidden = false;
+      const box = tip.getBoundingClientRect();
+      tip.style.left = `${Math.min(window.innerWidth - box.width - 12, x + 16)}px`;
+      tip.style.top = `${Math.min(window.innerHeight - box.height - 12, y + 16)}px`;
+      document.body.style.cursor = 'pointer';
+    };
+
+    /** Only the bare background is pickable; panels and links are not. */
+    const overBackground = (target: EventTarget | null) =>
+      target instanceof Element &&
+      !target.closest('a, button, input, .glass, .site-header, [data-rail], #console');
+
+    const pickAt = () => {
+      raycaster.setFromCamera(ndc, camera);
+      const hit = raycaster.intersectObject(recordPoints, false)[0];
+      return hit?.index !== undefined ? (records[hit.index] ?? null) : null;
+    };
+
+    window.addEventListener(
+      'pointermove',
+      (event) => {
+        pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+        pointer.y = (event.clientY / window.innerHeight) * 2 - 1;
+        if (!overBackground(event.target)) {
+          ndc.set(-2, -2);
+          if (hovered) {
+            hovered = null;
+            showTip(null, 0, 0);
+          }
+          return;
+        }
+        ndc.set(pointer.x, -pointer.y);
+        const found = pickAt();
+        if (found?.id !== hovered?.id) {
+          hovered = found;
+          showTip(found, event.clientX, event.clientY);
+        } else if (found) {
+          showTip(found, event.clientX, event.clientY);
+        }
+      },
+      { passive: true },
+    );
+
+    window.addEventListener('click', (event) => {
+      if (!hovered || !overBackground(event.target)) return;
+      const target = hovered;
+      if (target.external) window.open(target.href, '_blank', 'noopener');
+      else window.location.href = target.href;
+    });
+
+    window.addEventListener(
+      'scroll',
+      () => {
+        const progress =
+          window.scrollY / Math.max(1, document.body.scrollHeight - window.innerHeight);
+        scrollTilt = progress * 0.55;
+      },
+      { passive: true },
+    );
+
+    /* ----------------------------------------------------------------- loop */
 
     const draw = () => {
-      // One cubic ease covers the whole entrance: it grows in and fades up.
       const ease = 1 - Math.pow(1 - Math.min(1, intro), 3);
       globe.scale.setScalar(baseScale * (0.88 + 0.12 * ease));
       eased.x += (pointer.x - eased.x) * 0.045;
       eased.y += (pointer.y - eased.y) * 0.045;
-      globe.rotation.y += 0.0016;
+      globe.rotation.y += hotIds.length > 0 ? 0.0006 : 0.0016;
       globe.rotation.x = eased.y * 0.24 + scrollTilt;
       globe.rotation.z = -0.32 + eased.x * 0.12;
-      pointMaterial.opacity = baseOpacity * ease;
-      lineMaterial.opacity = baseOpacity * 0.34 * ease;
+      const dim = hotIds.length > 0 && hotIds.length < records.length;
+      latticeMaterial.opacity = baseOpacity * (dim ? 0.25 : 1) * ease;
+      lineMaterial.opacity = baseOpacity * (dim ? 0.12 : 0.34) * ease;
+      recordMaterial.opacity = baseOpacity * (dim ? 0.28 : 1) * ease;
+      hotMaterial.opacity = ease;
       renderer.render(scene, camera);
     };
 
@@ -186,31 +368,8 @@
       if (!running) draw();
     });
 
-    window.addEventListener(
-      'pointermove',
-      (event) => {
-        pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
-        pointer.y = (event.clientY / window.innerHeight) * 2 - 1;
-      },
-      { passive: true },
-    );
+    document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
 
-    window.addEventListener(
-      'scroll',
-      () => {
-        const progress =
-          window.scrollY / Math.max(1, document.body.scrollHeight - window.innerHeight);
-        scrollTilt = progress * 0.55;
-      },
-      { passive: true },
-    );
-
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) stop();
-      else start();
-    });
-
-    // Someone turning motion off mid-visit gets a still frame, immediately.
     reduced.addEventListener('change', (event) => {
       if (event.matches) {
         stop();
@@ -221,7 +380,6 @@
       }
     });
 
-    // The globe follows the theme the moment it changes.
     new MutationObserver(() => {
       readTheme();
       if (!running) draw();
@@ -230,6 +388,27 @@
       readTheme();
       if (!running) draw();
     });
+
+    /* The section you are reading is lit in the field. */
+    const sections = document.querySelectorAll<HTMLElement>('section[id]');
+    if (sections.length && 'IntersectionObserver' in window) {
+      let locked = false;
+      window.addEventListener('atlas:lock', ((event: CustomEvent<boolean>) => {
+        locked = event.detail;
+      }) as EventListener);
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (locked) return;
+          const best = entries
+            .filter((entry) => entry.isIntersecting)
+            .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+          if (best) api.section(best.target.id);
+        },
+        { rootMargin: '-40% 0px -40% 0px', threshold: [0, 0.3, 0.7] },
+      );
+      sections.forEach((section) => observer.observe(section));
+    }
   }
 </script>
 
@@ -244,8 +423,42 @@
     pointer-events: none;
   }
 
+  #atlas-tip {
+    position: fixed;
+    z-index: 26;
+    max-width: 22rem;
+    padding: 0.6rem 0.8rem;
+    display: grid;
+    gap: 0.15rem;
+    border-radius: 12px;
+    background-color: var(--surface);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    pointer-events: none;
+  }
+
+  #atlas-tip :global(.type) {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  #atlas-tip :global(.label) {
+    font-size: var(--text-meta);
+    color: var(--ink);
+  }
+
+  #atlas-tip :global(.sub) {
+    font-size: var(--text-micro);
+    color: var(--ink-2);
+  }
+
   @media print {
-    #atlas {
+    #atlas,
+    #atlas-tip {
       display: none;
     }
   }

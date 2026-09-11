@@ -34,6 +34,10 @@
   --particle-opacity: 0.75;
 
   --selection: rgba(16, 112, 127, 0.22);
+
+  /* Reading surfaces — a dialog has to be legible, not translucent. */
+  --surface: rgba(252, 253, 255, 0.94);
+  --scrim: rgba(20, 37, 59, 0.32);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -66,6 +70,9 @@
     --particle-opacity: 0.9;
 
     --selection: rgba(95, 192, 210, 0.28);
+
+    --surface: rgba(12, 22, 35, 0.95);
+    --scrim: rgba(2, 6, 12, 0.6);
   }
 }
 
@@ -98,4 +105,7 @@
   --particle-opacity: 0.9;
 
   --selection: rgba(95, 192, 210, 0.28);
+
+  --surface: rgba(12, 22, 35, 0.95);
+  --scrim: rgba(2, 6, 12, 0.6);
 }

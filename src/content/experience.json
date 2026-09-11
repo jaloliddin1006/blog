@@ -1,6 +1,8 @@
 [
   {
     "id": "head-isd",
+    "start": "2026-07",
+    "end": null,
     "current": true,
     "period": {
       "en": "Jul 2026 – present",
@@ -37,6 +39,8 @@
   },
   {
     "id": "chief-is",
+    "start": "2025-06",
+    "end": "2026-07",
     "period": {
       "en": "Jun 2025 – Jul 2026",
       "uz": "2025 iyun – 2026 iyul",
@@ -72,6 +76,8 @@
   },
   {
     "id": "chief-ai",
+    "start": "2025-03",
+    "end": "2025-06",
     "period": {
       "en": "Mar 2025 – Jun 2025",
       "uz": "2025 mart – 2025 iyun",
@@ -107,6 +113,8 @@
   },
   {
     "id": "lead-dbe",
+    "start": "2024-09",
+    "end": "2025-03",
     "period": {
       "en": "Sep 2024 – Mar 2025",
       "uz": "2024 sentabr – 2025 mart",
@@ -142,6 +150,8 @@
   },
   {
     "id": "ict-academy",
+    "start": "2023-06",
+    "end": "2025-09",
     "secondary": true,
     "org": {
       "en": "ICT Academy · part-time",
