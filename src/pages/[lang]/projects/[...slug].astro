@@ -1,0 +1,20 @@
+---
+import type { GetStaticPaths } from 'astro';
+import ProjectsView from '../../../components/ProjectsView.astro';
+import { hasProjectPage, projects } from '../../../lib/content';
+import { PREFIXED_LOCALES, isLocale } from '../../../lib/i18n';
+
+export const getStaticPaths = (() =>
+  PREFIXED_LOCALES.flatMap((lang) => [
+    { params: { lang, slug: undefined }, props: { project: undefined } },
+    ...projects
+      .filter((project) => hasProjectPage(project, lang))
+      .map((project) => ({ params: { lang, slug: project.slug }, props: { project } })),
+  ])) satisfies GetStaticPaths;
+
+const { lang } = Astro.params;
+const { project } = Astro.props;
+if (!isLocale(lang)) throw new Error(`Unknown locale: ${lang}`);
+---
+
+<ProjectsView locale={lang} project={project} />

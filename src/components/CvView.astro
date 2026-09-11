@@ -133,8 +133,8 @@ const short = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '');
               <li>
                 <span class="project-name">{project.name}</span> —{' '}
                 {pick(project.description, locale)}{' '}
-                <a href={project.url} rel="noopener noreferrer" target="_blank">
-                  {short(project.url)}
+                <a href={project.repo} rel="noopener noreferrer" target="_blank">
+                  {short(project.repo)}
                 </a>
               </li>
             ))

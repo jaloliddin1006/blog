@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Studio — mamatmusayev.uz</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --ground-1: #060c14;
+        --ground-2: #0d1826;
+        --glass: rgba(255, 255, 255, 0.055);
+        --glass-strong: rgba(255, 255, 255, 0.085);
+        --border: rgba(255, 255, 255, 0.12);
+        --ink: #eaf0f7;
+        --ink-2: #9db0c6;
+        --accent: #5fc0d2;
+        --accent-soft: rgba(95, 192, 210, 0.14);
+        --danger: #e88b8b;
+        --mono: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font:
+          15px/1.55 system-ui,
+          -apple-system,
+          'Segoe UI',
+          Roboto,
+          sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(120% 90% at 12% 8%, rgba(95, 192, 210, 0.2), transparent 55%),
+          linear-gradient(170deg, var(--ground-1), var(--ground-2));
+        background-attachment: fixed;
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.9rem 1.5rem;
+        background: rgba(6, 12, 20, 0.75);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--border);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      h1 span {
+        color: var(--ink-2);
+        font-weight: 400;
+      }
+
+      .tabs {
+        margin-left: auto;
+        display: flex;
+        gap: 0.4rem;
+      }
+
+      .tabs button {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 0.45rem 0.9rem;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--ink-2);
+        cursor: pointer;
+      }
+
+      .tabs button[aria-selected='true'] {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #05131a;
+      }
+
+      main {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 1.75rem 1.25rem 5rem;
+      }
+
+      .panel {
+        background: var(--glass);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+        backdrop-filter: blur(16px);
+      }
+
+      h2 {
+        margin: 0 0 1.25rem;
+        font-size: 0.72rem;
+        font-family: var(--mono);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.9rem;
+        font-size: 0.8rem;
+        color: var(--ink-2);
+      }
+
+      label > span {
+        display: block;
+        margin-bottom: 0.3rem;
+      }
+
+      input[type='text'],
+      input[type='url'],
+      input[type='date'],
+      select,
+      textarea {
+        width: 100%;
+        padding: 0.55rem 0.7rem;
+        font: inherit;
+        color: var(--ink);
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid var(--border);
+        border-radius: 9px;
+      }
+
+      textarea {
+        min-height: 8rem;
+        resize: vertical;
+        line-height: 1.6;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: 2px solid var(--accent);
+        outline-offset: 1px;
+      }
+
+      .row {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .cols-3 {
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      }
+
+      .cols-2 {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+
+      .check {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+      }
+
+      button.primary,
+      button.ghost {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 0.65rem 1.3rem;
+        border-radius: 999px;
+        cursor: pointer;
+        border: 1px solid var(--accent);
+      }
+
+      button.primary {
+        background: var(--accent);
+        color: #05131a;
+      }
+
+      button.ghost {
+        background: transparent;
+        border-color: var(--border);
+        color: var(--ink);
+      }
+
+      button.ghost:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      button.link {
+        background: none;
+        border: 0;
+        color: var(--danger);
+        font-size: 0.75rem;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-top: 0.5rem;
+      }
+
+      .note {
+        font-size: 0.75rem;
+        color: var(--ink-2);
+      }
+
+      .note.warn {
+        color: var(--danger);
+      }
+
+      .list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 0.4rem;
+      }
+
+      .list li {
+        display: flex;
+        gap: 0.75rem;
+        align-items: baseline;
+        padding: 0.5rem 0.7rem;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        font-size: 0.82rem;
+      }
+
+      .list .tag,
+      .list .date {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        color: var(--ink-2);
+      }
+
+      .list .tag {
+        color: var(--accent);
+      }
+
+      .drop {
+        border: 1px dashed var(--border);
+        border-radius: 14px;
+        padding: 1.5rem;
+        text-align: center;
+        color: var(--ink-2);
+        font-size: 0.85rem;
+        cursor: pointer;
+      }
+
+      .drop.over {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+        color: var(--ink);
+      }
+
+      .shots {
+        display: grid;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .shot {
+        display: grid;
+        gap: 0.75rem;
+        grid-template-columns: 190px minmax(0, 1fr);
+        align-items: start;
+        padding: 0.85rem;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+      }
+
+      .shot img {
+        width: 100%;
+        border-radius: 9px;
+        display: block;
+        border: 1px solid var(--border);
+      }
+
+      .shot .file {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        color: var(--ink-2);
+        margin-top: 0.4rem;
+        word-break: break-all;
+      }
+
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 1.25rem;
+        transform: translateX(-50%);
+        padding: 0.7rem 1.2rem;
+        border-radius: 999px;
+        background: var(--glass-strong);
+        border: 1px solid var(--border);
+        backdrop-filter: blur(14px);
+        font-size: 0.82rem;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+        pointer-events: none;
+        max-width: 90vw;
+      }
+
+      .toast.show {
+        opacity: 1;
+      }
+
+      .toast.error {
+        border-color: var(--danger);
+        color: var(--danger);
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      @media (max-width: 640px) {
+        .shot {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Studio <span>· mamatmusayev.uz</span></h1>
+      <div class="tabs" role="tablist">
+        <button role="tab" data-tab="posts" aria-selected="true">Posts</button>
+        <button role="tab" data-tab="projects" aria-selected="false">Projects</button>
+      </div>
+    </header>
+
+    <main>
+      <!-- ------------------------------------------------------------ posts -->
+      <section id="tab-posts">
+        <div class="panel">
+          <h2>New post</h2>
+          <div class="row cols-3">
+            <label>
+              <span>Language</span>
+              <select id="post-lang">
+                <option value="en">English</option>
+                <option value="uz">O‘zbekcha</option>
+                <option value="ru">Русский</option>
+              </select>
+            </label>
+            <label>
+              <span>Date</span>
+              <input type="date" id="post-date" />
+            </label>
+            <label class="check" style="align-self: end; margin-bottom: 1.4rem">
+              <input type="checkbox" id="post-draft" />
+              Draft — keep it out of the build
+            </label>
+          </div>
+
+          <label>
+            <span>Title</span>
+            <input type="text" id="post-title" placeholder="What I changed about our ETL" />
+          </label>
+
+          <label>
+            <span>Slug <em id="post-slug-hint" class="note"></em></span>
+            <input type="text" id="post-slug" placeholder="left blank, it comes from the title" />
+          </label>
+
+          <label>
+            <span>Summary <em class="note" id="post-summary-count">0/155</em></span>
+            <input type="text" id="post-summary" maxlength="155" />
+          </label>
+
+          <label>
+            <span>Link out instead of writing a page (optional LinkedIn URL)</span>
+            <input type="url" id="post-external" placeholder="https://www.linkedin.com/posts/…" />
+          </label>
+
+          <label>
+            <span>Body — Markdown</span>
+            <textarea id="post-body" placeholder="## A heading&#10;&#10;Your text."></textarea>
+          </label>
+
+          <div class="actions">
+            <button class="primary" id="post-save">Save post</button>
+            <span class="note">Writes src/content/posts/&lt;lang&gt;/&lt;slug&gt;.md</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Existing posts</h2>
+          <ul class="list" id="post-list"></ul>
+        </div>
+      </section>
+
+      <!-- --------------------------------------------------------- projects -->
+      <section id="tab-projects" hidden>
+        <div class="panel">
+          <h2>Project</h2>
+          <label>
+            <span>Edit an existing one, or start a new one</span>
+            <select id="project-picker"></select>
+          </label>
+
+          <div class="row cols-2">
+            <label>
+              <span>Name</span>
+              <input type="text" id="project-name" placeholder="chatbot-with-llm" />
+            </label>
+            <label>
+              <span>Slug — the URL segment</span>
+              <input type="text" id="project-slug" />
+            </label>
+            <label>
+              <span>Repository URL</span>
+              <input type="url" id="project-repo" />
+            </label>
+            <label>
+              <span>Live demo URL (optional)</span>
+              <input type="url" id="project-demo" />
+            </label>
+            <label>
+              <span>Stack — up to three, comma separated</span>
+              <input type="text" id="project-stack" placeholder="Python, Django, aiogram 3" />
+            </label>
+            <label>
+              <span>License (optional)</span>
+              <input type="text" id="project-license" placeholder="MIT" />
+            </label>
+          </div>
+
+          <label class="check">
+            <input type="checkbox" id="project-featured" />
+            Featured — show it on the homepage
+          </label>
+
+          <div class="row cols-3">
+            <label>
+              <span>Description · EN — one line</span>
+              <input type="text" id="project-description-en" />
+            </label>
+            <label>
+              <span>Description · UZ</span>
+              <input type="text" id="project-description-uz" />
+            </label>
+            <label>
+              <span>Description · RU</span>
+              <input type="text" id="project-description-ru" />
+            </label>
+          </div>
+
+          <p class="note">
+            Details below fill the project page. Leave a blank line between paragraphs. A project
+            with no details and no screenshots has no page — the card just links to GitHub.
+          </p>
+
+          <div class="row cols-3">
+            <label>
+              <span>Details · EN</span>
+              <textarea id="project-details-en"></textarea>
+            </label>
+            <label>
+              <span>Details · UZ</span>
+              <textarea id="project-details-uz"></textarea>
+            </label>
+            <label>
+              <span>Details · RU</span>
+              <textarea id="project-details-ru"></textarea>
+            </label>
+          </div>
+
+          <div class="actions">
+            <button class="primary" id="project-save">Save project</button>
+            <span class="note">Writes src/content/projects.json</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Screenshots</h2>
+          <p class="note" id="shot-hint">Save the project first, then add screenshots.</p>
+          <div class="drop" id="shot-drop" hidden>
+            Drop an image here, or click to choose one. It is resized to 1600px and written as AVIF,
+            WebP and JPEG.
+          </div>
+          <input type="file" id="shot-input" accept="image/*" hidden multiple />
+          <div class="shots" id="shot-list"></div>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <script type="module">
+      const $ = (id) => document.getElementById(id);
+      const LOCALES = ['en', 'uz', 'ru'];
+      let state = { projects: [], posts: [] };
+      let current = null;
+
+      const toast = (message, isError = false) => {
+        const node = $('toast');
+        node.textContent = message;
+        node.classList.toggle('error', isError);
+        node.classList.add('show');
+        clearTimeout(node._timer);
+        node._timer = setTimeout(() => node.classList.remove('show'), 3200);
+      };
+
+      async function api(path, options = {}) {
+        const response = await fetch(path, options);
+        const body = await response.json();
+        if (!response.ok) throw new Error(body.error ?? 'Request failed');
+        return body;
+      }
+
+      const slugify = (value) =>
+        value
+          .toLowerCase()
+          .replace(/[‘’ʻʼ']/g, '')
+          .normalize('NFD')
+          .replace(/[̀-ͯ]/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+
+      /* ---------------------------------------------------------- tabs */
+      document.querySelectorAll('[role="tab"]').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('[role="tab"]').forEach((other) => {
+            const selected = other === tab;
+            other.setAttribute('aria-selected', String(selected));
+            $(`tab-${other.dataset.tab}`).hidden = !selected;
+          });
+        });
+      });
+
+      /* --------------------------------------------------------- posts */
+      $('post-date').value = new Date().toISOString().slice(0, 10);
+      $('post-summary').addEventListener('input', (event) => {
+        $('post-summary-count').textContent = `${event.target.value.length}/155`;
+      });
+      $('post-title').addEventListener('input', (event) => {
+        $('post-slug-hint').textContent = $('post-slug').value
+          ? ''
+          : `→ ${slugify(event.target.value) || '…'}`;
+      });
+
+      $('post-save').addEventListener('click', async () => {
+        try {
+          const created = await api('/api/post', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+              locale: $('post-lang').value,
+              slug: $('post-slug').value,
+              title: $('post-title').value,
+              date: $('post-date').value,
+              summary: $('post-summary').value,
+              external: $('post-external').value,
+              body: $('post-body').value,
+              draft: $('post-draft').checked,
+            }),
+          });
+          toast(`Saved ${created.file}`);
+          ['post-title', 'post-slug', 'post-summary', 'post-external', 'post-body'].forEach(
+            (id) => {
+              $(id).value = '';
+            },
+          );
+          $('post-summary-count').textContent = '0/155';
+          $('post-slug-hint').textContent = '';
+          await load();
+        } catch (error) {
+          toast(error.message, true);
+        }
+      });
+
+      function renderPosts() {
+        $('post-list').innerHTML =
+          state.posts
+            .map(
+              (post) => `<li>
+                <span class="tag">${post.locale.toUpperCase()}</span>
+                <span class="date">${post.date}</span>
+                <span>${post.title}${post.draft ? ' <span class="tag">draft</span>' : ''}</span>
+              </li>`,
+            )
+            .join('') || '<li><span class="note">Nothing yet.</span></li>';
+      }
+
+      /* ------------------------------------------------------ projects */
+      function renderPicker() {
+        $('project-picker').innerHTML = [
+          '<option value="">+ New project</option>',
+          ...state.projects.map(
+            (project) =>
+              `<option value="${project.slug}">${project.name}${project.featured ? ' ★' : ''}</option>`,
+          ),
+        ].join('');
+        $('project-picker').value = current?.slug ?? '';
+      }
+
+      function fillProject(project) {
+        current = project;
+        $('project-name').value = project?.name ?? '';
+        $('project-slug').value = project?.slug ?? '';
+        $('project-repo').value = project?.repo ?? '';
+        $('project-demo').value = project?.demo ?? '';
+        $('project-stack').value = (project?.stack ?? []).join(', ');
+        $('project-license').value = project?.license ?? '';
+        $('project-featured').checked = Boolean(project?.featured);
+        for (const locale of LOCALES) {
+          $(`project-description-${locale}`).value = project?.description?.[locale] ?? '';
+          $(`project-details-${locale}`).value = (project?.details?.[locale] ?? []).join('\n\n');
+        }
+        renderShots();
+      }
+
+      $('project-picker').addEventListener('change', (event) => {
+        fillProject(state.projects.find((project) => project.slug === event.target.value) ?? null);
+      });
+
+      $('project-name').addEventListener('input', (event) => {
+        if (!current && !$('project-slug').value)
+          $('project-slug').value = slugify(event.target.value);
+      });
+
+      $('project-save').addEventListener('click', async () => {
+        try {
+          const payload = {
+            slug: $('project-slug').value || slugify($('project-name').value),
+            name: $('project-name').value,
+            repo: $('project-repo').value,
+            demo: $('project-demo').value,
+            license: $('project-license').value,
+            featured: $('project-featured').checked,
+            stack: $('project-stack')
+              .value.split(',')
+              .map((item) => item.trim()),
+            description: Object.fromEntries(
+              LOCALES.map((locale) => [locale, $(`project-description-${locale}`).value]),
+            ),
+            details: Object.fromEntries(
+              LOCALES.map((locale) => [locale, $(`project-details-${locale}`).value]),
+            ),
+            screenshots: current?.screenshots ?? [],
+          };
+          const saved = await api('/api/project', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          toast(`Saved ${saved.slug}`);
+          await load();
+          fillProject(state.projects.find((project) => project.slug === saved.slug) ?? null);
+          renderPicker();
+        } catch (error) {
+          toast(error.message, true);
+        }
+      });
+
+      /* --------------------------------------------------- screenshots */
+      function renderShots() {
+        const saved = Boolean(current);
+        $('shot-drop').hidden = !saved;
+        $('shot-hint').hidden = saved;
+        if (!saved) {
+          $('shot-list').innerHTML = '';
+          return;
+        }
+
+        $('shot-list').innerHTML = (current.screenshots ?? [])
+          .map(
+            (shot, index) => `
+            <div class="shot" data-index="${index}">
+              <div>
+                <img src="/projects/${current.slug}/${shot.file}.jpg?v=${Date.now()}" alt="" />
+                <p class="file">${shot.file}</p>
+                <button class="link" data-remove="${shot.file}">Remove</button>
+              </div>
+              <div>
+                ${LOCALES.map(
+                  (locale) => `
+                  <label>
+                    <span>Alt · ${locale.toUpperCase()}</span>
+                    <input type="text" data-shot="alt" data-locale="${locale}"
+                      value="${(shot.alt?.[locale] ?? '').replace(/"/g, '&quot;')}" />
+                  </label>
+                  <label>
+                    <span>Caption · ${locale.toUpperCase()} (optional)</span>
+                    <input type="text" data-shot="caption" data-locale="${locale}"
+                      value="${(shot.caption?.[locale] ?? '').replace(/"/g, '&quot;')}" />
+                  </label>`,
+                ).join('')}
+              </div>
+            </div>`,
+          )
+          .join('');
+
+        $('shot-list')
+          .querySelectorAll('[data-remove]')
+          .forEach((button) =>
+            button.addEventListener('click', async () => {
+              try {
+                const { screenshots } = await api('/api/screenshot/delete', {
+                  method: 'POST',
+                  headers: { 'content-type': 'application/json' },
+                  body: JSON.stringify({ slug: current.slug, file: button.dataset.remove }),
+                });
+                current.screenshots = screenshots;
+                toast('Screenshot removed');
+                renderShots();
+              } catch (error) {
+                toast(error.message, true);
+              }
+            }),
+          );
+
+        $('shot-list')
+          .querySelectorAll('input[data-shot]')
+          .forEach((input) =>
+            input.addEventListener('input', () => {
+              const index = Number(input.closest('.shot').dataset.index);
+              const shot = current.screenshots[index];
+              const field = input.dataset.shot;
+              shot[field] = shot[field] ?? {};
+              shot[field][input.dataset.locale] = input.value;
+              if (field === 'caption' && LOCALES.every((locale) => !shot.caption?.[locale])) {
+                delete shot.caption;
+              }
+            }),
+          );
+      }
+
+      async function upload(files) {
+        for (const file of files) {
+          try {
+            const result = await api(
+              `/api/screenshot?slug=${encodeURIComponent(current.slug)}&name=${encodeURIComponent(file.name)}`,
+              { method: 'POST', body: file },
+            );
+            current.screenshots = result.screenshots;
+            toast(`Added ${result.file} — remember to save the project`);
+          } catch (error) {
+            toast(error.message, true);
+          }
+        }
+        renderShots();
+      }
+
+      $('shot-drop').addEventListener('click', () => $('shot-input').click());
+      $('shot-input').addEventListener('change', (event) => upload([...event.target.files]));
+      ['dragenter', 'dragover'].forEach((type) =>
+        $('shot-drop').addEventListener(type, (event) => {
+          event.preventDefault();
+          $('shot-drop').classList.add('over');
+        }),
+      );
+      ['dragleave', 'drop'].forEach((type) =>
+        $('shot-drop').addEventListener(type, (event) => {
+          event.preventDefault();
+          $('shot-drop').classList.remove('over');
+          if (type === 'drop')
+            upload([...event.dataTransfer.files].filter((f) => f.type.startsWith('image/')));
+        }),
+      );
+
+      /* ----------------------------------------------------------- boot */
+      async function load() {
+        state = await api('/api/state');
+        renderPosts();
+        renderPicker();
+        if (current) {
+          current = state.projects.find((project) => project.slug === current.slug) ?? current;
+        }
+      }
+
+      await load();
+      fillProject(null);
+    </script>
+  </body>
+</html>

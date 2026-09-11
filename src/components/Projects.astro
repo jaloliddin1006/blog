@@ -1,8 +1,9 @@
 ---
 import ExternalIcon from './ExternalIcon.astro';
+import ProjectCard from './ProjectCard.astro';
 import Section from './Section.astro';
 import { featuredProjects, profile } from '../lib/content';
-import { fill, pick, t, type Locale } from '../lib/i18n';
+import { localePath, t, type Locale } from '../lib/i18n';
 
 interface Props {
   locale: Locale;
@@ -14,32 +15,13 @@ const strings = t(locale);
 
 <Section id="projects" index="03" title={strings.sections.projects} wide>
   <ul class="grid stagger">
-    {
-      featuredProjects.map((project) => (
-        <li class="card glass glass-sheen">
-          <h3>{project.name}</h3>
-          <p class="description">{pick(project.description, locale)}</p>
-          <ul class="chips">
-            {project.stack.map((item) => (
-              <li>{item}</li>
-            ))}
-          </ul>
-          <a
-            class="repo"
-            href={project.url}
-            rel="noopener noreferrer"
-            target="_blank"
-            aria-label={fill(strings.projects.viewLabel, { name: project.name })}
-          >
-            {strings.projects.view}
-            <ExternalIcon />
-          </a>
-        </li>
-      ))
-    }
+    {featuredProjects.map((project) => <ProjectCard project={project} locale={locale} />)}
   </ul>
 
   <p class="all">
+    <a href={localePath(locale, 'projects')}>
+      {strings.projects.allProjects}<ExternalIcon direction="right" />
+    </a>
     <a href={profile.links.github} rel="noopener noreferrer" target="_blank">
       {strings.projects.all}<ExternalIcon />
     </a>
@@ -55,74 +37,10 @@ const strings = t(locale);
     padding: 0;
   }
 
-  .card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-    padding: 1.6rem 1.5rem;
-    border-radius: 16px;
-    transition:
-      transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
-      border-color 0.35s ease,
-      box-shadow 0.35s ease;
-  }
-
-  .card:hover {
-    transform: translateY(-4px);
-    border-color: var(--accent);
-    box-shadow:
-      0 24px 48px -28px var(--accent-glow),
-      var(--glass-shadow);
-  }
-
-  h3 {
-    margin: 0;
-    font-family: var(--font-mono);
-    font-weight: 400;
-    font-size: var(--text-meta);
-    letter-spacing: -0.01em;
-    color: var(--ink);
-    overflow-wrap: anywhere;
-  }
-
-  .description {
-    margin: 0;
-    font-size: var(--text-meta);
-    color: var(--ink-2);
-    flex: 1;
-  }
-
-  .chips {
+  .all {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .chips li {
-    font-family: var(--font-mono);
-    font-size: var(--text-micro);
-    color: var(--accent);
-    background-color: var(--accent-soft);
-    border: 1px solid transparent;
-    border-radius: 999px;
-    padding: 0.15rem 0.55rem;
-  }
-
-  .repo {
-    font-size: var(--text-meta);
-    color: var(--accent);
-    text-decoration: none;
-    align-self: flex-start;
-  }
-
-  .repo:hover {
-    text-decoration: underline;
-  }
-
-  .all {
+    gap: 1.5rem;
     margin: 1.5rem 0 0;
   }
 

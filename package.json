@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "lint": "prettier --check . && node scripts/check-uz-apostrophes.mjs",
     "format": "prettier --write .",
-    "test": "playwright test"
+    "test": "playwright test",
+    "studio": "node scripts/studio.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.4",

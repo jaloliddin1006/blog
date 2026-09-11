@@ -45,13 +45,15 @@ sheet is the only source of truth: nothing here was invented, embellished or inf
 
 ## Deliberately left empty or absent
 
-| Item                                      | Why                                                                                                                                          |
-| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `certifications[].url`                    | A2 says to link each credential "where available"; no URLs were supplied. All are `null`, so no link renders. Fill them in and links appear. |
-| `profile.links.source`                    | The site repository is not public yet, so the footer's "Source on GitHub" link is not rendered.                                              |
-| GitHub star counts, "81 repositories"     | Removed during the spec review: they go stale and would break the fact-accuracy rule. Fetch them at build time if they are ever wanted.      |
-| Phone number                              | A3.9 forbids it.                                                                                                                             |
-| Anything about internal Committee systems | A2 forbids naming them; the work is described in prose only.                                                                                 |
+| Item                                      | Why                                                                                                                                                                                              |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `certifications[].url`                    | A2 says to link each credential "where available"; no URLs were supplied. All are `null`, so no link renders. Fill them in and links appear.                                                     |
+| `projects[].details`                      | Longer write-ups are the owner's to write — nothing about these repositories beyond A2's one-line descriptions was invented. A project with empty details and no screenshots simply has no page. |
+| `projects[].screenshots`                  | No screenshots were supplied. Add them in the studio (`npm run studio` → Projects → drop an image) and the project page appears on the next build.                                               |
+| `profile.links.source`                    | The site repository is not public yet, so the footer's "Source on GitHub" link is not rendered.                                                                                                  |
+| GitHub star counts, "81 repositories"     | Removed during the spec review: they go stale and would break the fact-accuracy rule. Fetch them at build time if they are ever wanted.                                                          |
+| Phone number                              | A3.9 forbids it.                                                                                                                                                                                 |
+| Anything about internal Committee systems | A2 forbids naming them; the work is described in prose only.                                                                                                                                     |
 
 ## Things for the owner to fix outside this repository
 

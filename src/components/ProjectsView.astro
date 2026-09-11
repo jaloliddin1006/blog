@@ -1,0 +1,360 @@
+---
+/**
+ * Two routes in one view: the /projects/ index, and a single project's page.
+ * Which one renders depends on whether a project was passed in.
+ */
+import Base from '../layouts/Base.astro';
+import ExternalIcon from './ExternalIcon.astro';
+import ProjectCard from './ProjectCard.astro';
+import Shot from './Shot.astro';
+import { projects, type Project } from '../lib/content';
+import { localePath, pick, t, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+  project?: Project;
+}
+
+const { locale, project } = Astro.props;
+const strings = t(locale);
+const featured = projects.filter((entry) => entry.featured);
+const rest = projects.filter((entry) => !entry.featured);
+const details = project ? pick(project.details, locale) : [];
+---
+
+{
+  project ? (
+    <Base
+      locale={locale}
+      title={`${project.name} — ${strings.meta.projectsTitle}`}
+      description={pick(project.description, locale)}
+      route={`projects/${project.slug}`}
+      ogType="article"
+    >
+      <article class="page shell">
+        <p class="back">
+          <a href={localePath(locale, 'projects')}>{strings.projects.back}</a>
+        </p>
+
+        <header class="head glass glass-sheen">
+          <h1>{project.name}</h1>
+          <p class="lede measure">{pick(project.description, locale)}</p>
+
+          <dl class="meta">
+            <div>
+              <dt>{strings.projects.stack}</dt>
+              <dd>
+                <ul class="chips">
+                  {project.stack.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+            {project.license && (
+              <div>
+                <dt>License</dt>
+                <dd>{project.license}</dd>
+              </div>
+            )}
+          </dl>
+
+          <p class="links">
+            <a class="button" href={project.repo} rel="noopener noreferrer" target="_blank">
+              {strings.projects.view}
+              <ExternalIcon />
+            </a>
+            {project.demo && (
+              <a class="button ghost" href={project.demo} rel="noopener noreferrer" target="_blank">
+                {strings.projects.demo}
+                <ExternalIcon />
+              </a>
+            )}
+          </p>
+        </header>
+
+        {details.length > 0 && (
+          <section class="prose glass glass-sheen reveal">
+            {details.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
+          </section>
+        )}
+
+        {project.screenshots.length > 0 && (
+          <section class="shots reveal">
+            <h2>{strings.projects.screenshots}</h2>
+            <div class="gallery stagger">
+              {project.screenshots.map((shot, index) => (
+                <figure class="glass glass-sheen">
+                  <Shot
+                    slug={project.slug}
+                    shot={shot}
+                    locale={locale}
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    sizes="(min-width: 900px) 520px, 92vw"
+                  />
+                  {shot.caption && <figcaption>{pick(shot.caption, locale)}</figcaption>}
+                </figure>
+              ))}
+            </div>
+          </section>
+        )}
+      </article>
+    </Base>
+  ) : (
+    <Base
+      locale={locale}
+      title={strings.meta.projectsTitle}
+      description={strings.meta.projectsDescription}
+      route="projects"
+    >
+      <div class="page shell">
+        <h1>{strings.sections.projects}</h1>
+        <p class="lede measure">{strings.projects.index}</p>
+
+        <h2 class="group">{strings.projects.featured}</h2>
+        <ul class="grid stagger">
+          {featured.map((entry) => (
+            <ProjectCard project={entry} locale={locale} />
+          ))}
+        </ul>
+
+        <h2 class="group">{strings.projects.other}</h2>
+        <ul class="grid stagger">
+          {rest.map((entry) => (
+            <ProjectCard project={entry} locale={locale} />
+          ))}
+        </ul>
+
+        <p class="all">
+          <a href="https://github.com/jaloliddin1006" rel="noopener noreferrer" target="_blank">
+            {strings.projects.all}
+            <ExternalIcon />
+          </a>
+        </p>
+      </div>
+    </Base>
+  )
+}
+
+<style>
+  .page {
+    padding-block: 6.5rem 1rem;
+  }
+
+  h1 {
+    margin: 0 0 1rem;
+    font-size: var(--text-h1);
+    overflow-wrap: anywhere;
+  }
+
+  .head h1 {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: var(--text-h2);
+    letter-spacing: -0.02em;
+  }
+
+  .lede {
+    margin: 0 0 2rem;
+    color: var(--ink-2);
+  }
+
+  .head .lede {
+    margin-bottom: 1.75rem;
+  }
+
+  .back {
+    margin: 0 0 1.5rem;
+  }
+
+  .back a {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .back a:hover {
+    text-decoration: underline;
+  }
+
+  .head,
+  .prose {
+    padding: 1.9rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .meta {
+    margin: 0 0 1.75rem;
+    display: grid;
+    gap: 1rem;
+  }
+
+  dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+
+  dd {
+    margin: 0;
+    font-size: var(--text-meta);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .chips li {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    padding: 0.2rem 0.65rem;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    margin: 0;
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    background-color: var(--accent);
+    color: var(--on-accent);
+    border: 1px solid var(--accent);
+    transition:
+      transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1),
+      background-color 0.25s ease;
+  }
+
+  .button:hover {
+    transform: translateY(-2px);
+  }
+
+  .button.ghost {
+    background-color: transparent;
+    color: var(--ink);
+    border-color: var(--glass-border);
+  }
+
+  .button.ghost:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .prose p {
+    margin: 0 0 1.15rem;
+    max-width: 66ch;
+    color: var(--ink-2);
+  }
+
+  .prose p:last-child {
+    margin-bottom: 0;
+  }
+
+  .shots h2,
+  .group {
+    margin: 2.5rem 0 1.1rem;
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: var(--text-micro);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .gallery {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  figure {
+    margin: 0;
+    padding: 0.5rem;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  figure :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 11px;
+  }
+
+  figcaption {
+    padding: 0.75rem 0.5rem 0.25rem;
+    font-size: var(--text-micro);
+    color: var(--ink-2);
+  }
+
+  .grid {
+    display: grid;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .all {
+    margin: 2rem 0 0;
+  }
+
+  .all a {
+    font-size: var(--text-meta);
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .all a:hover {
+    text-decoration: underline;
+  }
+
+  @media (min-width: 768px) {
+    .page {
+      padding-block: 8rem 2rem;
+    }
+
+    .head,
+    .prose {
+      padding: 2.75rem 2.5rem;
+    }
+
+    .meta {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .gallery {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.25rem;
+    }
+  }
+</style>

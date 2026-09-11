@@ -30,13 +30,15 @@ scripts/              portrait, OG cards, orthography check, JS budget, test ser
 
 English lives at the root, the other two behind a prefix:
 
-| Route      | English         | Uzbek / Russian    |
-| ---------- | --------------- | ------------------ |
-| home       | `/`             | `/uz/`, `/ru/`     |
-| blog index | `/blog/`        | `/uz/blog/`        |
-| post       | `/blog/<slug>/` | `/uz/blog/<slug>/` |
-| CV         | `/cv/`          | `/uz/cv/`          |
-| not found  | `/404`          | shared             |
+| Route      | English             | Uzbek / Russian        |
+| ---------- | ------------------- | ---------------------- |
+| home       | `/`                 | `/uz/`, `/ru/`         |
+| blog index | `/blog/`            | `/uz/blog/`            |
+| post       | `/blog/<slug>/`     | `/uz/blog/<slug>/`     |
+| projects   | `/projects/`        | `/uz/projects/`        |
+| project    | `/projects/<slug>/` | `/uz/projects/<slug>/` |
+| CV         | `/cv/`              | `/uz/cv/`              |
+| not found  | `/404`              | shared                 |
 
 English pages are ordinary files; `src/pages/[lang]/…` generates the other two from
 `PREFIXED_LOCALES`. Each route is a thin wrapper over a shared view component, so the
@@ -122,6 +124,26 @@ when their inputs change, and their outputs are committed:
 5. `mkdir src/content/posts/<code>` and run `node scripts/generate-og.mjs`.
 
 Routes, hreflang, the switch and the CV follow automatically.
+
+## The studio
+
+`scripts/studio.mjs` is a plain Node server — no Astro, no adapter, no framework — that
+serves `scripts/studio/index.html` and a handful of JSON endpoints. It writes Markdown
+posts, upserts `projects.json`, and runs uploaded screenshots through sharp into AVIF,
+WebP and JPEG under `public/projects/<slug>/`.
+
+It binds to `127.0.0.1` and is deliberately outside the Astro app. Astro builds static
+output with no adapter, so an on-demand route would need one, and adding one would put a
+writable surface on the deployed site. Keeping the studio separate means what gets
+deployed stays exactly what it was — static files.
+
+The studio validates only enough to fail fast: required fields, the 155-character summary
+limit, at least one stack chip. Real validation stays where it belongs, in the zod schemas
+that run on every `npm run build`.
+
+Screenshot uploads skip multipart entirely — the browser posts the raw file as the request
+body with the slug and filename in the query string, which is why the server needs no
+parser dependency.
 
 ## Deployment
 

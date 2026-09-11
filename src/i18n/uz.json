@@ -35,7 +35,16 @@
   "projects": {
     "all": "GitHub sahifasidagi barcha repozitoriylar",
     "view": "GitHub",
-    "viewLabel": "{name} loyihasini GitHub’da ochish"
+    "viewLabel": "{name} loyihasini GitHub’da ochish",
+    "detail": "Batafsil",
+    "allProjects": "Barcha loyihalar",
+    "back": "Loyihalar",
+    "demo": "Jonli versiya",
+    "screenshots": "Skrinshotlar",
+    "index": "Ochiq kodli ishlar, shaxsiy loyihalar va tajribalar — diqqatga arziydiganlari.",
+    "stack": "Stek",
+    "featured": "Tanlanganlar",
+    "other": "Qolganlari"
   },
   "blog": {
     "all": "Barcha yozuvlar",
@@ -90,6 +99,8 @@
     "blogDescription": "Ma’lumot tizimlari, backend muhandisligi va rasmiy statistikada sun’iy intellekt haqida qisqa yozuvlar.",
     "cvTitle": "Rezyume — Jaloliddin Mamatmusayev",
     "cvDescription": "Rezyume: ish tajribasi, ta’lim, sertifikatlar, ko‘nikmalar va tanlangan loyihalar.",
-    "notFoundTitle": "Sahifa topilmadi — Jaloliddin Mamatmusayev"
+    "notFoundTitle": "Sahifa topilmadi — Jaloliddin Mamatmusayev",
+    "projectsTitle": "Loyihalar — Jaloliddin Mamatmusayev",
+    "projectsDescription": "Ochiq kodli ishlar va tajribalar: RAG chatbotlar, fine-tuning modellar, Telegram botlar va REST API."
   }
 }

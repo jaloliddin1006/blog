@@ -7,7 +7,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? 'github' : 'list',
   use: {
-    baseURL: 'http://localhost:4321',
+    baseURL: 'http://localhost:4323',
     trace: 'on-first-retry',
   },
   projects: [
@@ -15,8 +15,9 @@ export default defineConfig({
     { name: 'mobile', use: { ...devices['Pixel 7'] } },
   ],
   webServer: {
-    command: 'npm run build && node scripts/serve-dist.mjs',
-    url: 'http://localhost:4321',
+    // A port of its own, so a running `npm run dev` is never picked up by mistake.
+    command: 'npm run build && PORT=4323 node scripts/serve-dist.mjs',
+    url: 'http://localhost:4323',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

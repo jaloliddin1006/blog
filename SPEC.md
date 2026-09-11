@@ -125,7 +125,11 @@ One page with anchored sections, plus two real routes: `/blog/` (with post pages
 
 **4. Work (timeline)** — vertical timeline, four Committee roles from A2 with the period on the left, role on the right, 2-line description each; ICT Academy as a fifth, lighter entry. A single caption above: `National Statistics Committee of the Republic of Uzbekistan · Sep 2024 – present`. A `Full CV →` link to `/cv/` sits under the timeline.
 
-**5. Projects** — grid of 6 cards (3×2 desktop, 1 column mobile). Each card: name, one-line English description, 2–3 stack chips, `GitHub ↗`. No star counts, no repo totals — nothing that goes stale. Cards are equal height, same padding, no shadows; a 1px border and a hover lift of 2px. Below the grid: `All repositories on GitHub ↗`.
+**5. Projects** — grid of 6 featured cards (3×2 desktop, 1 column mobile). Each card: a cover screenshot when there is one, name, one-line description, 2–3 stack chips, and links. No star counts, no repo totals — nothing that goes stale. Cards are equal height, same padding; a 1px border and a hover lift. Below the grid: `All projects →` (to `/projects/`) and `All repositories on GitHub ↗`.
+
+- **`/projects/`** lists every repository in `projects.json`, split into _Featured_ and _Everything else_, using the same card.
+- **`/projects/<slug>/`** is a project's own page: name, description, stack, licence, repository and demo links, the written details, and a screenshot gallery. **A project only gets a page once it has details or screenshots** — otherwise the card links straight to GitHub and the route is never built, which keeps empty pages out of the site and out of the sitemap.
+- Screenshots live in `public/projects/<slug>/<file>.{avif,webp,jpg}`, each with `alt` in all three languages and an optional caption.
 
 **6. Skills** — four labeled rows from A2, plain chips. No progress bars, no percentages.
 
@@ -184,12 +188,13 @@ _Revised 10 Sep 2026, at the owner's request: the original brief called for a fl
 - **Content model** (so the owner can edit without touching layout):
   - `content/profile.json` — identity, links, lede, "Now" strip
   - `content/experience.json` — timeline entries
-  - `content/projects.json` — featured repos (name, description, stack[], stars, url)
+  - `content/projects.json` — repositories (slug, name, repo, demo, stack[], description, details, screenshots[])
   - `content/certifications.json`
   - `content/posts/*.md` — blog posts, Markdown + frontmatter (may be an empty folder)
 - **Quality gates**: `npm run build` with zero warnings, `npm run lint`, an HTML validator pass, a Playwright smoke test that loads `/`, `/uz/`, `/ru/`, toggles theme, and asserts every external link has `rel="noopener"`.
-- **Routes**: `/`, `/blog/`, `/blog/<slug>/`, `/cv/`, `/404`, each mirrored under `/uz/` and `/ru/`. All static — no server, no runtime rendering.
-- **Out of scope for v1**: CMS, contact form backend, comments, blog tags/categories/pagination/RSS-beyond-a-single-feed, project detail pages, search.
+- **Routes**: `/`, `/blog/`, `/blog/<slug>/`, `/projects/`, `/projects/<slug>/`, `/cv/`, `/404`, each mirrored under `/uz/` and `/ru/`. All static — no server, no runtime rendering.
+- **Authoring**: a local studio (`npm run studio`) writes posts, projects and screenshots straight into `src/content/` and `public/projects/`. It binds to `127.0.0.1`, is never part of the build, and adds no runtime surface to the deployed site — the repository stays the source of truth, and `npm run build` still validates everything it wrote. Screenshots are resized to 1600px and written as AVIF, WebP and JPEG.
+- **Out of scope for v1**: a hosted CMS, contact form backend, comments, blog tags/categories/pagination/RSS-beyond-a-single-feed, search.
 
 ---
 
@@ -310,6 +315,8 @@ Tasks:
 - [ ] Content editable via JSON only; README explains how; CI runs lint, build, test on push.
 - [ ] No horizontal scroll at 360px; cards equal height; no clipped text at any breakpoint.
 - [ ] Blog section, nav item and `/blog/` hide themselves when there are no published posts; a post added as Markdown appears with no code change.
+- [ ] `/projects/` lists every repository; `/projects/<slug>/` exists only for projects with details or screenshots, in each language.
+- [ ] `npm run studio` writes a post, a project and a screenshot that all survive `npm run build`; the studio never appears in `dist/`.
 - [ ] `/cv/` renders in all three languages, prints to ≤ 2 A4 pages with no nav/footer/button, and every fact on it matches the homepage.
 - [ ] `npm run build` and `npm run lint` pass with zero warnings; W3C HTML validator clean on all three pages.
 - [ ] No hard-coded GitHub star counts or repo totals anywhere in content or markup.

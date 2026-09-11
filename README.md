@@ -45,6 +45,33 @@ Write `o‘`/`g‘` with U+2018 and the tutuq belgisi with U+2019 (`ma’lumot`)
 draws the latter two full-width, which visibly breaks up Uzbek words. macOS: `⌥]` and
 `⌥⇧]`. Linux: `Ctrl+Shift+U 2018`.
 
+## The studio — writing without touching files
+
+```bash
+npm run studio      # http://localhost:4322
+```
+
+A small authoring tool that runs **only on your machine**. It has two tabs:
+
+- **Posts** — language, title, date, summary (with the 155-character limit enforced),
+  an optional "link out to LinkedIn instead" URL, a draft switch, and a Markdown body.
+  Save writes `src/content/posts/<lang>/<slug>.md`.
+- **Projects** — pick an existing project or start a new one: name, slug, repository,
+  demo, stack chips, licence, the featured switch, one-line descriptions in all three
+  languages, and the longer details that fill the project page. Save writes
+  `src/content/projects.json`.
+- **Screenshots** — drag an image onto the drop zone (or click to choose). It is resized
+  to 1600px and written as AVIF, WebP and JPEG into `public/projects/<slug>/`, then listed
+  with `alt` and caption fields for each language. Fill the alt text in — it is the one
+  field a screenshot must have.
+
+The studio binds to `127.0.0.1`, is never built into the site, and adds nothing to what
+gets deployed. It writes plain files; review them with `npm run dev`, then commit. If it
+writes something malformed, `npm run build` refuses it — the zod schemas still apply.
+
+Everything it does can also be done by editing the files by hand; the sections below
+describe that.
+
 ## Adding a blog post
 
 Create a Markdown file under `src/content/posts/<lang>/`:
@@ -65,6 +92,46 @@ Your text. Headings, lists, links, code — all standard Markdown.
   LinkedIn instead of getting its own page — useful for a post you do not want to rewrite.
 - A post is listed only under its own language. With no published posts in a language,
   the blog section, the nav item and the `/blog/` route all disappear by themselves.
+
+## Adding a project
+
+Either use the studio, or add an entry to `src/content/projects.json`:
+
+```jsonc
+{
+  "slug": "surdo-ai", // the URL segment: lowercase words joined by hyphens
+  "name": "surdo-ai",
+  "repo": "https://github.com/jaloliddin1006/surdo-ai",
+  "demo": null, // or a URL
+  "featured": true, // true puts it on the homepage
+  "license": "MIT", // optional
+  "stack": ["Python", "AI"], // up to three chips
+  "description": { "en": "…", "uz": "…", "ru": "…" }, // one line, shown on the card
+  "details": { "en": [], "uz": [], "ru": [] }, // paragraphs for the project page
+  "screenshots": [],
+}
+```
+
+**A project gets a page of its own — `/projects/<slug>/` — as soon as it has details or
+screenshots.** Until then the card links straight to GitHub and no empty page is built.
+`/projects/` always lists everything, split into featured and the rest.
+
+### Screenshots by hand
+
+Put `<name>.avif`, `<name>.webp` and `<name>.jpg` in `public/projects/<slug>/` and add:
+
+```jsonc
+"screenshots": [
+  {
+    "file": "dashboard",                                  // the base name, no extension
+    "alt": { "en": "…", "uz": "…", "ru": "…" },           // required — describe the image
+    "caption": { "en": "…", "uz": "…", "ru": "…" }        // optional
+  }
+]
+```
+
+The studio does the three conversions for you; by hand, `scripts/process-portrait.mjs` is
+a working example of the same sharp pipeline.
 
 ## Replacing the portrait
 

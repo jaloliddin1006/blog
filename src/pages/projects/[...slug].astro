@@ -1,0 +1,16 @@
+---
+import type { GetStaticPaths } from 'astro';
+import ProjectsView from '../../components/ProjectsView.astro';
+import { hasProjectPage, projects } from '../../lib/content';
+
+export const getStaticPaths = (() => [
+  { params: { slug: undefined }, props: { project: undefined } },
+  ...projects
+    .filter((project) => hasProjectPage(project, 'en'))
+    .map((project) => ({ params: { slug: project.slug }, props: { project } })),
+]) satisfies GetStaticPaths;
+
+const { project } = Astro.props;
+---
+
+<ProjectsView locale="en" project={project} />

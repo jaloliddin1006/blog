@@ -1,4 +1,5 @@
 import { z } from 'astro/zod';
+import type { Locale } from './i18n';
 import certificationsRaw from '../content/certifications.json';
 import educationRaw from '../content/education.json';
 import experienceRaw from '../content/experience.json';
@@ -52,12 +53,26 @@ const experienceSchema = z.array(
 
 const projectsSchema = z.array(
   z.object({
+    /** URL segment for /projects/<slug>/ — must be unique. */
+    slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'lowercase words joined by hyphens'),
     name: text,
-    url: z.url(),
+    repo: z.url(),
+    demo: z.url().nullable().optional(),
     featured: z.boolean(),
     license: text.optional(),
     stack: z.array(text).min(1).max(3),
+    /** One line for the card. */
     description: l10nText,
+    /** Paragraphs for the detail page; empty until they are written. */
+    details: l10n(z.array(text)),
+    screenshots: z.array(
+      z.object({
+        /** Base name under public/projects/<slug>/, without extension. */
+        file: text,
+        alt: l10nText,
+        caption: l10nText.optional(),
+      }),
+    ),
   }),
 );
 
@@ -103,5 +118,17 @@ export const certifications = parse(
 
 export const featuredProjects = projects.filter((project) => project.featured);
 
+const duplicateSlug = projects
+  .map((project) => project.slug)
+  .find((slug, index, all) => all.indexOf(slug) !== index);
+if (duplicateSlug) {
+  throw new Error(`Duplicate project slug in content/projects.json: ${duplicateSlug}`);
+}
+
 export type Project = (typeof projects)[number];
 export type ExperienceEntry = (typeof experience)[number];
+
+/** A project earns a page of its own once there is something to put on it. */
+export function hasProjectPage(project: Project, locale: Locale): boolean {
+  return project.details[locale].length > 0 || project.screenshots.length > 0;
+}

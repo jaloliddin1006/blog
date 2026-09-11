@@ -35,7 +35,16 @@
   "projects": {
     "all": "All repositories on GitHub",
     "view": "GitHub",
-    "viewLabel": "Open {name} on GitHub"
+    "viewLabel": "Open {name} on GitHub",
+    "detail": "Details",
+    "allProjects": "All projects",
+    "back": "Projects",
+    "demo": "Live demo",
+    "screenshots": "Screenshots",
+    "index": "Open-source work, side projects and experiments — the ones worth a second look.",
+    "stack": "Stack",
+    "featured": "Featured",
+    "other": "Everything else"
   },
   "blog": {
     "all": "All posts",
@@ -90,6 +99,8 @@
     "blogDescription": "Short notes on data systems, backend engineering and AI in official statistics.",
     "cvTitle": "CV — Jaloliddin Mamatmusayev",
     "cvDescription": "Curriculum vitae: experience, education, certifications, skills and selected projects.",
-    "notFoundTitle": "Page not found — Jaloliddin Mamatmusayev"
+    "notFoundTitle": "Page not found — Jaloliddin Mamatmusayev",
+    "projectsTitle": "Projects — Jaloliddin Mamatmusayev",
+    "projectsDescription": "Open-source work and experiments: RAG chatbots, fine-tuned models, Telegram bots and REST APIs."
   }
 }

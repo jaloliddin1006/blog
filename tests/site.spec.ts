@@ -13,8 +13,8 @@ test.describe('homepage', () => {
 
       await expect(page).toHaveTitle(locale.title);
       await expect(page.locator('html')).toHaveAttribute('lang', locale.code);
-      await expect(page.locator('h1')).toHaveCount(1);
-      await expect(page.locator('h1')).toHaveText('Jaloliddin Mamatmusayev');
+      await expect(page.locator('main h1')).toHaveCount(1);
+      await expect(page.locator('main h1')).toHaveText('Jaloliddin Mamatmusayev');
 
       // Every section the rail points at must exist.
       for (const id of ['top', 'about', 'work', 'projects', 'skills', 'education', 'contact']) {
@@ -82,12 +82,12 @@ test.describe('language switch', () => {
 test.describe('blog', () => {
   test('lists posts and opens one', async ({ page }) => {
     await page.goto('/blog/');
-    await expect(page.locator('h1')).toBeVisible();
+    await expect(page.locator('main h1').first()).toBeVisible();
     const first = page.locator('article, ul.posts li').first();
     await expect(first).toBeVisible();
 
     await page.goto('/blog/colophon/');
-    await expect(page.locator('h1')).toHaveText(/Colophon/);
+    await expect(page.locator('main h1')).toHaveText(/Colophon/);
     await expect(page.locator('time')).toBeVisible();
   });
 
@@ -104,7 +104,7 @@ test.describe('cv', () => {
   for (const locale of LOCALES) {
     test(`${locale.code} cv carries the same facts as the homepage`, async ({ page }) => {
       await page.goto(`${locale.path}cv/`.replace('//cv/', '/cv/'));
-      await expect(page.locator('h1')).toHaveText('Jaloliddin Mamatmusayev');
+      await expect(page.locator('main h1')).toHaveText('Jaloliddin Mamatmusayev');
       await expect(
         page
           .getByText('Jul 2026 – present')
@@ -114,6 +114,36 @@ test.describe('cv', () => {
       await expect(page.locator('[data-print]')).toBeVisible();
     });
   }
+});
+
+test.describe('projects', () => {
+  test('the index lists every project in each language', async ({ page }) => {
+    for (const locale of LOCALES) {
+      await page.goto(`${locale.path}projects/`.replace('//projects/', '/projects/'));
+      await expect(page.locator('main h1').first()).toBeVisible();
+      // 12 repositories live in content/projects.json.
+      await expect(page.locator('li.card')).toHaveCount(12);
+    }
+  });
+
+  test('the homepage grid links through to the index', async ({ page }) => {
+    await page.goto('/');
+    const grid = page.locator('#projects li.card');
+    await expect(grid).toHaveCount(6);
+    await page
+      .locator('#projects')
+      .getByRole('link', { name: /all projects/i })
+      .click();
+    await expect(page).toHaveURL(/\/projects\/$/);
+  });
+
+  test('a project without details or screenshots has no page of its own', async ({ page }) => {
+    const response = await page.goto('/projects/leetcodesolves/', {
+      waitUntil: 'domcontentloaded',
+    });
+    // The static host serves 404.html for a route that was never built.
+    expect(await response!.text()).not.toContain('Selected projects');
+  });
 });
 
 test.describe('404', () => {

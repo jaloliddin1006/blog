@@ -1,0 +1,28 @@
+---
+/**
+ * A project screenshot. The studio writes AVIF, WebP and JPEG side by side
+ * under public/projects/<slug>/, so the markup just names the base file.
+ */
+import { pick, type Locale } from '../lib/i18n';
+
+interface Props {
+  slug: string;
+  shot: {
+    file: string;
+    alt: Record<Locale, string>;
+    caption?: Record<Locale, string>;
+  };
+  locale: Locale;
+  sizes?: string;
+  loading?: 'lazy' | 'eager';
+}
+
+const { slug, shot, locale, sizes = '100vw', loading = 'lazy' } = Astro.props;
+const base = `/projects/${slug}/${shot.file}`;
+---
+
+<picture>
+  <source srcset={`${base}.avif`} type="image/avif" sizes={sizes} />
+  <source srcset={`${base}.webp`} type="image/webp" sizes={sizes} />
+  <img src={`${base}.jpg`} alt={pick(shot.alt, locale)} loading={loading} decoding="async" />
+</picture>
